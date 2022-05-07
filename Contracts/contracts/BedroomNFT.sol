@@ -58,6 +58,23 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     mapping(uint256 => address) public tokenIdToAddress;
     mapping(uint256 => Bedroom) public tokenIdToBedroom;
     mapping(uint256 => Bed) public tokenIdToBed;
+
+    // Events
+    event MintingBedroomNFT(
+        uint256 _tokenID, 
+        string _tokenURI,
+        Bedroom _bedroom,
+        Bed _bed, 
+        address _owner
+    );
+
+    event UpgradingBedroomNFT(
+        uint256 _tokenID, 
+        string _newTokenURI,
+        Bedroom _newBedroom,
+        Bed _newBed, 
+        address _owner
+    );
     
     constructor(
         // 162
@@ -271,7 +288,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         if (tokenIdToBed[_tokenId].pillowComfortabilityScore > 100) {
             tokenIdToBed[_tokenId].pillowComfortabilityScore = 100;
         }
-        
     }
 
     // Callback function used by VRF Coordinator
