@@ -26,7 +26,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         string name;
         uint256 investmentBalance;
         uint256 nbUpgrades;
-        uint256 decorationScore;
         uint256 lightIsolationScore;
         uint256 thermalIsolationScore;
         uint256 soundIsolationScore;
@@ -36,34 +35,18 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     }
 
     struct Bed {
-        string name;
-        uint256 nbUpgrades;
-        uint256 investmentBalance;
         uint256 sizeScore;
         uint256 heightScore;
-        uint256 bedBaseMaterialScore;
-        uint256 bedBaseThicknessScore; 
-        uint256 bedBaseLegsScore;
-        uint256 bedBaseApparenceScore;
+        uint256 bedBaseScore;
         uint256 mattressTechnologyScore;
         uint256 mattressThicknessScore; 
-        uint256 mattressFillingScore;
-        uint256 mattressTopQuiltingScore;
         uint256 deformationDepthScore;
         uint256 deformationSpeedScore;
         uint256 deformationPersistenceScore;
-        uint256 supportScore;
-        uint256 suspensionScore;
         uint256 thermalIsolationScore;
         uint256 hygrometricRegulationScore;
-        uint256 comforterTechnologyScore;
-        uint256 comforterFillingScore;
-        uint256 comforterSizeScore;
-        uint256 comforterApparenceScore;
-        uint256 pillowSizeScore;
-        uint256 pillowTechnologyScore;
-        uint256 pillowFillingScore;
-        uint256 pillowApparenceScore;
+        uint256 comforterComfortabilityScore;
+        uint256 pillowComfortabilityScore;
     }
 
     // Array of all Bedroom NFT
@@ -116,13 +99,12 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
             tokenIdToBedroomName[_tokenId],
             0,
             0,
-            _randomNumber%100, 
-            (_randomNumber%800)/10, 
-            (_randomNumber%8000)/100, 
-            (_randomNumber%80000)/1000, 
-            (_randomNumber%800000)/10000, 
-            (_randomNumber%8000000)/100000, 
-            (_randomNumber%80000000)/100000
+            (_randomNumber%70000)/1000, 
+            (_randomNumber%70000)/1000, 
+            (_randomNumber%70000)/1000, 
+            (_randomNumber%70000)/1000, 
+            (_randomNumber%70000)/1000, 
+            (_randomNumber%70000)/1000
         );
         // Storage of the new Bedroom
         bedrooms.push(bedroom);
@@ -131,34 +113,18 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     function createBed(uint256 _randomNumber, uint256 _tokenId) internal {
         // New Bed
         Bed memory bed = Bed(
-            "Bed Level 1",
-            0,
-            0,
-            (_randomNumber%50000)/1000, 
-            (_randomNumber%85000)/1000,
-            (_randomNumber%60000)/1000, 
-            (_randomNumber%65000)/1000, 
-            (_randomNumber%1000)/100, 
-            (_randomNumber%1000)/10, 
-            (_randomNumber%600000)/10000,
             (_randomNumber%70000)/1000, 
-            (_randomNumber%600000)/10000, 
-            (_randomNumber%8000000)/100000,
-            (_randomNumber%7000000)/100000, 
-            (_randomNumber%7000000)/100000, 
-            (_randomNumber%7000000)/100000, 
-            (_randomNumber%8000000)/100000, 
-            (_randomNumber%8000000)/100000, 
-            (_randomNumber%800000000)/10000000, 
-            (_randomNumber%800000000)/10000000, 
-            (_randomNumber%1000)/10, 
-            (_randomNumber%70000)/1000,
             (_randomNumber%70000)/1000, 
-            (_randomNumber%80000)/1000,
-            (_randomNumber%8000)/100, 
-            (_randomNumber%50000)/1000, 
+            (_randomNumber%70000)/1000, 
+            (_randomNumber%70000)/1000, 
+            (_randomNumber%70000)/1000, 
             (_randomNumber%60000)/1000, 
-            (_randomNumber%8000)/100 
+            (_randomNumber%60000)/1000, 
+            (_randomNumber%60000)/1000, 
+            (_randomNumber%60000)/1000, 
+            (_randomNumber%60000)/1000, 
+            (_randomNumber%60000)/1000, 
+            (_randomNumber%60000)/1000
         );
         tokenIdToBed[_tokenId] = bed;
     }
