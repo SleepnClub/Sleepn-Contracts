@@ -112,51 +112,51 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     }
 
     // Callback function used by VRF Coordinator
-    function fulfillRandomness(uint256 _requestId, uint256 _randomNumber) internal override {
+    function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
         // New Bedroom
-        Bedroom memory bedroom = new Bedroom(
+        Bedroom memory bedroom = Bedroom(
             requestToBedroomName[_requestId],
             0,
             0,
-            _randomNumber%100, 
-            (_randomNumber%800)/10, 
-            (_randomNumber%8000)/100, 
-            (_randomNumber%80000)/1000, 
-            (_randomNumber%800000)/10000, 
-            (_randomNumber%8000000)/100000, 
-            (_randomNumber%80000000)/100000
+            _randomWords[0]%100, 
+            (_randomWords[0]%800)/10, 
+            (_randomWords[0]%8000)/100, 
+            (_randomWords[0]%80000)/1000, 
+            (_randomWords[0]%800000)/10000, 
+            (_randomWords[0]%8000000)/100000, 
+            (_randomWords[0]%80000000)/100000
         );
 
         // New Bed
-        Bed memory bed = new Bed(
+        Bed memory bed = Bed(
             requestToBedroomName[_requestId],
             0,
             0,
-            (_randomNumber%50000)/1000, 
-            (_randomNumber%85000)/1000,
-            (_randomNumber%60000)/1000, 
-            (_randomNumber%65000)/1000, 
-            (_randomNumber%1000)/100, 
-            (_randomNumber%1000)/10, 
-            (_randomNumber%600000)/10000,
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%600000)/10000, 
-            (_randomNumber%8000000)/100000,
-            (_randomNumber%7000000)/100000, 
-            (_randomNumber%7000000)/100000, 
-            (_randomNumber%7000000)/100000, 
-            (_randomNumber%8000000)/100000, 
-            (_randomNumber%8000000)/100000, 
-            (_randomNumber%800000000)/10000000, 
-            (_randomNumber%800000000)/10000000, 
-            (_randomNumber%1000)/10, 
-            (_randomNumber%70000)/1000,
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%80000)/1000,
-            (_randomNumber%8000)/100, 
-            (_randomNumber%50000)/1000, 
-            (_randomNumber%60000)/1000, 
-            (_randomNumber%8000)/100 
+            (_randomWords[0]%50000)/1000, 
+            (_randomWords[0]%85000)/1000,
+            (_randomWords[0]%60000)/1000, 
+            (_randomWords[0]%65000)/1000, 
+            (_randomWords[0]%1000)/100, 
+            (_randomWords[0]%1000)/10, 
+            (_randomWords[0]%600000)/10000,
+            (_randomWords[0]%70000)/1000, 
+            (_randomWords[0]%600000)/10000, 
+            (_randomWords[0]%8000000)/100000,
+            (_randomWords[0]%7000000)/100000, 
+            (_randomWords[0]%7000000)/100000, 
+            (_randomWords[0]%7000000)/100000, 
+            (_randomWords[0]%8000000)/100000, 
+            (_randomWords[0]%8000000)/100000, 
+            (_randomWords[0]%800000000)/10000000, 
+            (_randomWords[0]%800000000)/10000000, 
+            (_randomWords[0]%1000)/10, 
+            (_randomWords[0]%70000)/1000,
+            (_randomWords[0]%70000)/1000, 
+            (_randomWords[0]%80000)/1000,
+            (_randomWords[0]%8000)/100, 
+            (_randomWords[0]%50000)/1000, 
+            (_randomWords[0]%60000)/1000, 
+            (_randomWords[0]%8000)/100 
         );
 
         // Storage of the new Bedroom
@@ -166,14 +166,10 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         uint256 tokenId = bedrooms.length - 1;
 
         // Minting of the new Bedroom NFT 
-        _mint(requestToAddress, tokenId, 1, "");
+        _mint(requestToAddress[_requestId], tokenId, 1, "");
 
         // Maps new token Id to new Bed
-        tokenIdToBed[tokenId] = Bed;
-    }
-
-    function setURI(string memory newuri) public onlyOwner {
-        _setURI(newuri);
+        tokenIdToBed[tokenId] = bed;
     }
 
     function setURI(string memory newuri) public onlyOwner {
