@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
@@ -96,7 +97,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     // Creating a new random bedroom object 
     function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
         // New Bedroom
-        string memory name = string(abi.encodePacked("token #", _tokenId));
+        string memory name = string(abi.encodePacked("token #", Strings.toString(_tokenId)));
         Bedroom memory bedroom = Bedroom(
             name,
             0,
