@@ -54,7 +54,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     Bedroom[] public bedrooms;
 
     // Mappings
-    mapping(uint256 => string) public tokenIdToBedroomName; 
     mapping(uint256 => address) public tokenIdToAddress;
     mapping(uint256 => Bed) public tokenIdToBed;
     
@@ -81,9 +80,8 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     }
 
     // This function is creating a new random bedroom NFT by generating a random number
-    function newRandomBedroom(string memory _name) public {
+    function newRandomBedroom() public {
         uint256 tokenId = bedrooms.length;
-        tokenIdToBedroomName[tokenId] = _name; 
         tokenIdToAddress[tokenId] = msg.sender;
         COORDINATOR.requestRandomWords(
             keyHash,
