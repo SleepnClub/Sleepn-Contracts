@@ -152,10 +152,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     
     }
 
-    function setURI(string memory newuri) public onlyOwner {
-        _setURI(newuri);
-    }
-
     function pause() public onlyOwner {
         _pause();
     }
