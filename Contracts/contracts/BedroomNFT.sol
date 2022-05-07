@@ -70,9 +70,8 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     Bedroom[] public bedrooms;
 
     // Mappings
-    mapping(uint256 => string) public requestToBedroomName; 
-    mapping(uint256 => address) public requestToAddress;
-    mapping(uint256 => uint256) public requestToTokenId; 
+    mapping(uint256 => string) public tokenIdToBedroomName; 
+    mapping(uint256 => address) public tokenIdToAddress;
     mapping(uint256 => Bed) public tokenIdToBed;
     
     constructor(
@@ -98,78 +97,85 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
 
     }
        
-    function newRandomBedroom(string memory _name) public returns (uint256) {
-        uint256 requestId = COORDINATOR.requestRandomWords(
+    function newRandomBedroom(string memory _name) public {
+        uint256 tokenId = bedrooms.length;
+        tokenIdToBedroomName[tokenId] = _name; 
+        tokenIdToAddress[tokenId] = msg.sender;
+        COORDINATOR.requestRandomWords(
             keyHash,
             subscriptionId,
             requestConfirmations,
             callbackGasLimit,
             numWord
         );
-        requestToBedroomName[requestId] = _name;
-        requestToAddress[requestId] = msg.sender;
-        return requestId;
+    }
+
+    function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
+        // New Bedroom
+        Bedroom memory bedroom = Bedroom(
+            tokenIdToBedroomName[_tokenId],
+            0,
+            0,
+            _randomNumber%100, 
+            (_randomNumber%800)/10, 
+            (_randomNumber%8000)/100, 
+            (_randomNumber%80000)/1000, 
+            (_randomNumber%800000)/10000, 
+            (_randomNumber%8000000)/100000, 
+            (_randomNumber%80000000)/100000
+        );
+        // Storage of the new Bedroom
+        bedrooms.push(bedroom);
+    }
+
+    function createBed(uint256 _randomNumber, uint256 _tokenId) internal {
+        // New Bed
+        Bed memory bed = Bed(
+            "Bed Level 1",
+            0,
+            0,
+            (_randomNumber%50000)/1000, 
+            (_randomNumber%85000)/1000,
+            (_randomNumber%60000)/1000, 
+            (_randomNumber%65000)/1000, 
+            (_randomNumber%1000)/100, 
+            (_randomNumber%1000)/10, 
+            (_randomNumber%600000)/10000,
+            (_randomNumber%70000)/1000, 
+            (_randomNumber%600000)/10000, 
+            (_randomNumber%8000000)/100000,
+            (_randomNumber%7000000)/100000, 
+            (_randomNumber%7000000)/100000, 
+            (_randomNumber%7000000)/100000, 
+            (_randomNumber%8000000)/100000, 
+            (_randomNumber%8000000)/100000, 
+            (_randomNumber%800000000)/10000000, 
+            (_randomNumber%800000000)/10000000, 
+            (_randomNumber%1000)/10, 
+            (_randomNumber%70000)/1000,
+            (_randomNumber%70000)/1000, 
+            (_randomNumber%80000)/1000,
+            (_randomNumber%8000)/100, 
+            (_randomNumber%50000)/1000, 
+            (_randomNumber%60000)/1000, 
+            (_randomNumber%8000)/100 
+        );
+        tokenIdToBed[_tokenId] = bed;
     }
 
     // Callback function used by VRF Coordinator
     function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
-        // New Bedroom
-        Bedroom memory bedroom = Bedroom(
-            requestToBedroomName[_requestId],
-            0,
-            0,
-            _randomWords[0]%100, 
-            (_randomWords[0]%800)/10, 
-            (_randomWords[0]%8000)/100, 
-            (_randomWords[0]%80000)/1000, 
-            (_randomWords[0]%800000)/10000, 
-            (_randomWords[0]%8000000)/100000, 
-            (_randomWords[0]%80000000)/100000
-        );
-
-        // New Bed
-        Bed memory bed = Bed(
-            requestToBedroomName[_requestId],
-            0,
-            0,
-            (_randomWords[0]%50000)/1000, 
-            (_randomWords[0]%85000)/1000,
-            (_randomWords[0]%60000)/1000, 
-            (_randomWords[0]%65000)/1000, 
-            (_randomWords[0]%1000)/100, 
-            (_randomWords[0]%1000)/10, 
-            (_randomWords[0]%600000)/10000,
-            (_randomWords[0]%70000)/1000, 
-            (_randomWords[0]%600000)/10000, 
-            (_randomWords[0]%8000000)/100000,
-            (_randomWords[0]%7000000)/100000, 
-            (_randomWords[0]%7000000)/100000, 
-            (_randomWords[0]%7000000)/100000, 
-            (_randomWords[0]%8000000)/100000, 
-            (_randomWords[0]%8000000)/100000, 
-            (_randomWords[0]%800000000)/10000000, 
-            (_randomWords[0]%800000000)/10000000, 
-            (_randomWords[0]%1000)/10, 
-            (_randomWords[0]%70000)/1000,
-            (_randomWords[0]%70000)/1000, 
-            (_randomWords[0]%80000)/1000,
-            (_randomWords[0]%8000)/100, 
-            (_randomWords[0]%50000)/1000, 
-            (_randomWords[0]%60000)/1000, 
-            (_randomWords[0]%8000)/100 
-        );
-
-        // Storage of the new Bedroom
-        bedrooms.push(bedroom);
-        
         // Index of the new Bedroom NFT 
-        uint256 tokenId = bedrooms.length - 1;
+        uint256 tokenId = bedrooms.length;
+
+        // Create new Bedroom 
+        createBedroom(_randomWords[0], tokenId);
+
+        // Create new Bed
+        createBed(_randomWords[0], tokenId);
 
         // Minting of the new Bedroom NFT 
-        _mint(requestToAddress[_requestId], tokenId, 1, "");
-
-        // Maps new token Id to new Bed
-        tokenIdToBed[tokenId] = bed;
+        _mint(tokenIdToAddress[tokenId], tokenId, 1, "");
     }
 
     function setURI(string memory newuri) public onlyOwner {
