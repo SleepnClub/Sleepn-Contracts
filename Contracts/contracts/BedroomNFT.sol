@@ -96,17 +96,17 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     // Creating a new random bedroom object 
     function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
         // New Bedroom
-        string memory name = string(abi.encodePacked("token #", _tokenId.toString()));
+        string memory name = string(abi.encodePacked("token #", _tokenId));
         Bedroom memory bedroom = Bedroom(
             name,
             0,
             0,
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%70000)/1000
+            (_randomNumber%80), 
+            (_randomNumber%75), 
+            (_randomNumber%70), 
+            (_randomNumber%65), 
+            (_randomNumber%60), 
+            (_randomNumber%50)
         );
         // Storage of the new Bedroom
         bedrooms.push(bedroom);
@@ -116,18 +116,18 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     function createBed(uint256 _randomNumber, uint256 _tokenId) internal {
         // New Bed
         Bed memory bed = Bed(
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%70000)/1000, 
-            (_randomNumber%60000)/1000, 
-            (_randomNumber%60000)/1000, 
-            (_randomNumber%60000)/1000, 
-            (_randomNumber%60000)/1000, 
-            (_randomNumber%60000)/1000, 
-            (_randomNumber%60000)/1000, 
-            (_randomNumber%60000)/1000
+            (_randomNumber%100), 
+            (_randomNumber%95), 
+            (_randomNumber%80), 
+            (_randomNumber%75, 
+            (_randomNumber%70), 
+            (_randomNumber%65), 
+            (_randomNumber%60), 
+            (_randomNumber%55), 
+            (_randomNumber%50), 
+            (_randomNumber%52), 
+            (_randomNumber%59), 
+            (_randomNumber%64)
         );
         // Storage of the new Bed
         tokenIdToBed[_tokenId] = bed;
