@@ -148,27 +148,32 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         _mint(tokenIdToAddress[tokenId], tokenId, 1, "");
     }
 
-
+    // This implementation returns the concatenation of the _baseURI and the token-specific uri if the latter is set
     function uri(uint256 _tokenId) public view override(ERC1155, ERC1155URIStorage) returns (string memory) {
         return super.uri(_tokenId);
     }
 
+    // Sets tokenURI as the tokenURI of tokenId.
     function setTokenURI(uint256 _tokenId, string memory _tokenURI) public onlyOwner {
         _setURI(_tokenId, _tokenURI);
     }
 
+    // Sets baseURI as the _baseURI for all tokens
     function setBaseURI(string memory _baseURI) public onlyOwner {
         _setBaseURI(_baseURI);
     }
 
+    // Pause contract
     function pause() public onlyOwner {
         _pause();
     }
 
+    // unPause contract
     function unpause() public onlyOwner {
         _unpause();
     }
 
+    // Mint a Bedroom NFT
     function mint(address account, uint256 id, uint256 amount, bytes memory data)
         public
         onlyOwner
@@ -176,6 +181,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         _mint(account, id, amount, data);
     }
 
+    // Batched version of _mint
     function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
         public
         onlyOwner
@@ -183,6 +189,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         _mintBatch(to, ids, amounts, data);
     }
 
+    // Hook that is called before any token transfer.
     function _beforeTokenTransfer(address operator, address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
         internal
         whenNotPaused
