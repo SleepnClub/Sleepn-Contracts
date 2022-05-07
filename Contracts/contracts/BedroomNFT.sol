@@ -96,8 +96,9 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     // Creating a new random bedroom object 
     function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
         // New Bedroom
+        string memory name = string(abi.encodePacked("token #", _tokenId.toString()));
         Bedroom memory bedroom = Bedroom(
-            tokenIdToBedroomName[_tokenId],
+            name,
             0,
             0,
             (_randomNumber%70000)/1000, 
