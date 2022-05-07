@@ -72,7 +72,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     // Mappings
     mapping(uint256 => string) public requestToBedroomName; 
     mapping(uint256 => address) public requestToAddress;
-    mapping(uint256 => address) public requestToValue;
     mapping(uint256 => uint256) public requestToTokenId; 
     mapping(uint256 => Bed) public tokenIdToBed;
     
@@ -109,17 +108,16 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         );
         requestToBedroomName[requestId] = _name;
         requestToAddress[requestId] = msg.sender;
-        requestToValue[requestId] = msg.value; 
         return requestId;
     }
 
     // Callback function used by VRF Coordinator
     function fulfillRandomness(uint256 _requestId, uint256 _randomNumber) internal override {
         // New Bedroom
-        Bedroom bedroom = new Bedroom(
+        Bedroom memory bedroom = new Bedroom(
             requestToBedroomName[_requestId],
             0,
-            requestToValue[_requestId],
+            0,
             _randomNumber%100, 
             (_randomNumber%800)/10, 
             (_randomNumber%8000)/100, 
@@ -130,7 +128,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         );
 
         // New Bed
-        Bed bed = new Bed(
+        Bed memory bed = new Bed(
             requestToBedroomName[_requestId],
             0,
             0,
