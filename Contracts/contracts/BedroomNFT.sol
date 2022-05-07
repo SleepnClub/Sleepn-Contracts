@@ -51,11 +51,12 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         uint256 pillowComfortabilityScore;
     }
 
-    // Array of all Bedroom objects
-    Bedroom[] public bedrooms;
+    // Number of NFT 
+    uint256 public tokenId;
 
     // Mappings
     mapping(uint256 => address) public tokenIdToAddress;
+    mapping(uint256 => Bedroom) public tokenIdToBedroom;
     mapping(uint256 => Bed) public tokenIdToBed;
     
     constructor(
@@ -78,11 +79,11 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         callbackGasLimit = 100000;
         requestConfirmations = 3;
         numWord = 1; 
+        tokenId = 0;
     }
 
     // This function is creating a new random bedroom NFT by generating a random number
     function newRandomBedroom() public onlyOwner {
-        uint256 tokenId = bedrooms.length;
         tokenIdToAddress[tokenId] = msg.sender;
         COORDINATOR.requestRandomWords(
             keyHash,
@@ -109,7 +110,41 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
             (_randomNumber%50)
         );
         // Storage of the new Bedroom
-        bedrooms.push(bedroom);
+        tokenIdToBedroom[_tokenId] = bedroom;
+        // Increment the index
+        tokenId++;
+    }
+
+    // Updating a bedroom object 
+    function updateBedroom(uint256 _tokenId, uint256 _upgradeCategory) internal {
+        // nbUpgrades
+        tokenIdToBedroom[_tokenId].nbUpgrades++;
+        // name
+        tokenIdToBedroom[_tokenId].name = string(
+            abi.encodePacked(
+                tokenIdToBedroom[_tokenId].name, 
+                " Upgrade ", 
+                Strings.toString(tokenIdToBedroom[_tokenId].nbUpgrades)
+            )
+        );
+        // humidityScore
+        uint256 _humidityScore = tokenIdToBedroom[_tokenId].humidityScore;
+        tokenIdToBedroom[_tokenId].humidityScore = 100-(_humidityScore);
+        // lightIsolationScore
+        uint256 _lightIsolationScore = tokenIdToBedroom[_tokenId].lightIsolationScore;
+        tokenIdToBedroom[_tokenId].lightIsolationScore = 100-(_lightIsolationScore);
+        // thermalIsolationScore
+        uint256 _thermalIsolationScore = tokenIdToBedroom[_tokenId].thermalIsolationScore;
+        tokenIdToBedroom[_tokenId].thermalIsolationScore = 100-(_thermalIsolationScore);
+        // soundIsolationScore
+        uint256 _soundIsolationScore = tokenIdToBedroom[_tokenId].soundIsolationScore;
+        tokenIdToBedroom[_tokenId].soundIsolationScore = 100-(_soundIsolationScore);
+        // temperatureScore
+        uint256 _temperatureScore = tokenIdToBedroom[_tokenId].temperatureScore;
+        tokenIdToBedroom[_tokenId].temperatureScore = 100-(_temperatureScore);
+        // sleepAidMachinesScore
+        uint256 _sleepAidMachinesScore = tokenIdToBedroom[_tokenId].sleepAidMachinesScore;
+        tokenIdToBedroom[_tokenId].sleepAidMachinesScore = 100-(_sleepAidMachinesScore);
     }
 
     // Creating a new random bed object 
@@ -136,16 +171,16 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     // Callback function used by VRF Coordinator
     function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
         // Index of the new Bedroom NFT 
-        uint256 tokenId = bedrooms.length;
+        uint256 _tokenId = tokenId;
 
         // Create new Bedroom 
-        createBedroom(_randomWords[0], tokenId);
+        createBedroom(_randomWords[0], _tokenId);
 
         // Create new Bed
-        createBed(_randomWords[0], tokenId);
+        createBed(_randomWords[0], _tokenId);
 
         // Minting of the new Bedroom NFT 
-        _mint(tokenIdToAddress[tokenId], tokenId, 1, "");
+        _mint(tokenIdToAddress[_tokenId], _tokenId, 1, "");
     }
 
     // This implementation returns the concatenation of the _baseURI and the token-specific uri if the latter is set
