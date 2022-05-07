@@ -148,13 +148,17 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         _mint(tokenIdToAddress[tokenId], tokenId, 1, "");
     }
 
-    function upgradeToken(uint256 _tokenId, string memory _tokenURI) public {
-        require(isApprovedForAll(tokenIdToAddress[_tokenId], msg.sender), "Action not approved !");
-        _setURI(_tokenId, _tokenURI);
-    }
 
     function uri(uint256 _tokenId) public view override(ERC1155, ERC1155URIStorage) returns (string memory) {
         return super.uri(_tokenId);
+    }
+
+    function setTokenURI(uint256 _tokenId, string memory _tokenURI) public onlyOwner {
+        _setURI(_tokenId, _tokenURI);
+    }
+
+    function setBaseURI(string memory _baseURI) public onlyOwner {
+        _setBaseURI(_baseURI);
     }
 
     function pause() public onlyOwner {
