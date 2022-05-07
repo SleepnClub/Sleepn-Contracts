@@ -74,7 +74,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     mapping(uint256 => address) public requestToAddress;
     mapping(uint256 => address) public requestToValue;
     mapping(uint256 => uint256) public requestToTokenId; 
-    mapping(uint256 => Bed) public TokenIdToBed;
+    mapping(uint256 => Bed) public tokenIdToBed;
     
     constructor(
         uint64 _subscriptionId,
@@ -140,7 +140,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
             (_randomNumber%65000)/1000, 
             (_randomNumber%1000)/100, 
             (_randomNumber%1000)/10, 
-            (_randomNumber%600000)/10000,, 
+            (_randomNumber%600000)/10000,
             (_randomNumber%70000)/1000, 
             (_randomNumber%600000)/10000, 
             (_randomNumber%8000000)/100000,
@@ -154,7 +154,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
             (_randomNumber%1000)/10, 
             (_randomNumber%70000)/1000,
             (_randomNumber%70000)/1000, 
-            (_randomNumber%80000)/1000),
+            (_randomNumber%80000)/1000,
             (_randomNumber%8000)/100, 
             (_randomNumber%50000)/1000, 
             (_randomNumber%60000)/1000, 
