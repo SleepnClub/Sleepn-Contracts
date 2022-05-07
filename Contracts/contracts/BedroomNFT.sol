@@ -11,17 +11,16 @@ import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
 contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Supply {
+    // Chainlink VRF Variables
     VRFCoordinatorV2Interface immutable COORDINATOR;
     LinkTokenInterface immutable LINKTOKEN;
-
     uint64 immutable internal subscriptionId; 
     bytes32 immutable internal keyHash;     
     uint32 immutable internal callbackGasLimit;
     uint16 immutable internal requestConfirmations;
     uint32 immutable internal numWord;
 
-    uint256 public randomResult;
-
+    // Bedroom object
     struct Bedroom {
         string name;
         uint256 investmentBalance;
@@ -34,6 +33,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         uint256 sleepAidMachinesScore;
     }
 
+    // Bed object
     struct Bed {
         uint256 sizeScore;
         uint256 heightScore;
@@ -49,7 +49,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         uint256 pillowComfortabilityScore;
     }
 
-    // Array of all Bedroom NFT
+    // Array of all Bedroom objects
     Bedroom[] public bedrooms;
 
     // Mappings
@@ -58,28 +58,28 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     mapping(uint256 => Bed) public tokenIdToBed;
     
     constructor(
-        uint64 _subscriptionId,
+        // 162
+        uint64 _subscriptionId, 
+        // Mumbai Testnet : 0x6168499c0cFfCaCD319c818142124B7A15E857ab 
         address _vrfCoordinator,
+        // Mumbai Testnet : 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed
         address _link_token_contract,
-        bytes32 _keyHash,
-        uint32  _callbackGasLimit,
-        uint16 _requestConfirmation,
-        uint32 _numWord
+        // Mumbai Testnet : 0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f
+        bytes32 _keyHash
     ) 
     VRFConsumerBaseV2(_vrfCoordinator) 
     ERC1155("") 
     {
-
         COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
         LINKTOKEN = LinkTokenInterface(_link_token_contract);
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
-        callbackGasLimit = _callbackGasLimit;
-        requestConfirmations = _requestConfirmation;
-        numWord = _numWord;
-
+        callbackGasLimit = 100000;
+        requestConfirmations = 3;
+        numWord = 1; 
     }
-       
+
+    // This function is creating a new random bedroom NFT by generating a random number
     function newRandomBedroom(string memory _name) public {
         uint256 tokenId = bedrooms.length;
         tokenIdToBedroomName[tokenId] = _name; 
@@ -93,6 +93,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         );
     }
 
+    // Creating a new random bedroom object 
     function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
         // New Bedroom
         Bedroom memory bedroom = Bedroom(
@@ -110,6 +111,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         bedrooms.push(bedroom);
     }
 
+    // Creating a new random bed object 
     function createBed(uint256 _randomNumber, uint256 _tokenId) internal {
         // New Bed
         Bed memory bed = Bed(
@@ -126,6 +128,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
             (_randomNumber%60000)/1000, 
             (_randomNumber%60000)/1000
         );
+        // Storage of the new Bed
         tokenIdToBed[_tokenId] = bed;
     }
 
