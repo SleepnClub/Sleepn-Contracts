@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/alexisbalayre/Sleepn/Contracts/contracts/BedroomNFT.sol": {
-      "lastModificationDate": 1651954519442,
-      "contentHash": "5864967e152035ddf12e2f376ac96f43",
+      "lastModificationDate": 1651963764140,
+      "contentHash": "77473d07722076594c8f812189f8d55c",
       "sourceName": "contracts/BedroomNFT.sol",
       "solcConfig": {
         "version": "0.8.4",
@@ -33,6 +33,7 @@
         "@openzeppelin/contracts/access/Ownable.sol",
         "@openzeppelin/contracts/security/Pausable.sol",
         "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol",
+        "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol",
         "@openzeppelin/contracts/utils/Strings.sol",
         "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol",
         "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol",
@@ -778,6 +779,44 @@
       ],
       "artifacts": [
         "Strings"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol": {
+      "lastModificationDate": 1651915957892,
+      "contentHash": "6046dbdf9591874037a20159d431e11f",
+      "sourceName": "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../../utils/Strings.sol",
+        "../ERC1155.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ERC1155URIStorage"
       ]
     }
   }

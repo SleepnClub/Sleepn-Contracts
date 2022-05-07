@@ -23,7 +23,6 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
   functions: {
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
-    "bedrooms(uint256)": FunctionFragment;
     "exists(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mint(address,uint256,uint256,bytes)": FunctionFragment;
@@ -37,14 +36,16 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
-    "setURI(string)": FunctionFragment;
+    "setBaseURI(string)": FunctionFragment;
+    "setTokenURI(uint256,string)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "tokenId()": FunctionFragment;
     "tokenIdToAddress(uint256)": FunctionFragment;
     "tokenIdToBed(uint256)": FunctionFragment;
+    "tokenIdToBedroom(uint256)": FunctionFragment;
     "totalSupply(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "unpause()": FunctionFragment;
-    "upgradeToken()": FunctionFragment;
     "uri(uint256)": FunctionFragment;
   };
 
@@ -55,10 +56,6 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "balanceOfBatch",
     values: [string[], BigNumberish[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "bedrooms",
-    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "exists",
@@ -103,17 +100,26 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     functionFragment: "setApprovalForAll",
     values: [string, boolean]
   ): string;
-  encodeFunctionData(functionFragment: "setURI", values: [string]): string;
+  encodeFunctionData(functionFragment: "setBaseURI", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "setTokenURI",
+    values: [BigNumberish, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(functionFragment: "tokenId", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "tokenIdToAddress",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "tokenIdToBed",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenIdToBedroom",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -125,10 +131,6 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "upgradeToken",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "uri", values: [BigNumberish]): string;
 
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
@@ -136,7 +138,6 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     functionFragment: "balanceOfBatch",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "bedrooms", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
@@ -171,17 +172,26 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     functionFragment: "setApprovalForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setURI", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setBaseURI", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setTokenURI",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "tokenId", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "tokenIdToAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "tokenIdToBed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenIdToBedroom",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -193,10 +203,6 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "upgradeToken",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "uri", data: BytesLike): Result;
 
   events: {
@@ -314,33 +320,6 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber[]]>;
 
-    bedrooms(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber
-      ] & {
-        name: string;
-        investmentBalance: BigNumber;
-        nbUpgrades: BigNumber;
-        lightIsolationScore: BigNumber;
-        thermalIsolationScore: BigNumber;
-        soundIsolationScore: BigNumber;
-        temperatureScore: BigNumber;
-        humidityScore: BigNumber;
-        sleepAidMachinesScore: BigNumber;
-      }
-    >;
-
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
 
     isApprovedForAll(
@@ -411,8 +390,14 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setURI(
-      newuri: string,
+    setBaseURI(
+      _baseURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setTokenURI(
+      _tokenId: BigNumberish,
+      _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -420,6 +405,8 @@ export class BedroomNFT extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    tokenId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     tokenIdToAddress(
       arg0: BigNumberish,
@@ -459,6 +446,33 @@ export class BedroomNFT extends BaseContract {
       }
     >;
 
+    tokenIdToBedroom(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        name: string;
+        investmentBalance: BigNumber;
+        nbUpgrades: BigNumber;
+        lightIsolationScore: BigNumber;
+        thermalIsolationScore: BigNumber;
+        soundIsolationScore: BigNumber;
+        temperatureScore: BigNumber;
+        humidityScore: BigNumber;
+        sleepAidMachinesScore: BigNumber;
+      }
+    >;
+
     totalSupply(
       id: BigNumberish,
       overrides?: CallOverrides
@@ -473,11 +487,7 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    upgradeToken(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    uri(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
   };
 
   balanceOf(
@@ -491,33 +501,6 @@ export class BedroomNFT extends BaseContract {
     ids: BigNumberish[],
     overrides?: CallOverrides
   ): Promise<BigNumber[]>;
-
-  bedrooms(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [
-      string,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber
-    ] & {
-      name: string;
-      investmentBalance: BigNumber;
-      nbUpgrades: BigNumber;
-      lightIsolationScore: BigNumber;
-      thermalIsolationScore: BigNumber;
-      soundIsolationScore: BigNumber;
-      temperatureScore: BigNumber;
-      humidityScore: BigNumber;
-      sleepAidMachinesScore: BigNumber;
-    }
-  >;
 
   exists(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
@@ -589,8 +572,14 @@ export class BedroomNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setURI(
-    newuri: string,
+  setBaseURI(
+    _baseURI: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setTokenURI(
+    _tokenId: BigNumberish,
+    _tokenURI: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -598,6 +587,8 @@ export class BedroomNFT extends BaseContract {
     interfaceId: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  tokenId(overrides?: CallOverrides): Promise<BigNumber>;
 
   tokenIdToAddress(
     arg0: BigNumberish,
@@ -637,6 +628,33 @@ export class BedroomNFT extends BaseContract {
     }
   >;
 
+  tokenIdToBedroom(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      name: string;
+      investmentBalance: BigNumber;
+      nbUpgrades: BigNumber;
+      lightIsolationScore: BigNumber;
+      thermalIsolationScore: BigNumber;
+      soundIsolationScore: BigNumber;
+      temperatureScore: BigNumber;
+      humidityScore: BigNumber;
+      sleepAidMachinesScore: BigNumber;
+    }
+  >;
+
   totalSupply(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
   transferOwnership(
@@ -648,11 +666,7 @@ export class BedroomNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  upgradeToken(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  uri(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     balanceOf(
@@ -666,33 +680,6 @@ export class BedroomNFT extends BaseContract {
       ids: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
-
-    bedrooms(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber
-      ] & {
-        name: string;
-        investmentBalance: BigNumber;
-        nbUpgrades: BigNumber;
-        lightIsolationScore: BigNumber;
-        thermalIsolationScore: BigNumber;
-        soundIsolationScore: BigNumber;
-        temperatureScore: BigNumber;
-        humidityScore: BigNumber;
-        sleepAidMachinesScore: BigNumber;
-      }
-    >;
 
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
@@ -758,12 +745,20 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setURI(newuri: string, overrides?: CallOverrides): Promise<void>;
+    setBaseURI(_baseURI: string, overrides?: CallOverrides): Promise<void>;
+
+    setTokenURI(
+      _tokenId: BigNumberish,
+      _tokenURI: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    tokenId(overrides?: CallOverrides): Promise<BigNumber>;
 
     tokenIdToAddress(
       arg0: BigNumberish,
@@ -803,6 +798,33 @@ export class BedroomNFT extends BaseContract {
       }
     >;
 
+    tokenIdToBedroom(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        name: string;
+        investmentBalance: BigNumber;
+        nbUpgrades: BigNumber;
+        lightIsolationScore: BigNumber;
+        thermalIsolationScore: BigNumber;
+        soundIsolationScore: BigNumber;
+        temperatureScore: BigNumber;
+        humidityScore: BigNumber;
+        sleepAidMachinesScore: BigNumber;
+      }
+    >;
+
     totalSupply(
       id: BigNumberish,
       overrides?: CallOverrides
@@ -815,9 +837,7 @@ export class BedroomNFT extends BaseContract {
 
     unpause(overrides?: CallOverrides): Promise<void>;
 
-    upgradeToken(overrides?: CallOverrides): Promise<void>;
-
-    uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    uri(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -959,8 +979,6 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    bedrooms(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     isApprovedForAll(
@@ -1031,8 +1049,14 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setURI(
-      newuri: string,
+    setBaseURI(
+      _baseURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setTokenURI(
+      _tokenId: BigNumberish,
+      _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1041,12 +1065,19 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    tokenId(overrides?: CallOverrides): Promise<BigNumber>;
+
     tokenIdToAddress(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     tokenIdToBed(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenIdToBedroom(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1065,11 +1096,7 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    upgradeToken(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    uri(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -1082,11 +1109,6 @@ export class BedroomNFT extends BaseContract {
     balanceOfBatch(
       accounts: string[],
       ids: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    bedrooms(
-      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1163,8 +1185,14 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setURI(
-      newuri: string,
+    setBaseURI(
+      _baseURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setTokenURI(
+      _tokenId: BigNumberish,
+      _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1173,12 +1201,19 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    tokenId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     tokenIdToAddress(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     tokenIdToBed(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenIdToBedroom(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1197,12 +1232,8 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    upgradeToken(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     uri(
-      arg0: BigNumberish,
+      _tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

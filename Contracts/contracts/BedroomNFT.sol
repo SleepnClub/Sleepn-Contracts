@@ -129,25 +129,43 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         );
         // humidityScore
         uint256 _humidityScore = tokenIdToBedroom[_tokenId].humidityScore;
-        tokenIdToBedroom[_tokenId].humidityScore = 100-(_humidityScore);
+        tokenIdToBedroom[_tokenId].humidityScore = _humidityScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].humidityScore > 100) {
+            tokenIdToBedroom[_tokenId].humidityScore = 100;
+        }
         // lightIsolationScore
         uint256 _lightIsolationScore = tokenIdToBedroom[_tokenId].lightIsolationScore;
-        tokenIdToBedroom[_tokenId].lightIsolationScore = 100-(_lightIsolationScore);
+        tokenIdToBedroom[_tokenId].lightIsolationScore =_lightIsolationScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].lightIsolationScore > 100) {
+            tokenIdToBedroom[_tokenId].lightIsolationScore = 100;
+        }
         // thermalIsolationScore
         uint256 _thermalIsolationScore = tokenIdToBedroom[_tokenId].thermalIsolationScore;
-        tokenIdToBedroom[_tokenId].thermalIsolationScore = 100-(_thermalIsolationScore);
+        tokenIdToBedroom[_tokenId].thermalIsolationScore = _thermalIsolationScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].thermalIsolationScore > 100) {
+            tokenIdToBedroom[_tokenId].thermalIsolationScore = 100;
+        }
         // soundIsolationScore
         uint256 _soundIsolationScore = tokenIdToBedroom[_tokenId].soundIsolationScore;
-        tokenIdToBedroom[_tokenId].soundIsolationScore = 100-(_soundIsolationScore);
+        tokenIdToBedroom[_tokenId].soundIsolationScore = _soundIsolationScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].soundIsolationScore > 100) {
+            tokenIdToBedroom[_tokenId].soundIsolationScore = 100;
+        }
         // temperatureScore
         uint256 _temperatureScore = tokenIdToBedroom[_tokenId].temperatureScore;
-        tokenIdToBedroom[_tokenId].temperatureScore = 100-(_temperatureScore);
+        tokenIdToBedroom[_tokenId].temperatureScore = _temperatureScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].temperatureScore > 100) {
+            tokenIdToBedroom[_tokenId].temperatureScore = 100;
+        }
         // sleepAidMachinesScore
         uint256 _sleepAidMachinesScore = tokenIdToBedroom[_tokenId].sleepAidMachinesScore;
-        tokenIdToBedroom[_tokenId].sleepAidMachinesScore = 100-(_sleepAidMachinesScore);
+        tokenIdToBedroom[_tokenId].sleepAidMachinesScore = _sleepAidMachinesScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].sleepAidMachinesScore > 100) {
+            tokenIdToBedroom[_tokenId].sleepAidMachinesScore = 100;
+        }
     }
 
-    // Creating a new random bed object 
+    // Creating a new random Bed object 
     function createBed(uint256 _randomNumber, uint256 _tokenId) internal {
         // New Bed
         Bed memory bed = Bed(
@@ -166,6 +184,58 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         );
         // Storage of the new Bed
         tokenIdToBed[_tokenId] = bed;
+    }
+
+    // Updating a Bed object 
+    function updateBed(uint256 _tokenId, uint256 _upgradeCategory) internal {
+        // humidityScore
+        uint256 _humidityScore = tokenIdToBedroom[_tokenId].humidityScore;
+        tokenIdToBedroom[_tokenId].humidityScore = _humidityScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].humidityScore > 100) {
+            tokenIdToBedroom[_tokenId].humidityScore = 100;
+        }
+        // lightIsolationScore
+        uint256 _lightIsolationScore = tokenIdToBedroom[_tokenId].lightIsolationScore;
+        tokenIdToBedroom[_tokenId].lightIsolationScore =_lightIsolationScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].lightIsolationScore > 100) {
+            tokenIdToBedroom[_tokenId].lightIsolationScore = 100;
+        }
+        // thermalIsolationScore
+        uint256 _thermalIsolationScore = tokenIdToBedroom[_tokenId].thermalIsolationScore;
+        tokenIdToBedroom[_tokenId].thermalIsolationScore = _thermalIsolationScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].thermalIsolationScore > 100) {
+            tokenIdToBedroom[_tokenId].thermalIsolationScore = 100;
+        }
+        // soundIsolationScore
+        uint256 _soundIsolationScore = tokenIdToBedroom[_tokenId].soundIsolationScore;
+        tokenIdToBedroom[_tokenId].soundIsolationScore = _soundIsolationScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].soundIsolationScore > 100) {
+            tokenIdToBedroom[_tokenId].soundIsolationScore = 100;
+        }
+        // temperatureScore
+        uint256 _temperatureScore = tokenIdToBedroom[_tokenId].temperatureScore;
+        tokenIdToBedroom[_tokenId].temperatureScore = _temperatureScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].temperatureScore > 100) {
+            tokenIdToBedroom[_tokenId].temperatureScore = 100;
+        }
+        // sleepAidMachinesScore
+        uint256 _sleepAidMachinesScore = tokenIdToBedroom[_tokenId].sleepAidMachinesScore;
+        tokenIdToBedroom[_tokenId].sleepAidMachinesScore = _sleepAidMachinesScore + _upgradeCategory * 2;
+        if (tokenIdToBedroom[_tokenId].sleepAidMachinesScore > 100) {
+            tokenIdToBedroom[_tokenId].sleepAidMachinesScore = 100;
+        }
+        // sizeScore;
+        // heightScore;
+        // bedBaseScore;
+        // mattressTechnologyScore;
+        // mattressThicknessScore; 
+        // deformationDepthScore;
+        // deformationSpeedScore;
+        // deformationPersistenceScore;
+        // thermalIsolationScore;
+        // hygrometricRegulationScore;
+        // comforterComfortabilityScore;
+        // pillowComfortabilityScore;
     }
 
     // Callback function used by VRF Coordinator
