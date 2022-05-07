@@ -5,13 +5,14 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
-contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Supply {
+contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Supply, ERC1155URIStorage {
     // Chainlink VRF Variables
     VRFCoordinatorV2Interface immutable COORDINATOR;
     LinkTokenInterface immutable LINKTOKEN;
@@ -54,7 +55,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     Bedroom[] public bedrooms;
 
     // Mappings
-    mapping(uint256 => string) public tokenIdToBedroomName; 
     mapping(uint256 => address) public tokenIdToAddress;
     mapping(uint256 => Bed) public tokenIdToBed;
     
@@ -81,9 +81,8 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     }
 
     // This function is creating a new random bedroom NFT by generating a random number
-    function newRandomBedroom(string memory _name) public {
+    function newRandomBedroom() public onlyOwner {
         uint256 tokenId = bedrooms.length;
-        tokenIdToBedroomName[tokenId] = _name; 
         tokenIdToAddress[tokenId] = msg.sender;
         COORDINATOR.requestRandomWords(
             keyHash,
@@ -120,7 +119,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
             (_randomNumber%100), 
             (_randomNumber%95), 
             (_randomNumber%80), 
-            (_randomNumber%75, 
+            (_randomNumber%75), 
             (_randomNumber%70), 
             (_randomNumber%65), 
             (_randomNumber%60), 
@@ -149,8 +148,12 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         _mint(tokenIdToAddress[tokenId], tokenId, 1, "");
     }
 
-    function setURI(string memory newuri) public onlyOwner {
-        _setURI(newuri);
+    function upgradeToken(uint256 _tokenId) public onlyOwner {
+
+    }
+
+    function uri(uint256 _tokenId) public view override(ERC1155, ERC1155URIStorage) returns (string memory) {
+        return super.uri(_tokenId);
     }
 
     function pause() public onlyOwner {
