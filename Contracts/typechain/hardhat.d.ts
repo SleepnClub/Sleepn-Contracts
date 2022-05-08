@@ -41,6 +41,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC1155Supply__factory>;
     getContractFactory(
+      name: "ERC1155URIStorage",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC1155URIStorage__factory>;
+    getContractFactory(
       name: "IERC1155MetadataURI",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC1155MetadataURI__factory>;
@@ -120,6 +124,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.ERC1155Supply>;
+    getContractAt(
+      name: "ERC1155URIStorage",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC1155URIStorage>;
     getContractAt(
       name: "IERC1155MetadataURI",
       address: string,

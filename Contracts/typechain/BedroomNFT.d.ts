@@ -23,28 +23,28 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
   functions: {
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
-    "bedrooms(uint256)": FunctionFragment;
     "exists(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mint(address,uint256,uint256,bytes)": FunctionFragment;
     "mintBatch(address,uint256[],uint256[],bytes)": FunctionFragment;
     "newRandomBedroom()": FunctionFragment;
     "owner()": FunctionFragment;
-    "pause()": FunctionFragment;
-    "paused()": FunctionFragment;
     "rawFulfillRandomWords(uint256,uint256[])": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
-    "setURI(string)": FunctionFragment;
+    "setBaseURI(string)": FunctionFragment;
+    "setThresholds(uint256,uint256,uint256)": FunctionFragment;
+    "setTokenURI(uint256,string)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
+    "thresholds(uint256)": FunctionFragment;
+    "tokenId()": FunctionFragment;
     "tokenIdToAddress(uint256)": FunctionFragment;
     "tokenIdToBed(uint256)": FunctionFragment;
+    "tokenIdToBedroom(uint256)": FunctionFragment;
     "totalSupply(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "unpause()": FunctionFragment;
-    "upgradeToken()": FunctionFragment;
     "uri(uint256)": FunctionFragment;
   };
 
@@ -55,10 +55,6 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "balanceOfBatch",
     values: [string[], BigNumberish[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "bedrooms",
-    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "exists",
@@ -81,8 +77,6 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(functionFragment: "pause", values?: undefined): string;
-  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "rawFulfillRandomWords",
     values: [BigNumberish, BigNumberish[]]
@@ -103,17 +97,34 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     functionFragment: "setApprovalForAll",
     values: [string, boolean]
   ): string;
-  encodeFunctionData(functionFragment: "setURI", values: [string]): string;
+  encodeFunctionData(functionFragment: "setBaseURI", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "setThresholds",
+    values: [BigNumberish, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setTokenURI",
+    values: [BigNumberish, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
+  encodeFunctionData(
+    functionFragment: "thresholds",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "tokenId", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "tokenIdToAddress",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "tokenIdToBed",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenIdToBedroom",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -124,11 +135,6 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "upgradeToken",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "uri", values: [BigNumberish]): string;
 
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
@@ -136,7 +142,6 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     functionFragment: "balanceOfBatch",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "bedrooms", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
@@ -149,8 +154,6 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "rawFulfillRandomWords",
     data: BytesLike
@@ -171,17 +174,31 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     functionFragment: "setApprovalForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setURI", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setBaseURI", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setThresholds",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setTokenURI",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "thresholds", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tokenId", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "tokenIdToAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "tokenIdToBed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenIdToBedroom",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -192,30 +209,25 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "upgradeToken",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "uri", data: BytesLike): Result;
 
   events: {
     "ApprovalForAll(address,address,bool)": EventFragment;
+    "MintingBedroomNFT(uint256,string,tuple,tuple,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
-    "Paused(address)": EventFragment;
     "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
     "TransferSingle(address,address,address,uint256,uint256)": EventFragment;
     "URI(string,uint256)": EventFragment;
-    "Unpaused(address)": EventFragment;
+    "UpgradingBedroomNFT(uint256,string,tuple,tuple,address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "MintingBedroomNFT"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferBatch"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferSingle"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "URI"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpgradingBedroomNFT"): EventFragment;
 }
 
 export type ApprovalForAllEvent = TypedEvent<
@@ -226,11 +238,109 @@ export type ApprovalForAllEvent = TypedEvent<
   }
 >;
 
+export type MintingBedroomNFTEvent = TypedEvent<
+  [
+    BigNumber,
+    string,
+    [
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      name: string;
+      nbUpgrades: BigNumber;
+      lightIsolationScore: BigNumber;
+      thermalIsolationScore: BigNumber;
+      soundIsolationScore: BigNumber;
+      temperatureScore: BigNumber;
+      humidityScore: BigNumber;
+      sleepAidMachinesScore: BigNumber;
+    },
+    [
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      nbUpgrades: BigNumber;
+      sizeScore: BigNumber;
+      heightScore: BigNumber;
+      bedBaseScore: BigNumber;
+      mattressTechnologyScore: BigNumber;
+      mattressThicknessScore: BigNumber;
+      mattressDeformationScore: BigNumber;
+      thermalIsolationScore: BigNumber;
+      hygrometricRegulationScore: BigNumber;
+      comforterComfortabilityScore: BigNumber;
+      pillowComfortabilityScore: BigNumber;
+    },
+    string
+  ] & {
+    _tokenID: BigNumber;
+    _tokenURI: string;
+    _bedroom: [
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      name: string;
+      nbUpgrades: BigNumber;
+      lightIsolationScore: BigNumber;
+      thermalIsolationScore: BigNumber;
+      soundIsolationScore: BigNumber;
+      temperatureScore: BigNumber;
+      humidityScore: BigNumber;
+      sleepAidMachinesScore: BigNumber;
+    };
+    _bed: [
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      nbUpgrades: BigNumber;
+      sizeScore: BigNumber;
+      heightScore: BigNumber;
+      bedBaseScore: BigNumber;
+      mattressTechnologyScore: BigNumber;
+      mattressThicknessScore: BigNumber;
+      mattressDeformationScore: BigNumber;
+      thermalIsolationScore: BigNumber;
+      hygrometricRegulationScore: BigNumber;
+      comforterComfortabilityScore: BigNumber;
+      pillowComfortabilityScore: BigNumber;
+    };
+    _owner: string;
+  }
+>;
+
 export type OwnershipTransferredEvent = TypedEvent<
   [string, string] & { previousOwner: string; newOwner: string }
 >;
-
-export type PausedEvent = TypedEvent<[string] & { account: string }>;
 
 export type TransferBatchEvent = TypedEvent<
   [string, string, string, BigNumber[], BigNumber[]] & {
@@ -256,7 +366,105 @@ export type URIEvent = TypedEvent<
   [string, BigNumber] & { value: string; id: BigNumber }
 >;
 
-export type UnpausedEvent = TypedEvent<[string] & { account: string }>;
+export type UpgradingBedroomNFTEvent = TypedEvent<
+  [
+    BigNumber,
+    string,
+    [
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      name: string;
+      nbUpgrades: BigNumber;
+      lightIsolationScore: BigNumber;
+      thermalIsolationScore: BigNumber;
+      soundIsolationScore: BigNumber;
+      temperatureScore: BigNumber;
+      humidityScore: BigNumber;
+      sleepAidMachinesScore: BigNumber;
+    },
+    [
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      nbUpgrades: BigNumber;
+      sizeScore: BigNumber;
+      heightScore: BigNumber;
+      bedBaseScore: BigNumber;
+      mattressTechnologyScore: BigNumber;
+      mattressThicknessScore: BigNumber;
+      mattressDeformationScore: BigNumber;
+      thermalIsolationScore: BigNumber;
+      hygrometricRegulationScore: BigNumber;
+      comforterComfortabilityScore: BigNumber;
+      pillowComfortabilityScore: BigNumber;
+    },
+    string
+  ] & {
+    _tokenID: BigNumber;
+    _newTokenURI: string;
+    _newBedroom: [
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      name: string;
+      nbUpgrades: BigNumber;
+      lightIsolationScore: BigNumber;
+      thermalIsolationScore: BigNumber;
+      soundIsolationScore: BigNumber;
+      temperatureScore: BigNumber;
+      humidityScore: BigNumber;
+      sleepAidMachinesScore: BigNumber;
+    };
+    _newBed: [
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      nbUpgrades: BigNumber;
+      sizeScore: BigNumber;
+      heightScore: BigNumber;
+      bedBaseScore: BigNumber;
+      mattressTechnologyScore: BigNumber;
+      mattressThicknessScore: BigNumber;
+      mattressDeformationScore: BigNumber;
+      thermalIsolationScore: BigNumber;
+      hygrometricRegulationScore: BigNumber;
+      comforterComfortabilityScore: BigNumber;
+      pillowComfortabilityScore: BigNumber;
+    };
+    _owner: string;
+  }
+>;
 
 export class BedroomNFT extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -314,33 +522,6 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber[]]>;
 
-    bedrooms(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber
-      ] & {
-        name: string;
-        investmentBalance: BigNumber;
-        nbUpgrades: BigNumber;
-        lightIsolationScore: BigNumber;
-        thermalIsolationScore: BigNumber;
-        soundIsolationScore: BigNumber;
-        temperatureScore: BigNumber;
-        humidityScore: BigNumber;
-        sleepAidMachinesScore: BigNumber;
-      }
-    >;
-
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
 
     isApprovedForAll(
@@ -370,12 +551,6 @@ export class BedroomNFT extends BaseContract {
     ): Promise<ContractTransaction>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
-
-    pause(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    paused(overrides?: CallOverrides): Promise<[boolean]>;
 
     rawFulfillRandomWords(
       requestId: BigNumberish,
@@ -411,8 +586,21 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setURI(
-      newuri: string,
+    setBaseURI(
+      _baseURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setThresholds(
+      _indexAttribute: BigNumberish,
+      _initialScoreMax: BigNumberish,
+      _upgradeIncreases: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setTokenURI(
+      _tokenId: BigNumberish,
+      _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -420,6 +608,18 @@ export class BedroomNFT extends BaseContract {
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    thresholds(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        initialScoreMax: BigNumber;
+        upgradeIncreases: BigNumber;
+      }
+    >;
+
+    tokenId(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     tokenIdToAddress(
       arg0: BigNumberish,
@@ -441,21 +641,44 @@ export class BedroomNFT extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber,
         BigNumber
       ] & {
+        nbUpgrades: BigNumber;
         sizeScore: BigNumber;
         heightScore: BigNumber;
         bedBaseScore: BigNumber;
         mattressTechnologyScore: BigNumber;
         mattressThicknessScore: BigNumber;
-        deformationDepthScore: BigNumber;
-        deformationSpeedScore: BigNumber;
-        deformationPersistenceScore: BigNumber;
+        mattressDeformationScore: BigNumber;
         thermalIsolationScore: BigNumber;
         hygrometricRegulationScore: BigNumber;
         comforterComfortabilityScore: BigNumber;
         pillowComfortabilityScore: BigNumber;
+      }
+    >;
+
+    tokenIdToBedroom(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        name: string;
+        nbUpgrades: BigNumber;
+        lightIsolationScore: BigNumber;
+        thermalIsolationScore: BigNumber;
+        soundIsolationScore: BigNumber;
+        temperatureScore: BigNumber;
+        humidityScore: BigNumber;
+        sleepAidMachinesScore: BigNumber;
       }
     >;
 
@@ -469,15 +692,7 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    unpause(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    upgradeToken(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
+    uri(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
   };
 
   balanceOf(
@@ -491,33 +706,6 @@ export class BedroomNFT extends BaseContract {
     ids: BigNumberish[],
     overrides?: CallOverrides
   ): Promise<BigNumber[]>;
-
-  bedrooms(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [
-      string,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber
-    ] & {
-      name: string;
-      investmentBalance: BigNumber;
-      nbUpgrades: BigNumber;
-      lightIsolationScore: BigNumber;
-      thermalIsolationScore: BigNumber;
-      soundIsolationScore: BigNumber;
-      temperatureScore: BigNumber;
-      humidityScore: BigNumber;
-      sleepAidMachinesScore: BigNumber;
-    }
-  >;
 
   exists(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
@@ -548,12 +736,6 @@ export class BedroomNFT extends BaseContract {
   ): Promise<ContractTransaction>;
 
   owner(overrides?: CallOverrides): Promise<string>;
-
-  pause(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  paused(overrides?: CallOverrides): Promise<boolean>;
 
   rawFulfillRandomWords(
     requestId: BigNumberish,
@@ -589,8 +771,21 @@ export class BedroomNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setURI(
-    newuri: string,
+  setBaseURI(
+    _baseURI: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setThresholds(
+    _indexAttribute: BigNumberish,
+    _initialScoreMax: BigNumberish,
+    _upgradeIncreases: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setTokenURI(
+    _tokenId: BigNumberish,
+    _tokenURI: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -598,6 +793,18 @@ export class BedroomNFT extends BaseContract {
     interfaceId: BytesLike,
     overrides?: CallOverrides
   ): Promise<boolean>;
+
+  thresholds(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [BigNumber, BigNumber] & {
+      initialScoreMax: BigNumber;
+      upgradeIncreases: BigNumber;
+    }
+  >;
+
+  tokenId(overrides?: CallOverrides): Promise<BigNumber>;
 
   tokenIdToAddress(
     arg0: BigNumberish,
@@ -619,21 +826,44 @@ export class BedroomNFT extends BaseContract {
       BigNumber,
       BigNumber,
       BigNumber,
-      BigNumber,
       BigNumber
     ] & {
+      nbUpgrades: BigNumber;
       sizeScore: BigNumber;
       heightScore: BigNumber;
       bedBaseScore: BigNumber;
       mattressTechnologyScore: BigNumber;
       mattressThicknessScore: BigNumber;
-      deformationDepthScore: BigNumber;
-      deformationSpeedScore: BigNumber;
-      deformationPersistenceScore: BigNumber;
+      mattressDeformationScore: BigNumber;
       thermalIsolationScore: BigNumber;
       hygrometricRegulationScore: BigNumber;
       comforterComfortabilityScore: BigNumber;
       pillowComfortabilityScore: BigNumber;
+    }
+  >;
+
+  tokenIdToBedroom(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [
+      string,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      name: string;
+      nbUpgrades: BigNumber;
+      lightIsolationScore: BigNumber;
+      thermalIsolationScore: BigNumber;
+      soundIsolationScore: BigNumber;
+      temperatureScore: BigNumber;
+      humidityScore: BigNumber;
+      sleepAidMachinesScore: BigNumber;
     }
   >;
 
@@ -644,15 +874,7 @@ export class BedroomNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  unpause(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  upgradeToken(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  uri(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     balanceOf(
@@ -666,33 +888,6 @@ export class BedroomNFT extends BaseContract {
       ids: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
-
-    bedrooms(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [
-        string,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        BigNumber
-      ] & {
-        name: string;
-        investmentBalance: BigNumber;
-        nbUpgrades: BigNumber;
-        lightIsolationScore: BigNumber;
-        thermalIsolationScore: BigNumber;
-        soundIsolationScore: BigNumber;
-        temperatureScore: BigNumber;
-        humidityScore: BigNumber;
-        sleepAidMachinesScore: BigNumber;
-      }
-    >;
 
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
@@ -721,10 +916,6 @@ export class BedroomNFT extends BaseContract {
     newRandomBedroom(overrides?: CallOverrides): Promise<void>;
 
     owner(overrides?: CallOverrides): Promise<string>;
-
-    pause(overrides?: CallOverrides): Promise<void>;
-
-    paused(overrides?: CallOverrides): Promise<boolean>;
 
     rawFulfillRandomWords(
       requestId: BigNumberish,
@@ -758,12 +949,37 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setURI(newuri: string, overrides?: CallOverrides): Promise<void>;
+    setBaseURI(_baseURI: string, overrides?: CallOverrides): Promise<void>;
+
+    setThresholds(
+      _indexAttribute: BigNumberish,
+      _initialScoreMax: BigNumberish,
+      _upgradeIncreases: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setTokenURI(
+      _tokenId: BigNumberish,
+      _tokenURI: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    thresholds(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [BigNumber, BigNumber] & {
+        initialScoreMax: BigNumber;
+        upgradeIncreases: BigNumber;
+      }
+    >;
+
+    tokenId(overrides?: CallOverrides): Promise<BigNumber>;
 
     tokenIdToAddress(
       arg0: BigNumberish,
@@ -785,21 +1001,44 @@ export class BedroomNFT extends BaseContract {
         BigNumber,
         BigNumber,
         BigNumber,
-        BigNumber,
         BigNumber
       ] & {
+        nbUpgrades: BigNumber;
         sizeScore: BigNumber;
         heightScore: BigNumber;
         bedBaseScore: BigNumber;
         mattressTechnologyScore: BigNumber;
         mattressThicknessScore: BigNumber;
-        deformationDepthScore: BigNumber;
-        deformationSpeedScore: BigNumber;
-        deformationPersistenceScore: BigNumber;
+        mattressDeformationScore: BigNumber;
         thermalIsolationScore: BigNumber;
         hygrometricRegulationScore: BigNumber;
         comforterComfortabilityScore: BigNumber;
         pillowComfortabilityScore: BigNumber;
+      }
+    >;
+
+    tokenIdToBedroom(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        name: string;
+        nbUpgrades: BigNumber;
+        lightIsolationScore: BigNumber;
+        thermalIsolationScore: BigNumber;
+        soundIsolationScore: BigNumber;
+        temperatureScore: BigNumber;
+        humidityScore: BigNumber;
+        sleepAidMachinesScore: BigNumber;
       }
     >;
 
@@ -813,11 +1052,7 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    unpause(overrides?: CallOverrides): Promise<void>;
-
-    upgradeToken(overrides?: CallOverrides): Promise<void>;
-
-    uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+    uri(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -839,6 +1074,220 @@ export class BedroomNFT extends BaseContract {
       { account: string; operator: string; approved: boolean }
     >;
 
+    "MintingBedroomNFT(uint256,string,tuple,tuple,address)"(
+      _tokenID?: null,
+      _tokenURI?: null,
+      _bedroom?: null,
+      _bed?: null,
+      _owner?: null
+    ): TypedEventFilter<
+      [
+        BigNumber,
+        string,
+        [
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          name: string;
+          nbUpgrades: BigNumber;
+          lightIsolationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          soundIsolationScore: BigNumber;
+          temperatureScore: BigNumber;
+          humidityScore: BigNumber;
+          sleepAidMachinesScore: BigNumber;
+        },
+        [
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          nbUpgrades: BigNumber;
+          sizeScore: BigNumber;
+          heightScore: BigNumber;
+          bedBaseScore: BigNumber;
+          mattressTechnologyScore: BigNumber;
+          mattressThicknessScore: BigNumber;
+          mattressDeformationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          hygrometricRegulationScore: BigNumber;
+          comforterComfortabilityScore: BigNumber;
+          pillowComfortabilityScore: BigNumber;
+        },
+        string
+      ],
+      {
+        _tokenID: BigNumber;
+        _tokenURI: string;
+        _bedroom: [
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          name: string;
+          nbUpgrades: BigNumber;
+          lightIsolationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          soundIsolationScore: BigNumber;
+          temperatureScore: BigNumber;
+          humidityScore: BigNumber;
+          sleepAidMachinesScore: BigNumber;
+        };
+        _bed: [
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          nbUpgrades: BigNumber;
+          sizeScore: BigNumber;
+          heightScore: BigNumber;
+          bedBaseScore: BigNumber;
+          mattressTechnologyScore: BigNumber;
+          mattressThicknessScore: BigNumber;
+          mattressDeformationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          hygrometricRegulationScore: BigNumber;
+          comforterComfortabilityScore: BigNumber;
+          pillowComfortabilityScore: BigNumber;
+        };
+        _owner: string;
+      }
+    >;
+
+    MintingBedroomNFT(
+      _tokenID?: null,
+      _tokenURI?: null,
+      _bedroom?: null,
+      _bed?: null,
+      _owner?: null
+    ): TypedEventFilter<
+      [
+        BigNumber,
+        string,
+        [
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          name: string;
+          nbUpgrades: BigNumber;
+          lightIsolationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          soundIsolationScore: BigNumber;
+          temperatureScore: BigNumber;
+          humidityScore: BigNumber;
+          sleepAidMachinesScore: BigNumber;
+        },
+        [
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          nbUpgrades: BigNumber;
+          sizeScore: BigNumber;
+          heightScore: BigNumber;
+          bedBaseScore: BigNumber;
+          mattressTechnologyScore: BigNumber;
+          mattressThicknessScore: BigNumber;
+          mattressDeformationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          hygrometricRegulationScore: BigNumber;
+          comforterComfortabilityScore: BigNumber;
+          pillowComfortabilityScore: BigNumber;
+        },
+        string
+      ],
+      {
+        _tokenID: BigNumber;
+        _tokenURI: string;
+        _bedroom: [
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          name: string;
+          nbUpgrades: BigNumber;
+          lightIsolationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          soundIsolationScore: BigNumber;
+          temperatureScore: BigNumber;
+          humidityScore: BigNumber;
+          sleepAidMachinesScore: BigNumber;
+        };
+        _bed: [
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          nbUpgrades: BigNumber;
+          sizeScore: BigNumber;
+          heightScore: BigNumber;
+          bedBaseScore: BigNumber;
+          mattressTechnologyScore: BigNumber;
+          mattressThicknessScore: BigNumber;
+          mattressDeformationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          hygrometricRegulationScore: BigNumber;
+          comforterComfortabilityScore: BigNumber;
+          pillowComfortabilityScore: BigNumber;
+        };
+        _owner: string;
+      }
+    >;
+
     "OwnershipTransferred(address,address)"(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -854,12 +1303,6 @@ export class BedroomNFT extends BaseContract {
       [string, string],
       { previousOwner: string; newOwner: string }
     >;
-
-    "Paused(address)"(
-      account?: null
-    ): TypedEventFilter<[string], { account: string }>;
-
-    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
 
     "TransferBatch(address,address,address,uint256[],uint256[])"(
       operator?: string | null,
@@ -939,11 +1382,219 @@ export class BedroomNFT extends BaseContract {
       id?: BigNumberish | null
     ): TypedEventFilter<[string, BigNumber], { value: string; id: BigNumber }>;
 
-    "Unpaused(address)"(
-      account?: null
-    ): TypedEventFilter<[string], { account: string }>;
+    "UpgradingBedroomNFT(uint256,string,tuple,tuple,address)"(
+      _tokenID?: null,
+      _newTokenURI?: null,
+      _newBedroom?: null,
+      _newBed?: null,
+      _owner?: null
+    ): TypedEventFilter<
+      [
+        BigNumber,
+        string,
+        [
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          name: string;
+          nbUpgrades: BigNumber;
+          lightIsolationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          soundIsolationScore: BigNumber;
+          temperatureScore: BigNumber;
+          humidityScore: BigNumber;
+          sleepAidMachinesScore: BigNumber;
+        },
+        [
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          nbUpgrades: BigNumber;
+          sizeScore: BigNumber;
+          heightScore: BigNumber;
+          bedBaseScore: BigNumber;
+          mattressTechnologyScore: BigNumber;
+          mattressThicknessScore: BigNumber;
+          mattressDeformationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          hygrometricRegulationScore: BigNumber;
+          comforterComfortabilityScore: BigNumber;
+          pillowComfortabilityScore: BigNumber;
+        },
+        string
+      ],
+      {
+        _tokenID: BigNumber;
+        _newTokenURI: string;
+        _newBedroom: [
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          name: string;
+          nbUpgrades: BigNumber;
+          lightIsolationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          soundIsolationScore: BigNumber;
+          temperatureScore: BigNumber;
+          humidityScore: BigNumber;
+          sleepAidMachinesScore: BigNumber;
+        };
+        _newBed: [
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          nbUpgrades: BigNumber;
+          sizeScore: BigNumber;
+          heightScore: BigNumber;
+          bedBaseScore: BigNumber;
+          mattressTechnologyScore: BigNumber;
+          mattressThicknessScore: BigNumber;
+          mattressDeformationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          hygrometricRegulationScore: BigNumber;
+          comforterComfortabilityScore: BigNumber;
+          pillowComfortabilityScore: BigNumber;
+        };
+        _owner: string;
+      }
+    >;
 
-    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
+    UpgradingBedroomNFT(
+      _tokenID?: null,
+      _newTokenURI?: null,
+      _newBedroom?: null,
+      _newBed?: null,
+      _owner?: null
+    ): TypedEventFilter<
+      [
+        BigNumber,
+        string,
+        [
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          name: string;
+          nbUpgrades: BigNumber;
+          lightIsolationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          soundIsolationScore: BigNumber;
+          temperatureScore: BigNumber;
+          humidityScore: BigNumber;
+          sleepAidMachinesScore: BigNumber;
+        },
+        [
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          nbUpgrades: BigNumber;
+          sizeScore: BigNumber;
+          heightScore: BigNumber;
+          bedBaseScore: BigNumber;
+          mattressTechnologyScore: BigNumber;
+          mattressThicknessScore: BigNumber;
+          mattressDeformationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          hygrometricRegulationScore: BigNumber;
+          comforterComfortabilityScore: BigNumber;
+          pillowComfortabilityScore: BigNumber;
+        },
+        string
+      ],
+      {
+        _tokenID: BigNumber;
+        _newTokenURI: string;
+        _newBedroom: [
+          string,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          name: string;
+          nbUpgrades: BigNumber;
+          lightIsolationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          soundIsolationScore: BigNumber;
+          temperatureScore: BigNumber;
+          humidityScore: BigNumber;
+          sleepAidMachinesScore: BigNumber;
+        };
+        _newBed: [
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber,
+          BigNumber
+        ] & {
+          nbUpgrades: BigNumber;
+          sizeScore: BigNumber;
+          heightScore: BigNumber;
+          bedBaseScore: BigNumber;
+          mattressTechnologyScore: BigNumber;
+          mattressThicknessScore: BigNumber;
+          mattressDeformationScore: BigNumber;
+          thermalIsolationScore: BigNumber;
+          hygrometricRegulationScore: BigNumber;
+          comforterComfortabilityScore: BigNumber;
+          pillowComfortabilityScore: BigNumber;
+        };
+        _owner: string;
+      }
+    >;
   };
 
   estimateGas: {
@@ -958,8 +1609,6 @@ export class BedroomNFT extends BaseContract {
       ids: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    bedrooms(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -990,12 +1639,6 @@ export class BedroomNFT extends BaseContract {
     ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pause(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    paused(overrides?: CallOverrides): Promise<BigNumber>;
 
     rawFulfillRandomWords(
       requestId: BigNumberish,
@@ -1031,8 +1674,21 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setURI(
-      newuri: string,
+    setBaseURI(
+      _baseURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setThresholds(
+      _indexAttribute: BigNumberish,
+      _initialScoreMax: BigNumberish,
+      _upgradeIncreases: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setTokenURI(
+      _tokenId: BigNumberish,
+      _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1041,12 +1697,24 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    thresholds(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenId(overrides?: CallOverrides): Promise<BigNumber>;
+
     tokenIdToAddress(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     tokenIdToBed(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenIdToBedroom(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1061,15 +1729,7 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    unpause(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    upgradeToken(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    uri(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    uri(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -1082,11 +1742,6 @@ export class BedroomNFT extends BaseContract {
     balanceOfBatch(
       accounts: string[],
       ids: BigNumberish[],
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    bedrooms(
-      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1123,12 +1778,6 @@ export class BedroomNFT extends BaseContract {
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    pause(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     rawFulfillRandomWords(
       requestId: BigNumberish,
       randomWords: BigNumberish[],
@@ -1163,8 +1812,21 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setURI(
-      newuri: string,
+    setBaseURI(
+      _baseURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setThresholds(
+      _indexAttribute: BigNumberish,
+      _initialScoreMax: BigNumberish,
+      _upgradeIncreases: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setTokenURI(
+      _tokenId: BigNumberish,
+      _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1173,12 +1835,24 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    thresholds(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenId(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     tokenIdToAddress(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     tokenIdToBed(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenIdToBedroom(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1193,16 +1867,8 @@ export class BedroomNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    unpause(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    upgradeToken(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     uri(
-      arg0: BigNumberish,
+      _tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
