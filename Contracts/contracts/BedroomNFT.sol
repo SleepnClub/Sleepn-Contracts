@@ -42,13 +42,11 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         uint256 bedBaseScore; // Index 8
         uint256 mattressTechnologyScore; // Index 9
         uint256 mattressThicknessScore; // Index 10
-        uint256 deformationDepthScore; // Index 11
-        uint256 deformationSpeedScore; // Index 12
-        uint256 deformationPersistenceScore; // Index 13
-        uint256 thermalIsolationScore; // Index 14
-        uint256 hygrometricRegulationScore; // Index 15
-        uint256 comforterComfortabilityScore; // Index 16
-        uint256 pillowComfortabilityScore; // Index 17
+        uint256 mattressDeformationScore; // Index 11
+        uint256 thermalIsolationScore; // Index 12
+        uint256 hygrometricRegulationScore; // Index 13
+        uint256 comforterComfortabilityScore; // Index 14
+        uint256 pillowComfortabilityScore; // Index 15
     }
 
     // Score thresholds 
@@ -135,12 +133,12 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         Bedroom memory bedroom = Bedroom(
             name,
             0,
-            (_randomNumber%80), 
-            (_randomNumber%75), 
-            (_randomNumber%70), 
-            (_randomNumber%65), 
-            (_randomNumber%60), 
-            (_randomNumber%50)
+            (_randomNumber % thresholds[0].initialScoreMax), 
+            (_randomNumber % thresholds[1].initialScoreMax), 
+            (_randomNumber % thresholds[2].initialScoreMax), 
+            (_randomNumber % thresholds[3].initialScoreMax), 
+            (_randomNumber % thresholds[4].initialScoreMax), 
+            (_randomNumber % thresholds[5].initialScoreMax)
         );
         // Storage of the new Bedroom
         tokenIdToBedroom[_tokenId] = bedroom;
@@ -202,18 +200,17 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     function createBed(uint256 _randomNumber, uint256 _tokenId) internal {
         // New Bed
         Bed memory bed = Bed(
-            (_randomNumber%100), 
-            (_randomNumber%95), 
-            (_randomNumber%80), 
-            (_randomNumber%75), 
-            (_randomNumber%70), 
-            (_randomNumber%65), 
-            (_randomNumber%60), 
-            (_randomNumber%55), 
-            (_randomNumber%50), 
-            (_randomNumber%52), 
-            (_randomNumber%59), 
-            (_randomNumber%64)
+            0,
+            (_randomNumber % thresholds[6].initialScoreMax), 
+            (_randomNumber % thresholds[7].initialScoreMax), 
+            (_randomNumber % thresholds[8].initialScoreMax), 
+            (_randomNumber % thresholds[9].initialScoreMax), 
+            (_randomNumber % thresholds[10].initialScoreMax), 
+            (_randomNumber % thresholds[11].initialScoreMax), 
+            (_randomNumber % thresholds[12].initialScoreMax), 
+            (_randomNumber % thresholds[13].initialScoreMax), 
+            (_randomNumber % thresholds[14].initialScoreMax), 
+            (_randomNumber % thresholds[15].initialScoreMax) 
         );
         // Storage of the new Bed
         tokenIdToBed[_tokenId] = bed;
