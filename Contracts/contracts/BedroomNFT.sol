@@ -25,30 +25,36 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     // Bedroom object
     struct Bedroom {
         string name;
-        uint256 investmentBalance;
-        uint256 nbUpgrades;
-        uint256 lightIsolationScore;
-        uint256 thermalIsolationScore;
-        uint256 soundIsolationScore;
-        uint256 temperatureScore;
-        uint256 humidityScore;
-        uint256 sleepAidMachinesScore;
+        uint256 nbUpgrades; 
+        uint256 lightIsolationScore; // Index 0
+        uint256 thermalIsolationScore; // Index 1
+        uint256 soundIsolationScore; // Index 2
+        uint256 temperatureScore; // Index 3
+        uint256 humidityScore; // Index 4
+        uint256 sleepAidMachinesScore; // Index 5
     }
 
     // Bed object
     struct Bed {
-        uint256 sizeScore;
-        uint256 heightScore;
-        uint256 bedBaseScore;
-        uint256 mattressTechnologyScore;
-        uint256 mattressThicknessScore; 
-        uint256 deformationDepthScore;
-        uint256 deformationSpeedScore;
-        uint256 deformationPersistenceScore;
-        uint256 thermalIsolationScore;
-        uint256 hygrometricRegulationScore;
-        uint256 comforterComfortabilityScore;
-        uint256 pillowComfortabilityScore;
+        uint256 nbUpgrades; 
+        uint256 sizeScore; // Index 6
+        uint256 heightScore; // Index 7
+        uint256 bedBaseScore; // Index 8
+        uint256 mattressTechnologyScore; // Index 9
+        uint256 mattressThicknessScore; // Index 10
+        uint256 deformationDepthScore; // Index 11
+        uint256 deformationSpeedScore; // Index 12
+        uint256 deformationPersistenceScore; // Index 13
+        uint256 thermalIsolationScore; // Index 14
+        uint256 hygrometricRegulationScore; // Index 15
+        uint256 comforterComfortabilityScore; // Index 16
+        uint256 pillowComfortabilityScore; // Index 17
+    }
+
+    // Score thresholds 
+    struct Thresholds {
+        uint256 initialScoreMax;
+        uint256 upgradeIncreases;
     }
 
     // Number of NFT 
@@ -58,6 +64,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
     mapping(uint256 => address) public tokenIdToAddress;
     mapping(uint256 => Bedroom) public tokenIdToBedroom;
     mapping(uint256 => Bed) public tokenIdToBed;
+    mapping(uint256 => Thresholds) public thresholds;
 
     // Events
     event MintingBedroomNFT(
@@ -99,6 +106,16 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         tokenId = 0;
     }
 
+    // Set a new thresholds
+    function setThresholds(
+        uint256 _indexAttribute, 
+        uint256 _initialScoreMax,  
+        uint256 _upgradeIncreases
+    ) public onlyOwner {
+        thresholds[_indexAttribute].initialScoreMax = _initialScoreMax;
+        thresholds[_indexAttribute].upgradeIncreases = _upgradeIncreases;
+    }
+
     // This function is creating a new random bedroom NFT by generating a random number
     function newRandomBedroom() public onlyOwner {
         tokenIdToAddress[tokenId] = msg.sender;
@@ -117,7 +134,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, Pausable, ERC1155Sup
         string memory name = string(abi.encodePacked("token #", Strings.toString(_tokenId)));
         Bedroom memory bedroom = Bedroom(
             name,
-            0,
             0,
             (_randomNumber%80), 
             (_randomNumber%75), 
