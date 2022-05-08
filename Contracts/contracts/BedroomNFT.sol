@@ -159,39 +159,56 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         );
         // humidityScore
         uint256 _humidityScore = tokenIdToBedroom[_tokenId].humidityScore;
-        tokenIdToBedroom[_tokenId].humidityScore = _humidityScore + thresholds[4].upgradeIncreases;
-        if (tokenIdToBedroom[_tokenId].humidityScore > 100) {
-            tokenIdToBedroom[_tokenId].humidityScore = 100;
+        if (_humidityScore < 100) {
+            tokenIdToBedroom[_tokenId].humidityScore = _humidityScore + thresholds[4].upgradeIncreases;
+            if (tokenIdToBedroom[_tokenId].humidityScore > 100) {
+                tokenIdToBedroom[_tokenId].humidityScore = 100;
+            }
         }
+        
         // lightIsolationScore
         uint256 _lightIsolationScore = tokenIdToBedroom[_tokenId].lightIsolationScore;
-        tokenIdToBedroom[_tokenId].lightIsolationScore =_lightIsolationScore + thresholds[0].upgradeIncreases;
-        if (tokenIdToBedroom[_tokenId].lightIsolationScore > 100) {
-            tokenIdToBedroom[_tokenId].lightIsolationScore = 100;
+        if (_lightIsolationScore < 100) {
+            tokenIdToBedroom[_tokenId].lightIsolationScore =_lightIsolationScore + thresholds[0].upgradeIncreases;
+            if (tokenIdToBedroom[_tokenId].lightIsolationScore > 100) {
+                tokenIdToBedroom[_tokenId].lightIsolationScore = 100;
+            }
         }
+    
         // thermalIsolationScore
         uint256 _thermalIsolationScore = tokenIdToBedroom[_tokenId].thermalIsolationScore;
-        tokenIdToBedroom[_tokenId].thermalIsolationScore = _thermalIsolationScore + thresholds[1].upgradeIncreases;
-        if (tokenIdToBedroom[_tokenId].thermalIsolationScore > 100) {
-            tokenIdToBedroom[_tokenId].thermalIsolationScore = 100;
+        if (_thermalIsolationScore < 100) {
+            tokenIdToBedroom[_tokenId].thermalIsolationScore = _thermalIsolationScore + thresholds[1].upgradeIncreases;
+            if (tokenIdToBedroom[_tokenId].thermalIsolationScore > 100) {
+                tokenIdToBedroom[_tokenId].thermalIsolationScore = 100;
+            }
         }
+        
         // soundIsolationScore
         uint256 _soundIsolationScore = tokenIdToBedroom[_tokenId].soundIsolationScore;
-        tokenIdToBedroom[_tokenId].soundIsolationScore = _soundIsolationScore + thresholds[2].upgradeIncreases;
-        if (tokenIdToBedroom[_tokenId].soundIsolationScore > 100) {
-            tokenIdToBedroom[_tokenId].soundIsolationScore = 100;
+        if (_soundIsolationScore < 100) {
+            tokenIdToBedroom[_tokenId].soundIsolationScore = _soundIsolationScore + thresholds[2].upgradeIncreases;
+            if (tokenIdToBedroom[_tokenId].soundIsolationScore > 100) {
+                tokenIdToBedroom[_tokenId].soundIsolationScore = 100;
+            }
         }
+
         // temperatureScore
         uint256 _temperatureScore = tokenIdToBedroom[_tokenId].temperatureScore;
-        tokenIdToBedroom[_tokenId].temperatureScore = _temperatureScore + thresholds[3].upgradeIncreases;
-        if (tokenIdToBedroom[_tokenId].temperatureScore > 100) {
-            tokenIdToBedroom[_tokenId].temperatureScore = 100;
+        if (_temperatureScore < 100) {
+            tokenIdToBedroom[_tokenId].temperatureScore = _temperatureScore + thresholds[3].upgradeIncreases;
+            if (tokenIdToBedroom[_tokenId].temperatureScore > 100) {
+                tokenIdToBedroom[_tokenId].temperatureScore = 100;
+            }
         }
+
         // sleepAidMachinesScore
         uint256 _sleepAidMachinesScore = tokenIdToBedroom[_tokenId].sleepAidMachinesScore;
-        tokenIdToBedroom[_tokenId].sleepAidMachinesScore = _sleepAidMachinesScore + thresholds[5].upgradeIncreases;
-        if (tokenIdToBedroom[_tokenId].sleepAidMachinesScore > 100) {
-            tokenIdToBedroom[_tokenId].sleepAidMachinesScore = 100;
+        if (_sleepAidMachinesScore < 100) {
+            tokenIdToBedroom[_tokenId].sleepAidMachinesScore = _sleepAidMachinesScore + thresholds[5].upgradeIncreases;
+            if (tokenIdToBedroom[_tokenId].sleepAidMachinesScore > 100) {
+                tokenIdToBedroom[_tokenId].sleepAidMachinesScore = 100;
+            }
         }
     }
 
@@ -221,72 +238,92 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         tokenIdToBed[_tokenId].nbUpgrades++;
         // sizeScore
         uint256 _sizeScore = tokenIdToBed[_tokenId].sizeScore;
-        tokenIdToBed[_tokenId].sizeScore = _sizeScore + thresholds[6].upgradeIncreases;
-        if (tokenIdToBed[_tokenId].sizeScore > 100) {
-            tokenIdToBed[_tokenId].sizeScore = 100;
+        if (_sizeScore < 100) {
+            tokenIdToBed[_tokenId].sizeScore = _sizeScore + thresholds[6].upgradeIncreases;
+            if (tokenIdToBed[_tokenId].sizeScore > 100) {
+                tokenIdToBed[_tokenId].sizeScore = 100;
+            }
         }
 
         // heightScore
         uint256 _heightScore = tokenIdToBed[_tokenId].heightScore;
-        tokenIdToBed[_tokenId].heightScore = _heightScore + thresholds[7].upgradeIncreases;
-        if (tokenIdToBed[_tokenId].heightScore > 100) {
-            tokenIdToBed[_tokenId].heightScore = 100;
+        if (_heightScore < 100) {
+            tokenIdToBed[_tokenId].heightScore = _heightScore + thresholds[7].upgradeIncreases;
+            if (tokenIdToBed[_tokenId].heightScore > 100) {
+                tokenIdToBed[_tokenId].heightScore = 100;
+            }
         }
-
+        
         // bedBaseScore
         uint256 _bedBaseScore = tokenIdToBed[_tokenId].bedBaseScore;
-        tokenIdToBed[_tokenId].bedBaseScore = _bedBaseScore + thresholds[8].upgradeIncreases;
-        if (tokenIdToBed[_tokenId].bedBaseScore > 100) {
-            tokenIdToBed[_tokenId].bedBaseScore = 100;
+        if (_bedBaseScore < 100) {
+            tokenIdToBed[_tokenId].bedBaseScore = _bedBaseScore + thresholds[8].upgradeIncreases;
+            if (tokenIdToBed[_tokenId].bedBaseScore > 100) {
+                tokenIdToBed[_tokenId].bedBaseScore = 100;
+            }
         }
         
         // mattressTechnologyScore
         uint256 _mattressTechnologyScore = tokenIdToBed[_tokenId].mattressTechnologyScore;
-        tokenIdToBed[_tokenId].mattressTechnologyScore = _mattressTechnologyScore + thresholds[9].upgradeIncreases;
-        if (tokenIdToBed[_tokenId].mattressTechnologyScore > 100) {
-            tokenIdToBed[_tokenId].mattressTechnologyScore = 100;
+        if (_mattressTechnologyScore < 100) {
+            tokenIdToBed[_tokenId].mattressTechnologyScore = _mattressTechnologyScore + thresholds[9].upgradeIncreases;
+            if (tokenIdToBed[_tokenId].mattressTechnologyScore > 100) {
+                tokenIdToBed[_tokenId].mattressTechnologyScore = 100;
+            }
         }
         
         // mattressThicknessScore
         uint256 _mattressThicknessScore = tokenIdToBed[_tokenId].mattressThicknessScore;
-        tokenIdToBed[_tokenId].mattressThicknessScore = _mattressThicknessScore + thresholds[10].upgradeIncreases;
-        if (tokenIdToBed[_tokenId].mattressThicknessScore > 100) {
-            tokenIdToBed[_tokenId].mattressThicknessScore = 100;
+        if (_mattressThicknessScore < 100) {
+            tokenIdToBed[_tokenId].mattressThicknessScore = _mattressThicknessScore + thresholds[10].upgradeIncreases;
+            if (tokenIdToBed[_tokenId].mattressThicknessScore > 100) {
+                tokenIdToBed[_tokenId].mattressThicknessScore = 100;
+            }
         }
         
         // mattressDeformationScore
         uint256 _mattressDeformationScore = tokenIdToBed[_tokenId].mattressDeformationScore;
-        tokenIdToBed[_tokenId].mattressDeformationScore = _mattressDeformationScore + thresholds[11].upgradeIncreases;
-        if (tokenIdToBed[_tokenId].mattressDeformationScore > 100) {
-            tokenIdToBed[_tokenId].mattressDeformationScore = 100;
+        if (_mattressDeformationScore < 100) {
+            tokenIdToBed[_tokenId].mattressDeformationScore = _mattressDeformationScore + thresholds[11].upgradeIncreases;
+            if (tokenIdToBed[_tokenId].mattressDeformationScore > 100) {
+                tokenIdToBed[_tokenId].mattressDeformationScore = 100;
+            }
         }
         
         // thermalIsolationScore
         uint256 _thermalIsolationScore = tokenIdToBed[_tokenId].thermalIsolationScore;
-        tokenIdToBed[_tokenId].thermalIsolationScore = _thermalIsolationScore + thresholds[12].upgradeIncreases;
-        if (tokenIdToBed[_tokenId].thermalIsolationScore > 100) {
-            tokenIdToBed[_tokenId].thermalIsolationScore = 100;
+        if (_thermalIsolationScore < 100) {
+            tokenIdToBed[_tokenId].thermalIsolationScore = _thermalIsolationScore + thresholds[12].upgradeIncreases;
+            if (tokenIdToBed[_tokenId].thermalIsolationScore > 100) {
+                tokenIdToBed[_tokenId].thermalIsolationScore = 100;
+            }
         }
         
         // hygrometricRegulationScore
         uint256 _hygrometricRegulationScore = tokenIdToBed[_tokenId].hygrometricRegulationScore;
-        tokenIdToBed[_tokenId].hygrometricRegulationScore = _hygrometricRegulationScore + thresholds[13].upgradeIncreases;
-        if (tokenIdToBed[_tokenId].hygrometricRegulationScore > 100) {
-            tokenIdToBed[_tokenId].hygrometricRegulationScore = 100;
+        if (_hygrometricRegulationScore < 100) {
+            tokenIdToBed[_tokenId].hygrometricRegulationScore = _hygrometricRegulationScore + thresholds[13].upgradeIncreases;
+            if (tokenIdToBed[_tokenId].hygrometricRegulationScore > 100) {
+                tokenIdToBed[_tokenId].hygrometricRegulationScore = 100;
+            }
         }
         
         // comforterComfortabilityScore
         uint256 _comforterComfortabilityScore = tokenIdToBed[_tokenId].comforterComfortabilityScore;
-        tokenIdToBed[_tokenId].comforterComfortabilityScore = _comforterComfortabilityScore + thresholds[14].upgradeIncreases;
-        if (tokenIdToBed[_tokenId].comforterComfortabilityScore > 100) {
-            tokenIdToBed[_tokenId].comforterComfortabilityScore = 100;
+        if (_comforterComfortabilityScore < 100) {
+            tokenIdToBed[_tokenId].comforterComfortabilityScore = _comforterComfortabilityScore + thresholds[14].upgradeIncreases;
+            if (tokenIdToBed[_tokenId].comforterComfortabilityScore > 100) {
+                tokenIdToBed[_tokenId].comforterComfortabilityScore = 100;
+            }
         }
         
         // pillowComfortabilityScore
         uint256 _pillowComfortabilityScore = tokenIdToBed[_tokenId].pillowComfortabilityScore;
-        tokenIdToBed[_tokenId].pillowComfortabilityScore = _pillowComfortabilityScore + thresholds[15].upgradeIncreases;
-        if (tokenIdToBed[_tokenId].pillowComfortabilityScore > 100) {
-            tokenIdToBed[_tokenId].pillowComfortabilityScore = 100;
+        if (_pillowComfortabilityScore < 100) {
+            tokenIdToBed[_tokenId].pillowComfortabilityScore = _pillowComfortabilityScore + thresholds[15].upgradeIncreases;
+            if (tokenIdToBed[_tokenId].pillowComfortabilityScore > 100) {
+                tokenIdToBed[_tokenId].pillowComfortabilityScore = 100;
+            }
         }
     }
 
