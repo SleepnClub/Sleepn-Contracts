@@ -6,20 +6,31 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
+  const SleepToken = await ethers.getContractFactory("SleepToken");
+  console.log('Deploying SleepToken contract...');
+  const sleepToken = await SleepToken.deploy();
+  await sleepToken.deployed();
+  console.log("SleepToken contract deployed to:", sleepToken.address);
 
-  // We get the contract to deploy
-  const Greeter = await ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  // 162
+  const subscriptionId = 162;
+  // Mumbai Testnet : 0x6168499c0cFfCaCD319c818142124B7A15E857ab 
+  const vrfCoordinator = "0x6168499c0cFfCaCD319c818142124B7A15E857ab";
+  // Mumbai Testnet : 0x7a1BaC17Ccc5b313516C5E16fb24f7659aA5ebed
+  const link_token_contract = "0x6168499c0cFfCaCD319c818142124B7A15E857ab";
+  // Mumbai Testnet : 0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f
+  const keyHash = "0x4b09e658ed251bcafeebbc69400383d49f344ace09b9576fe248bb02c003fe9f";
 
-  await greeter.deployed();
-
-  console.log("Greeter deployed to:", greeter.address);
+  const BedroomNFT = await ethers.getContractFactory("BedroomNFT");
+  console.log('Deploying BedroomNFT contract...');
+  const bedroomNFT = await BedroomNFT.deploy(
+    subscriptionId, 
+    vrfCoordinator,
+    link_token_contract,
+    keyHash
+  );
+  await bedroomNFT.deployed();
+  console.log("BedroomNFT contract deployed to:", bedroomNFT.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
