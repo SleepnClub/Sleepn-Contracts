@@ -122,9 +122,9 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     }
 
     // This function is creating a new random bedroom NFT by generating a random number
-    function newRandomBedroom(uint256 _designId) public onlyOwner {
-        tokenIdToInfos[tokenId]. = msg.sender;
-        tokenIdToDesignId[tokenId] = _designId;
+    function newRandomBedroom(uint256 _designId, address _owner) public onlyOwner {
+        tokenIdToInfos[tokenId].owner = _owner;
+        tokenIdToInfos[tokenId].designId = _designId;
         COORDINATOR.requestRandomWords(
             keyHash,
             subscriptionId,
@@ -139,12 +139,10 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         // Name
         string memory name = string(abi.encodePacked("token #", Strings.toString(_tokenId)));
         tokenIdToBedroom[_tokenId].name = name;
-        // Upgrades Number  
-        tokenIdToBedroom[_tokenId].nbUpgrades = 0;
         // Light Isolation Score
         tokenIdToBedroom[_tokenId].lightIsolationScore = (_randomNumber % thresholds[0].initialScoreMax); // Index 0
         // Thermal Isolation Score
-        tokenIdToBedroom[_tokenId].thermalIsolationScore = (_randomNumber % thresholds[1].initialScoreMax) // Index 1
+        tokenIdToBedroom[_tokenId].thermalIsolationScore = (_randomNumber % thresholds[1].initialScoreMax); // Index 1
         // Sound Isolation Score
         tokenIdToBedroom[_tokenId].soundIsolationScore = (_randomNumber % thresholds[2].initialScoreMax); // Index 2
         // Temperature Score
@@ -239,8 +237,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Creating a new random Bed object 
     function createBed(uint256 _randomNumber, uint256 _tokenId) internal {
-        // Storage of the new Bed
-        tokenIdToBed[_tokenId].nbUpgrades = 0;
         // Size Score
         tokenIdToBed[_tokenId].sizeScore = (_randomNumber % thresholds[6].initialScoreMax); // Index 6
         // Height Score
