@@ -23,8 +23,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Bedroom object
     struct Bedroom {
-        string name;
-        uint256 nbUpgrades; 
         uint256 lightIsolationScore; // Index 0
         uint256 thermalIsolationScore; // Index 1
         uint256 soundIsolationScore; // Index 2
@@ -35,7 +33,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Bed object
     struct Bed {
-        uint256 nbUpgrades; 
         uint256 sizeScore; // Index 6
         uint256 heightScore; // Index 7
         uint256 bedBaseScore; // Index 8
@@ -50,16 +47,17 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Score thresholds 
     struct Thresholds {
-        uint256 initialScoreMax;
-        uint256 upgradeIncreases;
-        uint256 levelToUnlock;
+        uint256 initialScoreMax; // Initial Score Maximum value 
+        uint256 upgradeIncreases; // Number of percents per increase 
+        uint256 requiredLevel; // Required level to be unlock
     }
 
     // NFT Infos
     struct NftInfo {
-        address owner;
-        uint256 price; 
-        uint256 designId;
+        address owner; // Owner
+        uint256 price; // Price
+        uint256 designId; // Design Id
+        uint256 level; // Level
     }
 
     // File format
@@ -75,20 +73,20 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     mapping(uint256 => Thresholds) public thresholds;
 
     // Events
-    event MintingBedroomNFT(
-        uint256 _tokenID, 
-        string _tokenURI,
-        Bedroom _bedroom,
-        Bed _bed, 
-        address _owner
+    event BedroomNFTMinting(
+        uint256 tokenId, 
+        string tokenURI,
+        NftInfo infos,
+        Bedroom bedroom,
+        Bed bed
     );
 
-    event UpgradingBedroomNFT(
-        uint256 _tokenID, 
-        string _newTokenURI,
-        Bedroom _newBedroom,
-        Bed _newBed, 
-        address _owner
+    event BedroomNFTUpgrading(
+        uint256 tokenId, 
+        string newTokenURI,
+        NftInfo infos,
+        Bedroom bedroom,
+        Bed bed
     );
     
     constructor(
@@ -118,10 +116,12 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     function setThresholds(
         uint256 _indexAttribute, 
         uint256 _initialScoreMax,  
-        uint256 _upgradeIncreases
+        uint256 _upgradeIncreases,
+        uint256 _requiredLevel
     ) public onlyOwner {
         thresholds[_indexAttribute].initialScoreMax = _initialScoreMax;
         thresholds[_indexAttribute].upgradeIncreases = _upgradeIncreases;
+        thresholds[_indexAttribute].requiredLevel = _requiredLevel;
     }
 
     // Set file format
@@ -131,9 +131,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Creating a new random bedroom object 
     function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
-        // Name
-        string memory name = string(abi.encodePacked("token #", Strings.toString(_tokenId)));
-        tokenIdToBedroom[_tokenId].name = name;
         // Light Isolation Score
         tokenIdToBedroom[_tokenId].lightIsolationScore = (_randomNumber % thresholds[0].initialScoreMax); // Index 0
         // Thermal Isolation Score
@@ -146,24 +143,12 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         tokenIdToBedroom[_tokenId].humidityScore = (_randomNumber % thresholds[4].initialScoreMax); // Index 4
         // Sleep Aid Machines Score
         tokenIdToBedroom[_tokenId].sleepAidMachinesScore = (_randomNumber % thresholds[5].initialScoreMax); // Index 5
-        // Increment the index
-        tokenId++;
     }
 
     // Updating a bedroom object 
     function updateBedroom(uint256 _tokenId) internal {
-        // Upgrades Number
-        tokenIdToBedroom[_tokenId].nbUpgrades++;
-        // name
-        tokenIdToBedroom[_tokenId].name = string(
-            abi.encodePacked(
-                tokenIdToBedroom[_tokenId].name, 
-                " Upgrade ", 
-                Strings.toString(tokenIdToBedroom[_tokenId].nbUpgrades)
-            )
-        );
         // humidityScore
-        if (tokenIdToBedroom[_tokenId].nbUpgrades >= thresholds[4].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[4].requiredLevel) {
             uint256 _humidityScore = tokenIdToBedroom[_tokenId].humidityScore;
             if (_humidityScore < 100) {
                 tokenIdToBedroom[_tokenId].humidityScore = _humidityScore + thresholds[4].upgradeIncreases;
@@ -174,7 +159,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
         
         // lightIsolationScore
-        if (tokenIdToBedroom[_tokenId].nbUpgrades >= thresholds[0].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[0].requiredLevel) {
             uint256 _lightIsolationScore = tokenIdToBedroom[_tokenId].lightIsolationScore;
             if (_lightIsolationScore < 100) {
                 tokenIdToBedroom[_tokenId].lightIsolationScore =_lightIsolationScore + thresholds[0].upgradeIncreases;
@@ -185,7 +170,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
     
         // thermalIsolationScore
-        if (tokenIdToBedroom[_tokenId].nbUpgrades >= thresholds[1].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[1].requiredLevel) {
             uint256 _thermalIsolationScore = tokenIdToBedroom[_tokenId].thermalIsolationScore;
             if (_thermalIsolationScore < 100) {
                 tokenIdToBedroom[_tokenId].thermalIsolationScore = _thermalIsolationScore + thresholds[1].upgradeIncreases;
@@ -197,7 +182,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
         
         // soundIsolationScore
-        if (tokenIdToBedroom[_tokenId].nbUpgrades >= thresholds[2].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[2].requiredLevel) {
             uint256 _soundIsolationScore = tokenIdToBedroom[_tokenId].soundIsolationScore;
             if (_soundIsolationScore < 100) {
                 tokenIdToBedroom[_tokenId].soundIsolationScore = _soundIsolationScore + thresholds[2].upgradeIncreases;
@@ -208,7 +193,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
 
         // temperatureScore
-        if (tokenIdToBedroom[_tokenId].nbUpgrades >= thresholds[3].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[3].requiredLevel) {
             uint256 _temperatureScore = tokenIdToBedroom[_tokenId].temperatureScore;
             if (_temperatureScore < 100) {
                 tokenIdToBedroom[_tokenId].temperatureScore = _temperatureScore + thresholds[3].upgradeIncreases;
@@ -219,7 +204,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
 
         // sleepAidMachinesScore
-        if (tokenIdToBedroom[_tokenId].nbUpgrades >= thresholds[5].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[5].requiredLevel) {
             uint256 _sleepAidMachinesScore = tokenIdToBedroom[_tokenId].sleepAidMachinesScore;
             if (_sleepAidMachinesScore < 100) {
                 tokenIdToBedroom[_tokenId].sleepAidMachinesScore = _sleepAidMachinesScore + thresholds[5].upgradeIncreases;
@@ -256,11 +241,8 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Updating a Bed object 
     function updateBed(uint256 _tokenId) internal {  
-        // nbUpgrades
-        tokenIdToBed[_tokenId].nbUpgrades++;
-
         // sizeScore
-        if (tokenIdToBed[_tokenId].nbUpgrades >= thresholds[6].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[6].requiredLevel) {
             uint256 _sizeScore = tokenIdToBed[_tokenId].sizeScore;
             if (_sizeScore < 100) {
                 tokenIdToBed[_tokenId].sizeScore = _sizeScore + thresholds[6].upgradeIncreases;
@@ -271,7 +253,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
 
         // heightScore
-        if (tokenIdToBed[_tokenId].nbUpgrades >= thresholds[7].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[7].requiredLevel) {
             uint256 _heightScore = tokenIdToBed[_tokenId].heightScore;
             if (_heightScore < 100) {
                 tokenIdToBed[_tokenId].heightScore = _heightScore + thresholds[7].upgradeIncreases;
@@ -282,7 +264,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
 
         // bedBaseScore
-        if (tokenIdToBed[_tokenId].nbUpgrades >= thresholds[8].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[8].requiredLevel) {
             uint256 _bedBaseScore = tokenIdToBed[_tokenId].bedBaseScore;
             if (_bedBaseScore < 100) {
                 tokenIdToBed[_tokenId].bedBaseScore = _bedBaseScore + thresholds[8].upgradeIncreases;
@@ -293,7 +275,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
         
         // mattressTechnologyScore
-        if (tokenIdToBed[_tokenId].nbUpgrades >= thresholds[9].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[9].requiredLevel) {
             uint256 _mattressTechnologyScore = tokenIdToBed[_tokenId].mattressTechnologyScore;
             if (_mattressTechnologyScore < 100) {
                 tokenIdToBed[_tokenId].mattressTechnologyScore = _mattressTechnologyScore + thresholds[9].upgradeIncreases;
@@ -304,7 +286,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
 
         // mattressThicknessScore
-        if (tokenIdToBed[_tokenId].nbUpgrades >= thresholds[10].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[10].requiredLevel) {
             uint256 _mattressThicknessScore = tokenIdToBed[_tokenId].mattressThicknessScore;
             if (_mattressThicknessScore < 100) {
                 tokenIdToBed[_tokenId].mattressThicknessScore = _mattressThicknessScore + thresholds[10].upgradeIncreases;
@@ -315,7 +297,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
   
         // mattressDeformationScore
-        if (tokenIdToBed[_tokenId].nbUpgrades >= thresholds[11].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[11].requiredLevel) {
             uint256 _mattressDeformationScore = tokenIdToBed[_tokenId].mattressDeformationScore;
             if (_mattressDeformationScore < 100) {
                 tokenIdToBed[_tokenId].mattressDeformationScore = _mattressDeformationScore + thresholds[11].upgradeIncreases;
@@ -326,7 +308,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
 
         // thermalIsolationScore
-        if (tokenIdToBed[_tokenId].nbUpgrades >= thresholds[12].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[12].requiredLevel) {
             uint256 _hygrometricRegulationScore = tokenIdToBed[_tokenId].hygrometricRegulationScore;
             if (_hygrometricRegulationScore < 100) {
                 tokenIdToBed[_tokenId].hygrometricRegulationScore = _hygrometricRegulationScore + thresholds[13].upgradeIncreases;
@@ -337,7 +319,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
         
         // hygrometricRegulationScore
-        if (tokenIdToBed[_tokenId].nbUpgrades >= thresholds[13].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[13].requiredLevel) {
             uint256 _hygrometricRegulationScore = tokenIdToBed[_tokenId].hygrometricRegulationScore;
             if (_hygrometricRegulationScore < 100) {
                 tokenIdToBed[_tokenId].hygrometricRegulationScore = _hygrometricRegulationScore + thresholds[13].upgradeIncreases;
@@ -348,7 +330,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
         
         // comforterComfortabilityScore
-        if (tokenIdToBed[_tokenId].nbUpgrades >= thresholds[14].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[14].requiredLevel) {
             uint256 _comforterComfortabilityScore = tokenIdToBed[_tokenId].comforterComfortabilityScore;
             if (_comforterComfortabilityScore < 100) {
                 tokenIdToBed[_tokenId].comforterComfortabilityScore = _comforterComfortabilityScore + thresholds[14].upgradeIncreases;
@@ -359,7 +341,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
 
         // pillowComfortabilityScore
-        if (tokenIdToBed[_tokenId].nbUpgrades >= thresholds[15].levelToUnlock) {
+        if (tokenIdToInfos[_tokenId].level >= thresholds[15].requiredLevel) {
             uint256 _pillowComfortabilityScore = tokenIdToBed[_tokenId].pillowComfortabilityScore;
             if (_pillowComfortabilityScore < 100) {
                 tokenIdToBed[_tokenId].pillowComfortabilityScore = _pillowComfortabilityScore + thresholds[15].upgradeIncreases;
@@ -383,28 +365,48 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         );
     }
 
+    // Get Token Name
+    function getName(uint256 _tokenId) public view returns (string memory) {
+        return string(
+            abi.encodePacked(
+                "Token #",
+                Strings.toString(_tokenId), 
+                " Level ", 
+                Strings.toString(tokenIdToInfos[_tokenId].level)
+            )
+        );
+    }
+
     // Callback function used by VRF Coordinator
     function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
-        // Index of the new Bedroom NFT 
-        uint256 _tokenId = tokenId;
-
         // Create new Bedroom 
-        createBedroom(_randomWords[0], _tokenId);
+        createBedroom(_randomWords[0], tokenId);
 
         // Create new Bed
-        createBed(_randomWords[0], _tokenId);
+        createBed(_randomWords[0], tokenId);
 
         // Minting of the new Bedroom NFT 
-        _mint(tokenIdToInfos[_tokenId].owner, _tokenId, 1, "");
+        _mint(tokenIdToInfos[tokenId].owner, tokenId, 1, "");
 
         // Set Token URI
         string memory DesignName = string(
             abi.encodePacked(
-                Strings.toString(tokenIdToInfos[_tokenId].designId), 
+                Strings.toString(tokenIdToInfos[tokenId].designId), 
                 fileFormat
             )
         );
-        _setURI(_tokenId, DesignName);
+        _setURI(tokenId, DesignName);
+
+        emit BedroomNFTMinting(
+            tokenId,
+            uri(tokenId),
+            tokenIdToInfos[tokenId],
+            tokenIdToBedroom[tokenId],
+            tokenIdToBed[tokenId]
+        );
+
+        // Index of next NFT 
+        tokenId++;
     }
 
     // NFT Upgrading
@@ -417,6 +419,9 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
             updateBed(_tokenId);
         }
 
+        // Set Token Level
+        tokenIdToInfos[_tokenId].level++;
+
         // Set Token URI
         string memory DesignName = string(
             abi.encodePacked(
@@ -425,6 +430,14 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
             )
         );
         _setURI(_tokenId, DesignName);
+
+        emit BedroomNFTUpgrading(
+            _tokenId, 
+            uri(_tokenId),
+            tokenIdToInfos[_tokenId],
+            tokenIdToBedroom[_tokenId],
+            tokenIdToBed[_tokenId]
+        );
     }
 
     // This implementation returns the concatenation of the _baseURI and the token-specific uri if the latter is set
