@@ -13,13 +13,13 @@ import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
 contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC1155URIStorage {
     // Chainlink VRF Variables
-    VRFCoordinatorV2Interface immutable COORDINATOR;
-    LinkTokenInterface immutable LINKTOKEN;
-    uint64 immutable internal subscriptionId; 
-    bytes32 immutable internal keyHash;     
-    uint32 immutable internal callbackGasLimit;
-    uint16 immutable internal requestConfirmations;
-    uint32 immutable internal numWord;
+    VRFCoordinatorV2Interface COORDINATOR;
+    LinkTokenInterface LINKTOKEN;
+    uint64 subscriptionId; 
+    bytes32 keyHash;     
+    uint32 callbackGasLimit;
+    uint16 requestConfirmations;
+    uint32 numWord;
 
     // Bedroom object
     struct Bedroom {
@@ -67,6 +67,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     uint256 public tokenId;
 
     // Mappings
+    mapping(uint256 => uint256) public requestIdToTokenId;
     mapping(uint256 => NftInfo) public tokenIdToInfos; 
     mapping(uint256 => Bedroom) public tokenIdToBedroom;
     mapping(uint256 => Bed) public tokenIdToBed;
@@ -110,6 +111,24 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         requestConfirmations = 3;
         numWord = 1; 
         tokenId = 0;
+    }
+
+    function updateChainlink(
+        uint64 _subscriptionId, 
+        address _vrfCoordinator,
+        address _link_token_contract,
+        bytes32 _keyHash,
+        uint32 _callbackGasLimit,
+        uint16 _requestConfirmations,
+        uint32 _numWord
+    ) public onlyOwner {
+        COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
+        LINKTOKEN = LinkTokenInterface(_link_token_contract);
+        subscriptionId = _subscriptionId;
+        keyHash = _keyHash;
+        callbackGasLimit = _callbackGasLimit;
+        requestConfirmations = _requestConfirmations;
+        numWord = _numWord; 
     }
 
     // Set a new thresholds
@@ -354,15 +373,19 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // This function is creating a new random bedroom NFT by generating a random number
     function mintingBedroomNft(uint256 _designId, address _owner) public onlyOwner {
-        tokenIdToInfos[tokenId].owner = _owner;
-        tokenIdToInfos[tokenId].designId = _designId;
-        COORDINATOR.requestRandomWords(
+        uint256 requestId = COORDINATOR.requestRandomWords(
             keyHash,
             subscriptionId,
             requestConfirmations,
             callbackGasLimit,
             numWord
         );
+        requestIdToTokenId[requestId] = tokenId;
+        tokenIdToInfos[tokenId].owner = _owner;
+        tokenIdToInfos[tokenId].designId = _designId;
+
+        // Index of next NFT 
+        tokenId++;
     }
 
     // Get Token Name
@@ -379,34 +402,36 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Callback function used by VRF Coordinator
     function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
+        uint256 _tokenId = requestIdToTokenId[_requestId];
+        _mintingBedroomNft(_tokenId, _randomWords[0]);
+    }
+
+    function _mintingBedroomNft(uint256 _tokenId, uint256 _randomWord) internal {
         // Create new Bedroom 
-        createBedroom(_randomWords[0], tokenId);
+        createBedroom(_randomWord, _tokenId);
 
         // Create new Bed
-        createBed(_randomWords[0], tokenId);
+        createBed(_randomWord, _tokenId);
 
         // Minting of the new Bedroom NFT 
-        _mint(tokenIdToInfos[tokenId].owner, tokenId, 1, "");
+        _mint(tokenIdToInfos[tokenId].owner, _tokenId, 1, "");
 
         // Set Token URI
         string memory DesignName = string(
             abi.encodePacked(
-                Strings.toString(tokenIdToInfos[tokenId].designId), 
+                Strings.toString(tokenIdToInfos[_tokenId].designId), 
                 fileFormat
             )
         );
-        _setURI(tokenId, DesignName);
+        _setURI(_tokenId, DesignName);
 
         emit BedroomNFTMinting(
-            tokenId,
-            uri(tokenId),
-            tokenIdToInfos[tokenId],
-            tokenIdToBedroom[tokenId],
-            tokenIdToBed[tokenId]
+            _tokenId,
+            uri(_tokenId),
+            tokenIdToInfos[_tokenId],
+            tokenIdToBedroom[_tokenId],
+            tokenIdToBed[_tokenId]
         );
-
-        // Index of next NFT 
-        tokenId++;
     }
 
     // NFT Upgrading
