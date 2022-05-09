@@ -62,6 +62,9 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         uint256 designId;
     }
 
+    // File format
+    string public fileFormat;
+
     // Number of NFT 
     uint256 public tokenId;
 
@@ -119,6 +122,11 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     ) public onlyOwner {
         thresholds[_indexAttribute].initialScoreMax = _initialScoreMax;
         thresholds[_indexAttribute].upgradeIncreases = _upgradeIncreases;
+    }
+
+    // Set file format
+    function setFileFormat(string memory _format) public onlyOwner {
+        fileFormat = _format;
     }
 
     // This function is creating a new random bedroom NFT by generating a random number
@@ -387,7 +395,16 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         createBed(_randomWords[0], _tokenId);
 
         // Minting of the new Bedroom NFT 
-        _mint(tokenIdToAddress[_tokenId], _tokenId, 1, "");
+        _mint(tokenIdToInfos[_tokenId].owner, _tokenId, 1, "");
+
+        // Set Token URI
+        string memory DesignName = string(
+            abi.encodePacked(
+                Strings.toString(tokenIdToInfos[_tokenId].designId), 
+                formatFile
+            )
+        );
+        _setURI(_tokenId, DesignName);
     }
 
     // This implementation returns the concatenation of the _baseURI and the token-specific uri if the latter is set
