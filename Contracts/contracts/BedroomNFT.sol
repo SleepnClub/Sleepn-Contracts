@@ -129,19 +129,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         fileFormat = _format;
     }
 
-    // This function is creating a new random bedroom NFT by generating a random number
-    function newRandomBedroom(uint256 _designId, address _owner) public onlyOwner {
-        tokenIdToInfos[tokenId].owner = _owner;
-        tokenIdToInfos[tokenId].designId = _designId;
-        COORDINATOR.requestRandomWords(
-            keyHash,
-            subscriptionId,
-            requestConfirmations,
-            callbackGasLimit,
-            numWord
-        );
-    }
-
     // Creating a new random bedroom object 
     function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
         // Name
@@ -383,6 +370,19 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
     }
 
+    // This function is creating a new random bedroom NFT by generating a random number
+    function mintingBedroomNft(uint256 _designId, address _owner) public onlyOwner {
+        tokenIdToInfos[tokenId].owner = _owner;
+        tokenIdToInfos[tokenId].designId = _designId;
+        COORDINATOR.requestRandomWords(
+            keyHash,
+            subscriptionId,
+            requestConfirmations,
+            callbackGasLimit,
+            numWord
+        );
+    }
+
     // Callback function used by VRF Coordinator
     function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
         // Index of the new Bedroom NFT 
@@ -407,6 +407,26 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         _setURI(_tokenId, DesignName);
     }
 
+    // NFT Upgrading
+    function upgradeBedroomNft(uint256 _tokenId, uint256 _newDesignId, bool _upgradeType) public onlyOwner {
+        if (_upgradeType) {
+            // Update Bedroom : Upgrade type = 1
+            updateBedroom(_tokenId); 
+        } else {
+            // Update Bed : Upgrade type = 0
+            updateBed(_tokenId);
+        }
+
+        // Set Token URI
+        string memory DesignName = string(
+            abi.encodePacked(
+                Strings.toString(_newDesignId), 
+                fileFormat
+            )
+        );
+        _setURI(_tokenId, DesignName);
+    }
+
     // This implementation returns the concatenation of the _baseURI and the token-specific uri if the latter is set
     function uri(uint256 _tokenId) public view override(ERC1155, ERC1155URIStorage) returns (string memory) {
         return super.uri(_tokenId);
@@ -422,21 +442,6 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         _setBaseURI(_baseURI);
     }
 
-    // Mint a Bedroom NFT
-    function mint(address account, uint256 id, uint256 amount, bytes memory data)
-        public
-        onlyOwner
-    {
-        _mint(account, id, amount, data);
-    }
-
-    // Batched version of _mint
-    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
-        public
-        onlyOwner
-    {
-        _mintBatch(to, ids, amounts, data);
-    }
 
     // Hook that is called before any token transfer.
     function _beforeTokenTransfer(address operator, address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
