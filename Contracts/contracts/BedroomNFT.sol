@@ -55,11 +55,18 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         uint256 levelToUnlock;
     }
 
+    // NFT Infos
+    struct NftInfo {
+        address owner;
+        uint256 price; 
+        uint256 designId;
+    }
+
     // Number of NFT 
     uint256 public tokenId;
 
     // Mappings
-    mapping(uint256 => address) public tokenIdToAddress;
+    mapping(uint256 => NftInfo) public tokenIdToInfos; 
     mapping(uint256 => Bedroom) public tokenIdToBedroom;
     mapping(uint256 => Bed) public tokenIdToBed;
     mapping(uint256 => Thresholds) public thresholds;
@@ -115,8 +122,9 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     }
 
     // This function is creating a new random bedroom NFT by generating a random number
-    function newRandomBedroom() public onlyOwner {
-        tokenIdToAddress[tokenId] = msg.sender;
+    function newRandomBedroom(uint256 _designId) public onlyOwner {
+        tokenIdToInfos[tokenId]. = msg.sender;
+        tokenIdToDesignId[tokenId] = _designId;
         COORDINATOR.requestRandomWords(
             keyHash,
             subscriptionId,
@@ -128,27 +136,30 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Creating a new random bedroom object 
     function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
-        // New Bedroom
+        // Name
         string memory name = string(abi.encodePacked("token #", Strings.toString(_tokenId)));
-        Bedroom memory bedroom = Bedroom(
-            name,
-            0,
-            (_randomNumber % thresholds[0].initialScoreMax), 
-            (_randomNumber % thresholds[1].initialScoreMax), 
-            (_randomNumber % thresholds[2].initialScoreMax), 
-            (_randomNumber % thresholds[3].initialScoreMax), 
-            (_randomNumber % thresholds[4].initialScoreMax), 
-            (_randomNumber % thresholds[5].initialScoreMax)
-        );
-        // Storage of the new Bedroom
-        tokenIdToBedroom[_tokenId] = bedroom;
+        tokenIdToBedroom[_tokenId].name = name;
+        // Upgrades Number  
+        tokenIdToBedroom[_tokenId].nbUpgrades = 0;
+        // Light Isolation Score
+        tokenIdToBedroom[_tokenId].lightIsolationScore = (_randomNumber % thresholds[0].initialScoreMax); // Index 0
+        // Thermal Isolation Score
+        tokenIdToBedroom[_tokenId].thermalIsolationScore = (_randomNumber % thresholds[1].initialScoreMax) // Index 1
+        // Sound Isolation Score
+        tokenIdToBedroom[_tokenId].soundIsolationScore = (_randomNumber % thresholds[2].initialScoreMax); // Index 2
+        // Temperature Score
+        tokenIdToBedroom[_tokenId].temperatureScore = (_randomNumber % thresholds[3].initialScoreMax); // Index 3
+        // Humidity Score
+        tokenIdToBedroom[_tokenId].humidityScore = (_randomNumber % thresholds[4].initialScoreMax); // Index 4
+        // Sleep Aid Machines Score
+        tokenIdToBedroom[_tokenId].sleepAidMachinesScore = (_randomNumber % thresholds[5].initialScoreMax); // Index 5
         // Increment the index
         tokenId++;
     }
 
     // Updating a bedroom object 
     function updateBedroom(uint256 _tokenId) internal {
-        // nbUpgrades
+        // Upgrades Number
         tokenIdToBedroom[_tokenId].nbUpgrades++;
         // name
         tokenIdToBedroom[_tokenId].name = string(
@@ -228,22 +239,28 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Creating a new random Bed object 
     function createBed(uint256 _randomNumber, uint256 _tokenId) internal {
-        // New Bed
-        Bed memory bed = Bed(
-            0,
-            (_randomNumber % thresholds[6].initialScoreMax), 
-            (_randomNumber % thresholds[7].initialScoreMax), 
-            (_randomNumber % thresholds[8].initialScoreMax), 
-            (_randomNumber % thresholds[9].initialScoreMax), 
-            (_randomNumber % thresholds[10].initialScoreMax), 
-            (_randomNumber % thresholds[11].initialScoreMax), 
-            (_randomNumber % thresholds[12].initialScoreMax), 
-            (_randomNumber % thresholds[13].initialScoreMax), 
-            (_randomNumber % thresholds[14].initialScoreMax), 
-            (_randomNumber % thresholds[15].initialScoreMax) 
-        );
         // Storage of the new Bed
-        tokenIdToBed[_tokenId] = bed;
+        tokenIdToBed[_tokenId].nbUpgrades = 0;
+        // Size Score
+        tokenIdToBed[_tokenId].sizeScore = (_randomNumber % thresholds[6].initialScoreMax); // Index 6
+        // Height Score
+        tokenIdToBed[_tokenId].heightScore = (_randomNumber % thresholds[7].initialScoreMax); // Index 7
+        // Bed Base Score
+        tokenIdToBed[_tokenId].bedBaseScore = (_randomNumber % thresholds[8].initialScoreMax); // Index 8
+        // Mattress Technology Score
+        tokenIdToBed[_tokenId].mattressTechnologyScore = (_randomNumber % thresholds[9].initialScoreMax); // Index 9
+        // Mattress Thickness Score
+        tokenIdToBed[_tokenId].mattressThicknessScore = (_randomNumber % thresholds[10].initialScoreMax); // Index 10
+        // Mattress Deformation Score 
+        tokenIdToBed[_tokenId].mattressDeformationScore = (_randomNumber % thresholds[11].initialScoreMax); // Index 11
+        // Thermal Isolation Score
+        tokenIdToBed[_tokenId].thermalIsolationScore = (_randomNumber % thresholds[12].initialScoreMax); // Index 12
+        // Hygrometric Regulation Score
+        tokenIdToBed[_tokenId].hygrometricRegulationScore = (_randomNumber % thresholds[13].initialScoreMax); // Index 13
+        // Comforter Comfortability Score
+        tokenIdToBed[_tokenId].comforterComfortabilityScore = (_randomNumber % thresholds[14].initialScoreMax); // Index 14
+        // Pillow Comfortability Score
+        tokenIdToBed[_tokenId].pillowComfortabilityScore = (_randomNumber % thresholds[15].initialScoreMax); // Index 15
     }
 
     // Updating a Bed object 
