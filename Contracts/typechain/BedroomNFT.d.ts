@@ -24,6 +24,7 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
     "exists(uint256)": FunctionFragment;
+    "fileFormat()": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mint(address,uint256,uint256,bytes)": FunctionFragment;
     "mintBatch(address,uint256[],uint256[],bytes)": FunctionFragment;
@@ -35,6 +36,7 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setBaseURI(string)": FunctionFragment;
+    "setFileFormat(string)": FunctionFragment;
     "setThresholds(uint256,uint256,uint256)": FunctionFragment;
     "setTokenURI(uint256,string)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
@@ -59,6 +61,10 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "exists",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "fileFormat",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
@@ -98,6 +104,10 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     values: [string, boolean]
   ): string;
   encodeFunctionData(functionFragment: "setBaseURI", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "setFileFormat",
+    values: [string]
+  ): string;
   encodeFunctionData(
     functionFragment: "setThresholds",
     values: [BigNumberish, BigNumberish, BigNumberish]
@@ -143,6 +153,7 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "fileFormat", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
@@ -175,6 +186,10 @@ interface BedroomNFTInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setBaseURI", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setFileFormat",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "setThresholds",
     data: BytesLike
@@ -524,6 +539,8 @@ export class BedroomNFT extends BaseContract {
 
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
 
+    fileFormat(overrides?: CallOverrides): Promise<[string]>;
+
     isApprovedForAll(
       account: string,
       operator: string,
@@ -590,6 +607,11 @@ export class BedroomNFT extends BaseContract {
 
     setBaseURI(
       _baseURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setFileFormat(
+      _format: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -718,6 +740,8 @@ export class BedroomNFT extends BaseContract {
 
   exists(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
+  fileFormat(overrides?: CallOverrides): Promise<string>;
+
   isApprovedForAll(
     account: string,
     operator: string,
@@ -784,6 +808,11 @@ export class BedroomNFT extends BaseContract {
 
   setBaseURI(
     _baseURI: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setFileFormat(
+    _format: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -909,6 +938,8 @@ export class BedroomNFT extends BaseContract {
 
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
+    fileFormat(overrides?: CallOverrides): Promise<string>;
+
     isApprovedForAll(
       account: string,
       operator: string,
@@ -972,6 +1003,8 @@ export class BedroomNFT extends BaseContract {
     ): Promise<void>;
 
     setBaseURI(_baseURI: string, overrides?: CallOverrides): Promise<void>;
+
+    setFileFormat(_format: string, overrides?: CallOverrides): Promise<void>;
 
     setThresholds(
       _indexAttribute: BigNumberish,
@@ -1641,6 +1674,8 @@ export class BedroomNFT extends BaseContract {
 
     exists(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
+    fileFormat(overrides?: CallOverrides): Promise<BigNumber>;
+
     isApprovedForAll(
       account: string,
       operator: string,
@@ -1707,6 +1742,11 @@ export class BedroomNFT extends BaseContract {
 
     setBaseURI(
       _baseURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setFileFormat(
+      _format: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1781,6 +1821,8 @@ export class BedroomNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    fileFormat(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     isApprovedForAll(
       account: string,
       operator: string,
@@ -1847,6 +1889,11 @@ export class BedroomNFT extends BaseContract {
 
     setBaseURI(
       _baseURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setFileFormat(
+      _format: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

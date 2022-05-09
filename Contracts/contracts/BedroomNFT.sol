@@ -401,7 +401,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         string memory DesignName = string(
             abi.encodePacked(
                 Strings.toString(tokenIdToInfos[_tokenId].designId), 
-                formatFile
+                fileFormat
             )
         );
         _setURI(_tokenId, DesignName);
