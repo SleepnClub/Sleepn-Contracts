@@ -13,36 +13,35 @@ import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
 contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC1155URIStorage {
     // Chainlink VRF Variables
-    VRFCoordinatorV2Interface COORDINATOR;
-    LinkTokenInterface LINKTOKEN;
-    uint64 subscriptionId; 
-    bytes32 keyHash;     
+    VRFCoordinatorV2Interface immutable COORDINATOR;
+    LinkTokenInterface immutable LINKTOKEN;
+    uint32 immutable numWord; 
     uint32 callbackGasLimit;
     uint16 requestConfirmations;
-    uint32 numWord;
+    uint64 subscriptionId; 
+    bytes32 keyHash;    
 
     // NFT Specifications
     struct NftSpecifications {
-        address owner; // Owner
-        uint256 price; // Price
-        uint256 designId; // Design Id
-        uint16 level; // Level
-        uint8 lightIsolationScore; // Index 0
-        uint8 bedroomThermalIsolationScore; // Index 1
-        uint8 soundIsolationScore; // Index 2
-        uint8 temperatureScore; // Index 3
-        uint8 humidityScore; // Index 4
-        uint8 sleepAidMachinesScore; // Index 5
-        uint8 sizeScore; // Index 6
-        uint8 heightScore; // Index 7
-        uint8 bedBaseScore; // Index 8
-        uint8 mattressTechnologyScore; // Index 9
-        uint8 mattressThicknessScore; // Index 10
-        uint8 mattressDeformationScore; // Index 11
-        uint8 thermalIsolationScore; // Index 12
-        uint8 hygrometricRegulationScore; // Index 13
-        uint8 comforterComfortabilityScore; // Index 14
-        uint8 pillowComfortabilityScore; // Index 15
+        uint256 lightIsolationScore; // Index 0
+        uint256 bedroomThermalIsolationScore; // Index 1
+        uint256 soundIsolationScore; // Index 2
+        uint256 temperatureScore; // Index 3
+        uint256 humidityScore; // Index 4
+        uint256 sleepAidMachinesScore; // Index 5
+        uint256 sizeScore; // Index 6
+        uint256 heightScore; // Index 7
+        uint256 bedBaseScore; // Index 8
+        uint256 mattressTechnologyScore; // Index 9
+        uint256 mattressThicknessScore; // Index 10
+        uint256 mattressDeformationScore; // Index 11
+        uint256 thermalIsolationScore; // Index 12
+        uint256 hygrometricRegulationScore; // Index 13
+        uint256 comforterComfortabilityScore; // Index 14
+        uint256 pillowComfortabilityScore; // Index 15
+        uint256 price; // Price - Index 16
+        uint256 designId; // Design Id - Index 17
+        uint256 level; // Level - Index 18
     }
 
     // Score thresholds 
@@ -60,7 +59,8 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Mappings
     mapping(uint256 => uint256) public requestIdToTokenId;
-    mapping(uint256 => NftSpecifications) public tokenIdToNftSpecifications; 
+    mapping(uint256 => address) public tokenIdToOwner;
+    mapping(uint256 => NftSpecifications) tokenIdToNftSpecifications; 
     mapping(uint256 => Thresholds) public thresholds;
 
     // Events
@@ -69,12 +69,12 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         string tokenURI,
         NftSpecifications specifications
     );
-
     event BedroomNFTUpgrading(
         uint256 tokenId, 
         string newTokenURI,
         NftSpecifications specifications
     );
+    event ReturnedRandomness(uint256[] randomWords);
     
     constructor(
         // 162
@@ -99,22 +99,81 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         tokenId = 0;
     }
 
+    // Get NFT Specifications
+    function getNftSpecifications(
+        uint256 _tokenId, 
+        uint256 _indexAttribute
+    ) external view returns (uint256) {
+        if (_indexAttribute == 0) {
+            return tokenIdToNftSpecifications[_tokenId].lightIsolationScore;
+        }
+        if (_indexAttribute == 1) {
+            return tokenIdToNftSpecifications[_tokenId].bedroomThermalIsolationScore;
+        }
+        if (_indexAttribute == 2) {
+            return tokenIdToNftSpecifications[_tokenId].soundIsolationScore;
+        }
+        if (_indexAttribute == 3) {
+            return tokenIdToNftSpecifications[_tokenId].temperatureScore;
+        }
+        if (_indexAttribute == 4) {
+            return tokenIdToNftSpecifications[_tokenId].humidityScore;
+        }
+        if (_indexAttribute == 5) {
+            return tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore;
+        }
+        if (_indexAttribute == 6) {
+            return tokenIdToNftSpecifications[_tokenId].sizeScore;
+        }
+        if (_indexAttribute == 7) {
+            return tokenIdToNftSpecifications[_tokenId].heightScore;
+        }
+        if (_indexAttribute == 8) {
+            return tokenIdToNftSpecifications[_tokenId].bedBaseScore;
+        }
+        if (_indexAttribute == 9) {
+            return tokenIdToNftSpecifications[_tokenId].mattressTechnologyScore;
+        }
+        if (_indexAttribute == 10) {
+            return tokenIdToNftSpecifications[_tokenId].mattressThicknessScore;
+        }
+        if (_indexAttribute == 11) {
+            return tokenIdToNftSpecifications[_tokenId].mattressDeformationScore;
+        }
+        if (_indexAttribute == 12) {
+            return tokenIdToNftSpecifications[_tokenId].thermalIsolationScore;
+        }
+        if (_indexAttribute == 13) {
+            return tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore;
+        }
+        if (_indexAttribute == 14) {
+            return tokenIdToNftSpecifications[_tokenId].comforterComfortabilityScore;
+        }
+        if (_indexAttribute == 15) {
+            return tokenIdToNftSpecifications[_tokenId].pillowComfortabilityScore;
+        }
+        if (_indexAttribute == 16) {
+            return tokenIdToNftSpecifications[_tokenId].price;
+        }
+        if (_indexAttribute == 17) {
+            return tokenIdToNftSpecifications[_tokenId].designId;
+        }
+        if (_indexAttribute == 18) {
+            return tokenIdToNftSpecifications[_tokenId].level;
+        }
+        return 0;
+    }
+
     function updateChainlink(
-        uint64 _subscriptionId, 
-        address _vrfCoordinator,
-        address _link_token_contract,
-        bytes32 _keyHash,
-        uint32 _callbackGasLimit,
         uint16 _requestConfirmations,
-        uint32 _numWord
-    ) public onlyOwner {
-        COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
-        LINKTOKEN = LinkTokenInterface(_link_token_contract);
+        uint32 _callbackGasLimit,
+        uint64 _subscriptionId, 
+        bytes32 _keyHash
+    ) external onlyOwner {
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
         callbackGasLimit = _callbackGasLimit;
         requestConfirmations = _requestConfirmations;
-        numWord = _numWord; 
     }
 
     // Set a new thresholds
@@ -123,7 +182,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         uint256 _initialScoreMax,  
         uint256 _upgradeIncreases,
         uint256 _requiredLevel
-    ) public onlyOwner {
+    ) external onlyOwner {
         thresholds[_indexAttribute].initialScoreMax = _initialScoreMax;
         thresholds[_indexAttribute].upgradeIncreases = _upgradeIncreases;
         thresholds[_indexAttribute].requiredLevel = _requiredLevel;
@@ -135,57 +194,46 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     }
 
     // Generation of a new random room
-    function createBedroom(uint256 uint8(_randomNumber),  uint256 _tokenId) internal {
+    function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
         // Light Isolation Score
-        tokenIdToNftSpecifications[_tokenId].lightIsolationScore = (uint8(_randomNumber) % thresholds[0].initialScoreMax); // Index 0
+        tokenIdToNftSpecifications[_tokenId].lightIsolationScore = (_randomNumber % thresholds[0].initialScoreMax); // Index 0
         // Thermal Isolation Score
-        tokenIdToNftSpecifications[_tokenId].bedroomThermalIsolationScore = (uint8(_randomNumber) % thresholds[1].initialScoreMax); // Index 1
+        tokenIdToNftSpecifications[_tokenId].bedroomThermalIsolationScore = (_randomNumber % thresholds[1].initialScoreMax); // Index 1
         // Sound Isolation Score
-        tokenIdToNftSpecifications[_tokenId].soundIsolationScore = (uint8(_randomNumber) % thresholds[2].initialScoreMax); // Index 2
+        tokenIdToNftSpecifications[_tokenId].soundIsolationScore = (_randomNumber % thresholds[2].initialScoreMax); // Index 2
         // Temperature Score
-        tokenIdToNftSpecifications[_tokenId].temperatureScore = (uint8(_randomNumber) % thresholds[3].initialScoreMax); // Index 3
+        tokenIdToNftSpecifications[_tokenId].temperatureScore = (_randomNumber % thresholds[3].initialScoreMax); // Index 3
         // Humidity Score
-        tokenIdToNftSpecifications[_tokenId].humidityScore = (uint8(_randomNumber) % thresholds[4].initialScoreMax); // Index 4
+        tokenIdToNftSpecifications[_tokenId].humidityScore = (_randomNumber % thresholds[4].initialScoreMax); // Index 4
         // Sleep Aid Machines Score
-        tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore = (uint8(_randomNumber) % thresholds[5].initialScoreMax); // Index 5
+        tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore = (_randomNumber % thresholds[5].initialScoreMax); // Index 5
          // Size Score
-        tokenIdToNftSpecifications[_tokenId].sizeScore = (uint8(_randomNumber) % thresholds[6].initialScoreMax); // Index 6
+        tokenIdToNftSpecifications[_tokenId].sizeScore = (_randomNumber % thresholds[6].initialScoreMax); // Index 6
         // Height Score
-        tokenIdToNftSpecifications[_tokenId].heightScore = (uint8(_randomNumber) % thresholds[7].initialScoreMax); // Index 7
+        tokenIdToNftSpecifications[_tokenId].heightScore = (_randomNumber % thresholds[7].initialScoreMax); // Index 7
         // Bed Base Score
-        tokenIdToNftSpecifications[_tokenId].bedBaseScore = (uint8(_randomNumber) % thresholds[8].initialScoreMax); // Index 8
+        tokenIdToNftSpecifications[_tokenId].bedBaseScore = (_randomNumber % thresholds[8].initialScoreMax); // Index 8
         // Mattress Technology Score
-        tokenIdToNftSpecifications[_tokenId].mattressTechnologyScore = (uint8(_randomNumber) % thresholds[9].initialScoreMax); // Index 9
+        tokenIdToNftSpecifications[_tokenId].mattressTechnologyScore = (_randomNumber % thresholds[9].initialScoreMax); // Index 9
         // Mattress Thickness Score
-        tokenIdToNftSpecifications[_tokenId].mattressThicknessScore = (uint8(_randomNumber) % thresholds[10].initialScoreMax); // Index 10
+        tokenIdToNftSpecifications[_tokenId].mattressThicknessScore = (_randomNumber % thresholds[10].initialScoreMax); // Index 10
         // Mattress Deformation Score 
-        tokenIdToNftSpecifications[_tokenId].mattressDeformationScore = (uint8(_randomNumber) % thresholds[11].initialScoreMax); // Index 11
+        tokenIdToNftSpecifications[_tokenId].mattressDeformationScore = (_randomNumber % thresholds[11].initialScoreMax); // Index 11
         // Thermal Isolation Score
-        tokenIdToNftSpecifications[_tokenId].thermalIsolationScore = (uint8(_randomNumber) % thresholds[12].initialScoreMax); // Index 12
+        tokenIdToNftSpecifications[_tokenId].thermalIsolationScore = (_randomNumber % thresholds[12].initialScoreMax); // Index 12
         // Hygrometric Regulation Score
-        tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore = (uint8(_randomNumber) % thresholds[13].initialScoreMax); // Index 13
+        tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore = (_randomNumber % thresholds[13].initialScoreMax); // Index 13
         // Comforter Comfortability Score
-        tokenIdToNftSpecifications[_tokenId].comforterComfortabilityScore = (uint8(_randomNumber) % thresholds[14].initialScoreMax); // Index 14
+        tokenIdToNftSpecifications[_tokenId].comforterComfortabilityScore = (_randomNumber % thresholds[14].initialScoreMax); // Index 14
         // Pillow Comfortability Score
-        tokenIdToNftSpecifications[_tokenId].pillowComfortabilityScore = (uint8(_randomNumber) % thresholds[15].initialScoreMax); // Index 15
+        tokenIdToNftSpecifications[_tokenId].pillowComfortabilityScore = (_randomNumber % thresholds[15].initialScoreMax); // Index 15
     }
 
     // Updating a bedroom object 
-    function updateBedroom(uint256 _tokenId) internal {
-        // humidityScore
-        if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[4].requiredLevel) {
-            uint8 _humidityScore = tokenIdToNftSpecifications[_tokenId].humidityScore;
-            if (_humidityScore < 100) {
-                tokenIdToNftSpecifications[_tokenId].humidityScore = _humidityScore + thresholds[4].upgradeIncreases;
-                if (tokenIdToNftSpecifications[_tokenId].humidityScore > 100) {
-                    tokenIdToNftSpecifications[_tokenId].humidityScore = 100;
-                }
-            }
-        }
-        
+    function updateBedroom(uint256 _tokenId) internal {    
         // lightIsolationScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[0].requiredLevel) {
-            uint8 _lightIsolationScore = tokenIdToNftSpecifications[_tokenId].lightIsolationScore;
+            uint256 _lightIsolationScore = tokenIdToNftSpecifications[_tokenId].lightIsolationScore;
             if (_lightIsolationScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].lightIsolationScore =_lightIsolationScore + thresholds[0].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].lightIsolationScore > 100) {
@@ -196,7 +244,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     
         // bedroomThermalIsolationScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[1].requiredLevel) {
-            uint8 _bedroomThermalIsolationScore = tokenIdToNftSpecifications[_tokenId].bedroomThermalIsolationScore;
+            uint256 _bedroomThermalIsolationScore = tokenIdToNftSpecifications[_tokenId].bedroomThermalIsolationScore;
             if (_bedroomThermalIsolationScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].bedroomThermalIsolationScore = _bedroomThermalIsolationScore + thresholds[1].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].bedroomThermalIsolationScore > 100) {
@@ -208,7 +256,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         
         // soundIsolationScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[2].requiredLevel) {
-            uint8 _soundIsolationScore = tokenIdToNftSpecifications[_tokenId].soundIsolationScore;
+            uint256 _soundIsolationScore = tokenIdToNftSpecifications[_tokenId].soundIsolationScore;
             if (_soundIsolationScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].soundIsolationScore = _soundIsolationScore + thresholds[2].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].soundIsolationScore > 100) {
@@ -219,7 +267,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
         // temperatureScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[3].requiredLevel) {
-            uint8 _temperatureScore = tokenIdToNftSpecifications[_tokenId].temperatureScore;
+            uint256 _temperatureScore = tokenIdToNftSpecifications[_tokenId].temperatureScore;
             if (_temperatureScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].temperatureScore = _temperatureScore + thresholds[3].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].temperatureScore > 100) {
@@ -228,9 +276,20 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
             }
         }
 
+        // humidityScore
+        if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[4].requiredLevel) {
+            uint256 _humidityScore = tokenIdToNftSpecifications[_tokenId].humidityScore;
+            if (_humidityScore < 100) {
+                tokenIdToNftSpecifications[_tokenId].humidityScore = _humidityScore + thresholds[4].upgradeIncreases;
+                if (tokenIdToNftSpecifications[_tokenId].humidityScore > 100) {
+                    tokenIdToNftSpecifications[_tokenId].humidityScore = 100;
+                }
+            }
+        }
+
         // sleepAidMachinesScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[5].requiredLevel) {
-            uint8 _sleepAidMachinesScore = tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore;
+            uint256 _sleepAidMachinesScore = tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore;
             if (_sleepAidMachinesScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore = _sleepAidMachinesScore + thresholds[5].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore > 100) {
@@ -241,7 +300,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
         // sizeScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[6].requiredLevel) {
-            uint8 _sizeScore = tokenIdToNftSpecifications[_tokenId].sizeScore;
+            uint256 _sizeScore = tokenIdToNftSpecifications[_tokenId].sizeScore;
             if (_sizeScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].sizeScore = _sizeScore + thresholds[6].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].sizeScore > 100) {
@@ -252,7 +311,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
         // heightScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[7].requiredLevel) {
-            uint8 _heightScore = tokenIdToNftSpecifications[_tokenId].heightScore;
+            uint256 _heightScore = tokenIdToNftSpecifications[_tokenId].heightScore;
             if (_heightScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].heightScore = _heightScore + thresholds[7].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].heightScore > 100) {
@@ -263,7 +322,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
         // bedBaseScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[8].requiredLevel) {
-            uint8 _bedBaseScore = tokenIdToNftSpecifications[_tokenId].bedBaseScore;
+            uint256 _bedBaseScore = tokenIdToNftSpecifications[_tokenId].bedBaseScore;
             if (_bedBaseScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].bedBaseScore = _bedBaseScore + thresholds[8].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].bedBaseScore > 100) {
@@ -274,7 +333,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         
         // mattressTechnologyScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[9].requiredLevel) {
-            uint8 _mattressTechnologyScore = tokenIdToNftSpecifications[_tokenId].mattressTechnologyScore;
+            uint256 _mattressTechnologyScore = tokenIdToNftSpecifications[_tokenId].mattressTechnologyScore;
             if (_mattressTechnologyScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].mattressTechnologyScore = _mattressTechnologyScore + thresholds[9].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].mattressTechnologyScore > 100) {
@@ -285,7 +344,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
         // mattressThicknessScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[10].requiredLevel) {
-            uint8 _mattressThicknessScore = tokenIdToNftSpecifications[_tokenId].mattressThicknessScore;
+            uint256 _mattressThicknessScore = tokenIdToNftSpecifications[_tokenId].mattressThicknessScore;
             if (_mattressThicknessScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].mattressThicknessScore = _mattressThicknessScore + thresholds[10].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].mattressThicknessScore > 100) {
@@ -296,7 +355,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
   
         // mattressDeformationScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[11].requiredLevel) {
-            uint8 _mattressDeformationScore = tokenIdToNftSpecifications[_tokenId].mattressDeformationScore;
+            uint256 _mattressDeformationScore = tokenIdToNftSpecifications[_tokenId].mattressDeformationScore;
             if (_mattressDeformationScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].mattressDeformationScore = _mattressDeformationScore + thresholds[11].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].mattressDeformationScore > 100) {
@@ -307,7 +366,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
         // thermalIsolationScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[12].requiredLevel) {
-            uint8 _hygrometricRegulationScore = tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore;
+            uint256 _hygrometricRegulationScore = tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore;
             if (_hygrometricRegulationScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore = _hygrometricRegulationScore + thresholds[13].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore > 100) {
@@ -318,7 +377,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         
         // hygrometricRegulationScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[13].requiredLevel) {
-            uint8 _hygrometricRegulationScore = tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore;
+            uint256 _hygrometricRegulationScore = tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore;
             if (_hygrometricRegulationScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore = _hygrometricRegulationScore + thresholds[13].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore > 100) {
@@ -329,7 +388,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         
         // comforterComfortabilityScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[14].requiredLevel) {
-            uint8 _comforterComfortabilityScore = tokenIdToNftSpecifications[_tokenId].comforterComfortabilityScore;
+            uint256 _comforterComfortabilityScore = tokenIdToNftSpecifications[_tokenId].comforterComfortabilityScore;
             if (_comforterComfortabilityScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].comforterComfortabilityScore = _comforterComfortabilityScore + thresholds[14].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].comforterComfortabilityScore > 100) {
@@ -340,7 +399,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
         // pillowComfortabilityScore
         if (tokenIdToNftSpecifications[_tokenId].level >= thresholds[15].requiredLevel) {
-            uint8 _pillowComfortabilityScore = tokenIdToNftSpecifications[_tokenId].pillowComfortabilityScore;
+            uint256 _pillowComfortabilityScore = tokenIdToNftSpecifications[_tokenId].pillowComfortabilityScore;
             if (_pillowComfortabilityScore < 100) {
                 tokenIdToNftSpecifications[_tokenId].pillowComfortabilityScore = _pillowComfortabilityScore + thresholds[15].upgradeIncreases;
                 if (tokenIdToNftSpecifications[_tokenId].pillowComfortabilityScore > 100) {
@@ -360,7 +419,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
             numWord
         );
         requestIdToTokenId[requestId] = tokenId;
-        tokenIdToNftSpecifications[tokenId].owner = _owner;
+        tokenIdToOwner[tokenId] = _owner;
         tokenIdToNftSpecifications[tokenId].designId = _designId;
 
         // Index of next NFT 
@@ -380,9 +439,9 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     }
 
     // Callback function used by VRF Coordinator
-    function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
-        uint256 _tokenId = requestIdToTokenId[_requestId];
-        _mintingBedroomNft(_tokenId, _randomWords[0]);
+    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+        _mintingBedroomNft(requestIdToTokenId[requestId], randomWords[0]);
+        emit ReturnedRandomness(randomWords);
     }
 
     function _mintingBedroomNft(uint256 _tokenId, uint256 _randomWord) internal {
@@ -390,7 +449,7 @@ contract BedroomNFT is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         createBedroom(_randomWord, _tokenId);
 
         // Minting of the new Bedroom NFT 
-        _mint(tokenIdToNftSpecifications[tokenId].owner, _tokenId, 1, "");
+        _mint(tokenIdToOwner[tokenId], _tokenId, 1, "");
 
         // Set Token URI
         string memory DesignName = string(
