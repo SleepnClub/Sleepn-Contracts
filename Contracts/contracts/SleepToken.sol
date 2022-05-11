@@ -13,7 +13,6 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
         __ERC20Burnable_init();
         __Pausable_init();
         __Ownable_init();
-
         _mint(address(this), _totalSupply * 10 ** decimals());
     }
 
@@ -23,6 +22,14 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
 
     function unpause() public onlyOwner {
         _unpause();
+    }
+
+    function mint(uint256 _amount) public onlyOwner {
+        _mint(address(this), _amount);
+    }
+
+    function burn(uint256 _amount) public override onlyOwner {
+        _burn(address(this), _amount);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount)
