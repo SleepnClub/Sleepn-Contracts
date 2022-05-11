@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
@@ -8,18 +8,13 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, PausableUpgradeable, OwnableUpgradeable {
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
-
-    function initialize() initializer public {
+    function initialize(uint256 _totalSupply) initializer public {
         __ERC20_init("SleepToken", "SLP");
         __ERC20Burnable_init();
         __Pausable_init();
         __Ownable_init();
 
-        _mint(msg.sender, 100000000000 * 10 ** decimals());
+        _mint(address(this), _totalSupply * 10 ** decimals());
     }
 
     function pause() public onlyOwner {
@@ -28,10 +23,6 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
 
     function unpause() public onlyOwner {
         _unpause();
-    }
-
-    function mint(address to, uint256 amount) public onlyOwner {
-        _mint(to, amount);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount)

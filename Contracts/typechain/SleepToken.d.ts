@@ -29,7 +29,7 @@ interface SleepTokenInterface extends ethers.utils.Interface {
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
-    "mint(address,uint256)": FunctionFragment;
+    "initialize(uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
     "pause()": FunctionFragment;
@@ -67,8 +67,8 @@ interface SleepTokenInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "mint",
-    values: [string, BigNumberish]
+    functionFragment: "initialize",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
@@ -111,7 +111,7 @@ interface SleepTokenInterface extends ethers.utils.Interface {
     functionFragment: "increaseAllowance",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
@@ -138,6 +138,7 @@ interface SleepTokenInterface extends ethers.utils.Interface {
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Paused(address)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
@@ -145,6 +146,7 @@ interface SleepTokenInterface extends ethers.utils.Interface {
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
@@ -158,6 +160,8 @@ export type ApprovalEvent = TypedEvent<
     value: BigNumber;
   }
 >;
+
+export type InitializedEvent = TypedEvent<[number] & { version: number }>;
 
 export type OwnershipTransferredEvent = TypedEvent<
   [string, string] & { previousOwner: string; newOwner: string }
@@ -254,9 +258,8 @@ export class SleepToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    mint(
-      to: string,
-      amount: BigNumberish,
+    initialize(
+      _totalSupply: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -340,9 +343,8 @@ export class SleepToken extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  mint(
-    to: string,
-    amount: BigNumberish,
+  initialize(
+    _totalSupply: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -423,9 +425,8 @@ export class SleepToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    mint(
-      to: string,
-      amount: BigNumberish,
+    initialize(
+      _totalSupply: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -482,6 +483,14 @@ export class SleepToken extends BaseContract {
       [string, string, BigNumber],
       { owner: string; spender: string; value: BigNumber }
     >;
+
+    "Initialized(uint8)"(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
+
+    Initialized(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: string | null,
@@ -570,9 +579,8 @@ export class SleepToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    mint(
-      to: string,
-      amount: BigNumberish,
+    initialize(
+      _totalSupply: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -660,9 +668,8 @@ export class SleepToken extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    mint(
-      to: string,
-      amount: BigNumberish,
+    initialize(
+      _totalSupply: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
