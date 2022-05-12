@@ -10,7 +10,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, PausableUpgradeable, OwnableUpgradeable {
     address public nftDexAddress;
 
-    function initialize(uint256 _totalSupply) initializer public {
+    function initialize(address _nftDexAddress) initializer public {
         __ERC20_init("SleepToken", "SLP");
         __ERC20Burnable_init();
         __Pausable_init();
@@ -20,17 +20,22 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
 
     // Access management for token management functions
     modifier onlyDex(){
-        require(isInitialized(), "Dex address not configured!");
+        require(_isInitialized(), "Dex address not configured!");
         require(msg.sender == nftDexAddress, "Access forbidden");
         _;
     }
 
     // Verifies that DEX address has been configured
-    function isInitialized() internal returns(bool) {
+    function _isInitialized() internal returns(bool) {
         if (nftDexAddress != address(0)) {
             return true;
         }
         return false;
+    }
+
+    // set Dex address 
+    function setDex(address _nftDexAddress) public onlyOwner {
+        nftDexAddress = _nftDexAddress;
     }
 
     // Stop the contract
