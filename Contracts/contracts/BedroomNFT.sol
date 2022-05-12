@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -109,7 +109,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     // Get NFT Specifications
     function getNftSpecifications(
         uint256 _tokenId, 
-        string _indexAttribute
+        uint256 _indexAttribute
     ) public view returns (uint256) {
         if (_indexAttribute == 0) {
             return tokenIdToNftSpecifications[_tokenId].lightIsolationScore;
@@ -158,15 +158,6 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         }
         if (_indexAttribute == 15) {
             return tokenIdToNftSpecifications[_tokenId].pillowComfortabilityScore;
-        }
-        if (_indexAttribute == 16) {
-            return tokenIdToNftSpecifications[_tokenId].price;
-        }
-        if (_indexAttribute == 17) {
-            return tokenIdToNftSpecifications[_tokenId].designId;
-        }
-        if (_indexAttribute == 18) {
-            return tokenIdToNftSpecifications[_tokenId].level;
         }
         return 0;
     }
@@ -229,11 +220,11 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     // Updating a bedroom object 
     function updateBedroom(uint256 _tokenId) internal {   
         uint256[16] memory newPoints;
-        uint256 memory level = tokenIdToNftSpecifications[_tokenId].level
+        uint256 level = tokenIdToNftOwnership[_tokenId].level;
 
         for (uint256 i=0; i<16; i++) {
-            Thresholds _thresholds memory = thresholds[i];
-            uint256 points memory = getNftSpecifications(_tokenId, i)
+            Thresholds memory _thresholds = thresholds[i];
+            uint256 points = getNftSpecifications(_tokenId, i);
 
             if (level >= _thresholds.requiredLevel) {
                 if (points < 100) {
@@ -242,7 +233,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
                         points = 100;
                     }
                 }
-                newPoints.push(points);
+                newPoints[i] = points;
             }
         }
 
@@ -262,9 +253,8 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
             newPoints[12],
             newPoints[13],
             newPoints[14],
-            newPoints[15],
-            newPoints[16]
-        )
+            newPoints[15]
+        );
     }
 
     // This function is creating a new random bedroom NFT by generating a random number
@@ -292,7 +282,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
                 "Token #",
                 Strings.toString(_tokenId), 
                 " Level ", 
-                Strings.toString(tokenIdToNftSpecifications[_tokenId].level)
+                Strings.toString(tokenIdToNftOwnership[_tokenId].level)
             )
         );
     }
@@ -308,12 +298,12 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         createBedroom(_randomWord, _tokenId);
 
         // Minting of the new Bedroom NFT 
-        _mint(tokenIdToOwner[tokenId], _tokenId, 1, "");
+        _mint(tokenIdToNftOwnership[tokenId].owner, _tokenId, 1, "");
 
         // Set Token URI
         string memory DesignName = string(
             abi.encodePacked(
-                Strings.toString(tokenIdToNftSpecifications[_tokenId].designId), 
+                Strings.toString(tokenIdToNftOwnership[_tokenId].designId), 
                 fileFormat
             )
         );
@@ -327,12 +317,15 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     }
 
     // NFT Upgrading
-    function upgradeBedroomNft(uint256 _tokenId, uint256 _newDesignId) public onlyOwner {
+    function upgradeBedroomNft(uint256 _tokenId, uint256 _newDesignId, uint256 _amount) public onlyOwner {
         // Update Bedroom 
         updateBedroom(_tokenId); 
 
         // Set Token Level
-        tokenIdToNftSpecifications[_tokenId].level++;
+        tokenIdToNftOwnership[_tokenId].level++;
+        
+        // Set Token price
+        tokenIdToNftOwnership[_tokenId].price += _amount;
 
         // Set Token URI
         string memory DesignName = string(

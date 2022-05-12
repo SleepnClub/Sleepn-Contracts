@@ -9,13 +9,13 @@ import "./BedroomNft.sol";
 interface SleepTokenInterface {
     function balanceOf(address account) external view returns (uint256);
     function allowance(address owner, address spender) external view returns (uint256);
-    function investNft(address _owner, uint256 _amount) public;
+    function investNft(address _owner, uint256 _amount) external;
 }
 
 
 contract Dex is Initializable, OwnableUpgradeable {
     SleepTokenInterface public sleepTokenInstance; 
-    BedroomNFT public bedroomNftInstance;
+    BedroomNft public bedroomNftInstance;
 
     // Events 
     event BuyNft(uint256 category, uint256 sleepTokenAmount, address buyer);
@@ -27,8 +27,8 @@ contract Dex is Initializable, OwnableUpgradeable {
 
     // Buy a Nft
     function buyNft(uint256 _amount, uint256 category) public {
-        require(sleepTokenInstance != address(0), "sleepToken address is not configured");
-        require(bedroomNftInstance != address(0), "bedroomNft address is not configured");
+        require(address(sleepTokenInstance) != address(0), "sleepToken address is not configured");
+        require(address(bedroomNftInstance) != address(0), "bedroomNft address is not configured");
         // User must approve the transaction
 
         sleepTokenInstance.investNft(msg.sender, _amount);

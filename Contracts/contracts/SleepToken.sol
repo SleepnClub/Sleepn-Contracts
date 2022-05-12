@@ -10,7 +10,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, PausableUpgradeable, OwnableUpgradeable {
     address public nftDexAddress;
 
-    function initialize(address _nftDexAddress) initializer public {
+    function initialize(uint256 _totalSupply) initializer public {
         __ERC20_init("SleepToken", "SLP");
         __ERC20Burnable_init();
         __Pausable_init();
@@ -52,12 +52,12 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
     }
 
     // NFT Investment : Buy, Upgrade
-    function investNft(address _owner, uint256 _amount) public {
+    function investNft(address _owner, uint256 _amount) external {
         require(nftDexAddress != address(0), "Dex address is not configured");
         require(msg.sender == nftDexAddress, "Access forbidden");
         require(_amount > 0, "Incorrect amount");
         uint256 allowance = allowance(_owner, msg.sender);
-        require(allowance >= _amount,"Check the token allowance")
+        require(allowance >= _amount,"Check the token allowance");
         _burn(_owner, _amount);
     }
 
