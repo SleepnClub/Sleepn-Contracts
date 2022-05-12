@@ -18,21 +18,6 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
         _mint(address(this), _totalSupply * 10 ** decimals());
     }
 
-    // Access management for token management functions
-    modifier onlyDex(){
-        require(_isInitialized(), "Dex address not configured!");
-        require(msg.sender == nftDexAddress, "Access forbidden");
-        _;
-    }
-
-    // Verifies that DEX address has been configured
-    function _isInitialized() internal returns(bool) {
-        if (nftDexAddress != address(0)) {
-            return true;
-        }
-        return false;
-    }
-
     // set Dex address 
     function setDex(address _nftDexAddress) public onlyOwner {
         nftDexAddress = _nftDexAddress;
@@ -67,7 +52,9 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
     }
 
     // NFT Investment : Buy, Upgrade
-    function investNft(address _owner, uint256 _amount) public onlyDex {
+    function investNft(address _owner, uint256 _amount) public {
+        require(nftDexAddress != address(0), "Dex address is not configured");
+        require(msg.sender == nftDexAddress, "Access forbidden");
         require(_amount > 0, "Incorrect amount");
         uint256 allowance = allowance(_owner, msg.sender);
         require(allowance >= _amount,"Check the token allowance")
