@@ -1137,8 +1137,8 @@
       ]
     },
     "/Users/alexisbalayre/Sleepn/Contracts/contracts/Dex.sol": {
-      "lastModificationDate": 1652351008494,
-      "contentHash": "4a46d6d6c2bc65aec20f1364237f5853",
+      "lastModificationDate": 1652351698345,
+      "contentHash": "6f7871355e9cbe7aaf6e937507574f00",
       "sourceName": "contracts/Dex.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -1174,6 +1174,7 @@
         "0.8.13"
       ],
       "artifacts": [
+        "BedroomNftInterface",
         "Dex",
         "SleepTokenInterface"
       ]
