@@ -12,10 +12,14 @@ interface SleepTokenInterface {
     function investNft(address _owner, uint256 _amount) external;
 }
 
+interface BedroomNftInterface {
+    function mintingBedroomNft(uint256 _designId, uint256 _price, uint256 _categorie, address _owner) external;
+    function upgradeBedroomNft(uint256 _tokenId, uint256 _newDesignId, uint256 _amount) external;
+}
 
 contract Dex is Initializable, OwnableUpgradeable {
     SleepTokenInterface public sleepTokenInstance; 
-    BedroomNft public bedroomNftInstance;
+    BedroomNftInterface public bedroomNftInstance;
 
     // Events 
     event BuyNft(uint256 category, uint256 sleepTokenAmount, address buyer);
@@ -30,7 +34,7 @@ contract Dex is Initializable, OwnableUpgradeable {
         address _bedroomNftInstance
     ) internal onlyInitializing {
         sleepTokenInstance = SleepTokenInterface(_sleepTokenInstance);
-        bedroomNftInstance = BedroomNft(_bedroomNftInstance);
+        bedroomNftInstance = BedroomNftInterface(_bedroomNftInstance);
     }
 
     // Buy a Nft
