@@ -102,7 +102,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     // Get NFT Specifications
     function getNftSpecifications(
         uint256 _tokenId, 
-        uint256 _indexAttribute
+        string _indexAttribute
     ) external view returns (uint256) {
         if (_indexAttribute == 0) {
             return tokenIdToNftSpecifications[_tokenId].lightIsolationScore;
@@ -195,38 +195,26 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
 
     // Generation of a new random room
     function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
-        // Light Isolation Score
-        tokenIdToNftSpecifications[_tokenId].lightIsolationScore = (_randomNumber % thresholds[0].initialScoreMax); // Index 0
-        // Thermal Isolation Score
-        tokenIdToNftSpecifications[_tokenId].bedroomThermalIsolationScore = (_randomNumber % thresholds[1].initialScoreMax); // Index 1
-        // Sound Isolation Score
-        tokenIdToNftSpecifications[_tokenId].soundIsolationScore = (_randomNumber % thresholds[2].initialScoreMax); // Index 2
-        // Temperature Score
-        tokenIdToNftSpecifications[_tokenId].temperatureScore = (_randomNumber % thresholds[3].initialScoreMax); // Index 3
-        // Humidity Score
-        tokenIdToNftSpecifications[_tokenId].humidityScore = (_randomNumber % thresholds[4].initialScoreMax); // Index 4
-        // Sleep Aid Machines Score
-        tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore = (_randomNumber % thresholds[5].initialScoreMax); // Index 5
-         // Size Score
-        tokenIdToNftSpecifications[_tokenId].sizeScore = (_randomNumber % thresholds[6].initialScoreMax); // Index 6
-        // Height Score
-        tokenIdToNftSpecifications[_tokenId].heightScore = (_randomNumber % thresholds[7].initialScoreMax); // Index 7
-        // Bed Base Score
-        tokenIdToNftSpecifications[_tokenId].bedBaseScore = (_randomNumber % thresholds[8].initialScoreMax); // Index 8
-        // Mattress Technology Score
-        tokenIdToNftSpecifications[_tokenId].mattressTechnologyScore = (_randomNumber % thresholds[9].initialScoreMax); // Index 9
-        // Mattress Thickness Score
-        tokenIdToNftSpecifications[_tokenId].mattressThicknessScore = (_randomNumber % thresholds[10].initialScoreMax); // Index 10
-        // Mattress Deformation Score 
-        tokenIdToNftSpecifications[_tokenId].mattressDeformationScore = (_randomNumber % thresholds[11].initialScoreMax); // Index 11
-        // Thermal Isolation Score
-        tokenIdToNftSpecifications[_tokenId].thermalIsolationScore = (_randomNumber % thresholds[12].initialScoreMax); // Index 12
-        // Hygrometric Regulation Score
-        tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore = (_randomNumber % thresholds[13].initialScoreMax); // Index 13
-        // Comforter Comfortability Score
-        tokenIdToNftSpecifications[_tokenId].comforterComfortabilityScore = (_randomNumber % thresholds[14].initialScoreMax); // Index 14
-        // Pillow Comfortability Score
-        tokenIdToNftSpecifications[_tokenId].pillowComfortabilityScore = (_randomNumber % thresholds[15].initialScoreMax); // Index 15
+        tokenIdToNftSpecifications[_tokenId] = NftSpecifications(
+            (_randomNumber % thresholds[0].initialScoreMax),
+            (_randomNumber % thresholds[1].initialScoreMax),
+            (_randomNumber % thresholds[2].initialScoreMax),
+            (_randomNumber % thresholds[3].initialScoreMax),
+            (_randomNumber % thresholds[4].initialScoreMax),
+            (_randomNumber % thresholds[5].initialScoreMax),
+            (_randomNumber % thresholds[6].initialScoreMax),
+            (_randomNumber % thresholds[7].initialScoreMax),
+            (_randomNumber % thresholds[8].initialScoreMax),
+            (_randomNumber % thresholds[9].initialScoreMax),
+            (_randomNumber % thresholds[10].initialScoreMax),
+            (_randomNumber % thresholds[11].initialScoreMax),
+            (_randomNumber % thresholds[12].initialScoreMax),
+            (_randomNumber % thresholds[13].initialScoreMax),
+            (_randomNumber % thresholds[14].initialScoreMax),
+            (_randomNumber % thresholds[15].initialScoreMax),
+            (_randomNumber % thresholds[16].initialScoreMax),
+            (_randomNumber % thresholds[17].initialScoreMax)
+        );
     }
 
     // Updating a bedroom object 
