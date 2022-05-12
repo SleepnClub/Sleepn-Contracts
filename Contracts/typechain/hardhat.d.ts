@@ -113,17 +113,21 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
-      name: "BedroomNFT",
+      name: "BedroomNft",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.BedroomNFT__factory>;
+    ): Promise<Contracts.BedroomNft__factory>;
+    getContractFactory(
+      name: "Dex",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Dex__factory>;
+    getContractFactory(
+      name: "SleepTokenInterface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SleepTokenInterface__factory>;
     getContractFactory(
       name: "SleepToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SleepToken__factory>;
-    getContractFactory(
-      name: "SleepTokenManager",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.SleepTokenManager__factory>;
 
     getContractAt(
       name: "LinkTokenInterface",
@@ -251,20 +255,25 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC165>;
     getContractAt(
-      name: "BedroomNFT",
+      name: "BedroomNft",
       address: string,
       signer?: ethers.Signer
-    ): Promise<Contracts.BedroomNFT>;
+    ): Promise<Contracts.BedroomNft>;
+    getContractAt(
+      name: "Dex",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Dex>;
+    getContractAt(
+      name: "SleepTokenInterface",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SleepTokenInterface>;
     getContractAt(
       name: "SleepToken",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.SleepToken>;
-    getContractAt(
-      name: "SleepTokenManager",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.SleepTokenManager>;
 
     // default types
     getContractFactory(

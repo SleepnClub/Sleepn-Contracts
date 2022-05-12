@@ -21,8 +21,16 @@ contract Dex is Initializable, OwnableUpgradeable {
     event BuyNft(uint256 category, uint256 sleepTokenAmount, address buyer);
     event UpgradeNft(uint256 category, uint256 sleepTokenAmount, address buyer);
 
-    function initialize(SleepTokenInterface _sleepTokenInstance) public initializer {
-        sleepTokenInstance = _sleepTokenInstance;
+    function initialize(address _sleepTokenInstance, address _bedroomNftInstance) public initializer {
+       __initInstances(_sleepTokenInstance, _bedroomNftInstance);
+    }
+
+    function __initInstances(
+        address _sleepTokenInstance, 
+        address _bedroomNftInstance
+    ) internal onlyInitializing {
+        sleepTokenInstance = SleepTokenInterface(_sleepTokenInstance);
+        bedroomNftInstance = BedroomNft(_bedroomNftInstance);
     }
 
     // Buy a Nft
@@ -30,7 +38,6 @@ contract Dex is Initializable, OwnableUpgradeable {
         require(address(sleepTokenInstance) != address(0), "sleepToken address is not configured");
         require(address(bedroomNftInstance) != address(0), "bedroomNft address is not configured");
         // User must approve the transaction
-
         sleepTokenInstance.investNft(msg.sender, _amount);
     }
 }

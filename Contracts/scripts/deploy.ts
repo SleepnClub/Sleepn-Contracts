@@ -27,16 +27,16 @@ async function main() {
   // Polygon Mainnet : 0xcc294a196eeeb44da2888d17c0625cc88d70d9760a69d58d853ba6581a9ab0cd
   const keyHash = "0xff8dedfbfa60af186cf3c830acbc32c05aae823045ae5ea7da1e45fbfaba4f92";
 
-  const BedroomNFT = await ethers.getContractFactory("BedroomNFT");
-  console.log('Deploying BedroomNFT contract...');
-  const bedroomNFT = await BedroomNFT.deploy(
+  const BedroomNft = await ethers.getContractFactory("BedroomNft");
+  console.log('Deploying BedroomNft contract...');
+  const bedroomNFT = await BedroomNft.deploy(
     subscriptionId, 
     vrfCoordinator,
     link_token_contract,
     keyHash
   );
   await bedroomNFT.deployed();
-  console.log("BedroomNFT contract deployed to:", bedroomNFT.address);
+  console.log("BedroomNft contract deployed to:", bedroomNFT.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -12,6 +12,9 @@ import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
 contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC1155URIStorage {
+    // Dex Address
+    address public nftDexAddress;
+
     // Chainlink VRF Variables
     VRFCoordinatorV2Interface immutable COORDINATOR;
     LinkTokenInterface immutable LINKTOKEN;
@@ -71,12 +74,12 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     mapping(uint256 => Thresholds) public thresholds;
 
     // Events
-    event BedroomNFTMinting(
+    event BedroomNftMinting(
         uint256 tokenId, 
         string tokenURI,
         NftSpecifications specifications
     );
-    event BedroomNFTUpgrading(
+    event BedroomNftUpgrading(
         uint256 tokenId, 
         string newTokenURI,
         NftSpecifications specifications
@@ -104,6 +107,11 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         requestConfirmations = 3;
         numWord = 1; 
         tokenId = 0;
+    }
+
+    // set Dex address 
+    function setDex(address _nftDexAddress) public onlyOwner {
+        nftDexAddress = _nftDexAddress;
     }
 
     // Get NFT Specifications
@@ -258,7 +266,10 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     }
 
     // This function is creating a new random bedroom NFT by generating a random number
-    function mintingBedroomNft(uint256 _designId, uint256 _price, uint256 _categorie, address _owner) public onlyOwner {
+    function mintingBedroomNft(uint256 _designId, uint256 _price, uint256 _categorie, address _owner) external {
+        require(nftDexAddress != address(0), "Dex address is not configured");
+        require(msg.sender == nftDexAddress, "Access forbidden");
+        
         uint256 requestId = COORDINATOR.requestRandomWords(
             keyHash,
             subscriptionId,
@@ -309,7 +320,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         );
         _setURI(_tokenId, DesignName);
 
-        emit BedroomNFTMinting(
+        emit BedroomNftMinting(
             _tokenId,
             uri(_tokenId),
             tokenIdToNftSpecifications[_tokenId]
@@ -317,7 +328,10 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     }
 
     // NFT Upgrading
-    function upgradeBedroomNft(uint256 _tokenId, uint256 _newDesignId, uint256 _amount) public onlyOwner {
+    function upgradeBedroomNft(uint256 _tokenId, uint256 _newDesignId, uint256 _amount) external {
+        require(nftDexAddress != address(0), "Dex address is not configured");
+        require(msg.sender == nftDexAddress, "Access forbidden");
+
         // Update Bedroom 
         updateBedroom(_tokenId); 
 
@@ -336,7 +350,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
         );
         _setURI(_tokenId, DesignName);
 
-        emit BedroomNFTUpgrading(
+        emit BedroomNftUpgrading(
             _tokenId, 
             uri(_tokenId),
             tokenIdToNftSpecifications[_tokenId]
