@@ -17,23 +17,20 @@ contract Dex is Initializable, OwnableUpgradeable {
     SleepTokenInterface public sleepTokenInstance; 
     BedroomNFT public bedroomNftInstance;
 
-    // NFT Categories 
-    enum Category { Studio, Deluxe, Luxury }
-
     // Events 
-    event BuyNft(Category category, uint256 sleepTokenAmount, address buyer);
-    event UpgradeNft(Category category, uint256 sleepTokenAmount, address buyer);
+    event BuyNft(uint256 category, uint256 sleepTokenAmount, address buyer);
+    event UpgradeNft(uint256 category, uint256 sleepTokenAmount, address buyer);
 
     function initialize(SleepTokenInterface _sleepTokenInstance) public initializer {
         sleepTokenInstance = _sleepTokenInstance;
     }
 
     // Buy a Nft
-    function buyNft(uint256 _amount, Category category) public {
+    function buyNft(uint256 _amount, uint256 category) public {
         require(sleepTokenInstance != address(0), "sleepToken address is not configured");
         require(bedroomNftInstance != address(0), "bedroomNft address is not configured");
         // User must approve the transaction
-        
+
         sleepTokenInstance.investNft(msg.sender, _amount);
     }
 }
