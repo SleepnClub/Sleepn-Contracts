@@ -22,7 +22,7 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
     event UpgradeNft(uint256 tokenId, uint256 action, uint256 _designId, uint256 sleepTokenAmount, address buyer);
 
     function initialize(uint256 _totalSupply, address _bedroomNftAddress) initializer public {
-        __ERC20_init("SleepToken", "SLP");
+        __ERC20_init("Sleep Token", "$SLEEP");
         __ERC20Burnable_init();
         __Pausable_init();
         __Ownable_init();
