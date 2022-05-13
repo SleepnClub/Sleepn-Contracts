@@ -39,7 +39,7 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     "setBaseURI(string)": FunctionFragment;
     "setFileFormat(string)": FunctionFragment;
     "setSleepToken(address)": FunctionFragment;
-    "setThresholds(uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
+    "setThresholds(uint256,uint256,uint256,uint256)": FunctionFragment;
     "setTokenURI(uint256,string)": FunctionFragment;
     "sleepTokenAddress()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
@@ -47,7 +47,7 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     "tokenId()": FunctionFragment;
     "tokenIdToNftOwnership(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "updateChainlink(uint16,uint32,uint64,bytes32)": FunctionFragment;
+    "updateChainlink(uint32,uint64,bytes32)": FunctionFragment;
     "upgradeBedroomNft(uint256,uint256,uint256,uint256)": FunctionFragment;
     "uri(uint256)": FunctionFragment;
   };
@@ -120,13 +120,7 @@ interface BedroomNftInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setThresholds",
-    values: [
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish
-    ]
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setTokenURI",
@@ -155,7 +149,7 @@ interface BedroomNftInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "updateChainlink",
-    values: [BigNumberish, BigNumberish, BigNumberish, BytesLike]
+    values: [BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "upgradeBedroomNft",
@@ -627,7 +621,6 @@ export class BedroomNft extends BaseContract {
 
     setThresholds(
       _indexAttribute: BigNumberish,
-      _initialScoreMax: BigNumberish,
       _upgradeIncreases: BigNumberish,
       _requiredLevel: BigNumberish,
       _multiplier: BigNumberish,
@@ -651,8 +644,7 @@ export class BedroomNft extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        initialScoreMax: BigNumber;
+      [BigNumber, BigNumber, BigNumber] & {
         upgradeIncreases: BigNumber;
         requiredLevel: BigNumber;
         multiplier: BigNumber;
@@ -680,7 +672,6 @@ export class BedroomNft extends BaseContract {
     ): Promise<ContractTransaction>;
 
     updateChainlink(
-      _requestConfirmations: BigNumberish,
       _callbackGasLimit: BigNumberish,
       _subscriptionId: BigNumberish,
       _keyHash: BytesLike,
@@ -800,7 +791,6 @@ export class BedroomNft extends BaseContract {
 
   setThresholds(
     _indexAttribute: BigNumberish,
-    _initialScoreMax: BigNumberish,
     _upgradeIncreases: BigNumberish,
     _requiredLevel: BigNumberish,
     _multiplier: BigNumberish,
@@ -824,8 +814,7 @@ export class BedroomNft extends BaseContract {
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      initialScoreMax: BigNumber;
+    [BigNumber, BigNumber, BigNumber] & {
       upgradeIncreases: BigNumber;
       requiredLevel: BigNumber;
       multiplier: BigNumber;
@@ -853,7 +842,6 @@ export class BedroomNft extends BaseContract {
   ): Promise<ContractTransaction>;
 
   updateChainlink(
-    _requestConfirmations: BigNumberish,
     _callbackGasLimit: BigNumberish,
     _subscriptionId: BigNumberish,
     _keyHash: BytesLike,
@@ -965,7 +953,6 @@ export class BedroomNft extends BaseContract {
 
     setThresholds(
       _indexAttribute: BigNumberish,
-      _initialScoreMax: BigNumberish,
       _upgradeIncreases: BigNumberish,
       _requiredLevel: BigNumberish,
       _multiplier: BigNumberish,
@@ -989,8 +976,7 @@ export class BedroomNft extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        initialScoreMax: BigNumber;
+      [BigNumber, BigNumber, BigNumber] & {
         upgradeIncreases: BigNumber;
         requiredLevel: BigNumber;
         multiplier: BigNumber;
@@ -1018,7 +1004,6 @@ export class BedroomNft extends BaseContract {
     ): Promise<void>;
 
     updateChainlink(
-      _requestConfirmations: BigNumberish,
       _callbackGasLimit: BigNumberish,
       _subscriptionId: BigNumberish,
       _keyHash: BytesLike,
@@ -1612,7 +1597,6 @@ export class BedroomNft extends BaseContract {
 
     setThresholds(
       _indexAttribute: BigNumberish,
-      _initialScoreMax: BigNumberish,
       _upgradeIncreases: BigNumberish,
       _requiredLevel: BigNumberish,
       _multiplier: BigNumberish,
@@ -1650,7 +1634,6 @@ export class BedroomNft extends BaseContract {
     ): Promise<BigNumber>;
 
     updateChainlink(
-      _requestConfirmations: BigNumberish,
       _callbackGasLimit: BigNumberish,
       _subscriptionId: BigNumberish,
       _keyHash: BytesLike,
@@ -1774,7 +1757,6 @@ export class BedroomNft extends BaseContract {
 
     setThresholds(
       _indexAttribute: BigNumberish,
-      _initialScoreMax: BigNumberish,
       _upgradeIncreases: BigNumberish,
       _requiredLevel: BigNumberish,
       _multiplier: BigNumberish,
@@ -1812,7 +1794,6 @@ export class BedroomNft extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     updateChainlink(
-      _requestConfirmations: BigNumberish,
       _callbackGasLimit: BigNumberish,
       _subscriptionId: BigNumberish,
       _keyHash: BytesLike,

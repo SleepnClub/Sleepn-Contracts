@@ -21,9 +21,6 @@ contract reward is Initializable, OwnableUpgradeable {
     using CFAv1Library for CFAv1Library.InitData;
     CFAv1Library.InitData public cfaV1; //initialize cfaV1 variable
 
-    mapping(uint256 => int96) public idToflowRates; 
-    uint256 public idFlowRates;
-
     // Init 
     function initialize(
         ISuperToken _superToken, 

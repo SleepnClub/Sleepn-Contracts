@@ -61,13 +61,13 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
     address public sleepTokenAddress;
 
     // Chainlink VRF Variables
-    VRFCoordinatorV2Interface COORDINATOR;
-    LinkTokenInterface LINKTOKEN;
-    uint32 numWord; 
-    uint32 callbackGasLimit;
-    uint16 requestConfirmations;
-    uint64 subscriptionId; 
-    bytes32 keyHash;    
+    VRFCoordinatorV2Interface private COORDINATOR;
+    LinkTokenInterface private LINKTOKEN;
+    uint32 private numWords; 
+    uint32 private callbackGasLimit;
+    uint16 private requestConfirmations;
+    uint64 private subscriptionId; 
+    bytes32 private keyHash;    
 
     // NFT Specifications
     struct NftSpecifications {
@@ -100,7 +100,6 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
 
     // Score thresholds 
     struct Thresholds {
-        uint256 initialScoreMax; // Initial Score Maximum value 
         uint256 upgradeIncreases; // Number of percents per increase 
         uint256 requiredLevel; // Required level to be unlock
         uint256 multiplier; // Multiplier depending on the NFT category
@@ -140,30 +139,17 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
         __ERC1155_init("");
         __Ownable_init();
         __VrfCoordinator_init(_vrfCoordinator);
-        __Chainlink_init(
-            _subscriptionId, // 162
-            _vrfCoordinator, 
-            _link_token_contract,
-            _keyHash
-        );
-    }
 
-    function __Chainlink_init(
-        uint64 _subscriptionId, // 162
-        address _vrfCoordinator, 
-        address _link_token_contract,
-        bytes32 _keyHash
-    ) internal onlyInitializing
-    {
         COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
         LINKTOKEN = LinkTokenInterface(_link_token_contract);
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
-        callbackGasLimit = 100000;
+        callbackGasLimit = 200000;
         requestConfirmations = 3;
-        numWord = 1; 
+        numWords = 16; 
         tokenId = 0;
     }
+
 
     // set Sleep Token address 
     function setSleepToken(address _sleepTokenAddress) public onlyOwner {
@@ -227,7 +213,6 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
     }
 
     function updateChainlink(
-        uint16 _requestConfirmations,
         uint32 _callbackGasLimit,
         uint64 _subscriptionId, 
         bytes32 _keyHash
@@ -235,19 +220,16 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
         callbackGasLimit = _callbackGasLimit;
-        requestConfirmations = _requestConfirmations;
     }
 
     // Set a new thresholds
     function setThresholds(
         uint256 _indexAttribute, 
-        uint256 _initialScoreMax,  
         uint256 _upgradeIncreases,
         uint256 _requiredLevel, 
         uint256 _multiplier
     ) external onlyOwner {
         thresholds[_indexAttribute] = Thresholds(
-            _initialScoreMax, 
             _upgradeIncreases,
             _requiredLevel,
             _multiplier
@@ -260,24 +242,24 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
     }
 
     // Generation of a new random room
-    function createBedroom(uint256 _randomNumber,  uint256 _tokenId) internal {
+    function createBedroom(uint256[] memory _randomWords,  uint256 _tokenId) internal {
         tokenIdToNftSpecifications[_tokenId] = NftSpecifications(
-            (_randomNumber % thresholds[0].initialScoreMax),
-            (_randomNumber % thresholds[1].initialScoreMax),
-            (_randomNumber % thresholds[2].initialScoreMax),
-            (_randomNumber % thresholds[3].initialScoreMax),
-            (_randomNumber % thresholds[4].initialScoreMax),
-            (_randomNumber % thresholds[5].initialScoreMax),
-            (_randomNumber % thresholds[6].initialScoreMax),
-            (_randomNumber % thresholds[7].initialScoreMax),
-            (_randomNumber % thresholds[8].initialScoreMax),
-            (_randomNumber % thresholds[9].initialScoreMax),
-            (_randomNumber % thresholds[10].initialScoreMax),
-            (_randomNumber % thresholds[11].initialScoreMax),
-            (_randomNumber % thresholds[12].initialScoreMax),
-            (_randomNumber % thresholds[13].initialScoreMax),
-            (_randomNumber % thresholds[14].initialScoreMax),
-            (_randomNumber % thresholds[15].initialScoreMax)
+            (_randomWords[0] % 100) + 1,
+            (_randomWords[1] % 100) + 1,
+            (_randomWords[2] % 100) + 1,
+            (_randomWords[3] % 100) + 1,
+            (_randomWords[4] % 100) + 1,
+            (_randomWords[5] % 100) + 1,
+            (_randomWords[6] % 100) + 1,
+            (_randomWords[7] % 100) + 1,
+            (_randomWords[8] % 100) + 1,
+            (_randomWords[9] % 100) + 1,
+            (_randomWords[10] % 100) + 1,
+            (_randomWords[11] % 100) + 1,
+            (_randomWords[12] % 100) + 1,
+            (_randomWords[13] % 100) + 1,
+            (_randomWords[14] % 100) + 1,
+            (_randomWords[15] % 100) + 1
         );
     }
 
@@ -331,7 +313,7 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
             subscriptionId,
             requestConfirmations,
             callbackGasLimit,
-            numWord
+            numWords
         );
 
         requestIdToTokenId[requestId] = tokenId;
@@ -356,13 +338,13 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
 
     // Callback function used by VRF Coordinator
     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
-        _mintingBedroomNft(requestIdToTokenId[requestId], randomWords[0]);
+        _mintingBedroomNft(requestIdToTokenId[requestId], randomWords);
         emit ReturnedRandomness(randomWords);
     }
 
-    function _mintingBedroomNft(uint256 _tokenId, uint256 _randomWord) internal {
+    function _mintingBedroomNft(uint256 _tokenId, uint256[] memory _randomWords) internal {
         // Create new Bedroom 
-        createBedroom(_randomWord, _tokenId);
+        createBedroom(_randomWords, _tokenId);
 
         // Minting of the new Bedroom NFT 
         _mint(tokenIdToNftOwnership[tokenId].owner, _tokenId, 1, "");

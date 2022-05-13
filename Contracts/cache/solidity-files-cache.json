@@ -1140,8 +1140,8 @@
       ]
     },
     "/Users/alexisbalayre/Sleepn/Contracts/contracts/BedroomNft.sol": {
-      "lastModificationDate": 1652456068591,
-      "contentHash": "1fb208c928e577b46a3149e0cbf8af81",
+      "lastModificationDate": 1652479688840,
+      "contentHash": "12a065503e8bfdbea601e8fc74ae887e",
       "sourceName": "contracts/BedroomNft.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -1536,8 +1536,8 @@
       ]
     },
     "/Users/alexisbalayre/Sleepn/Contracts/contracts/Reward.sol": {
-      "lastModificationDate": 1652477359968,
-      "contentHash": "c85401a957f7f1f869cc59b9b9f05d50",
+      "lastModificationDate": 1652477992096,
+      "contentHash": "6ee070291552305ead6df28a38e4d45d",
       "sourceName": "contracts/Reward.sol",
       "solcConfig": {
         "version": "0.8.13",

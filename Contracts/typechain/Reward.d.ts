@@ -22,8 +22,6 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface RewardInterface extends ethers.utils.Interface {
   functions: {
     "cfaV1()": FunctionFragment;
-    "idFlowRates()": FunctionFragment;
-    "idToflowRates(uint256)": FunctionFragment;
     "initialize(address,address,address)": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
@@ -32,14 +30,6 @@ interface RewardInterface extends ethers.utils.Interface {
   };
 
   encodeFunctionData(functionFragment: "cfaV1", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "idFlowRates",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "idToflowRates",
-    values: [BigNumberish]
-  ): string;
   encodeFunctionData(
     functionFragment: "initialize",
     values: [string, string, string]
@@ -59,14 +49,6 @@ interface RewardInterface extends ethers.utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "cfaV1", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "idFlowRates",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "idToflowRates",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
@@ -142,13 +124,6 @@ export class Reward extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string, string] & { host: string; cfa: string }>;
 
-    idFlowRates(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    idToflowRates(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     initialize(
       _superToken: string,
       _host: string,
@@ -174,13 +149,6 @@ export class Reward extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[string, string] & { host: string; cfa: string }>;
 
-  idFlowRates(overrides?: CallOverrides): Promise<BigNumber>;
-
-  idToflowRates(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   initialize(
     _superToken: string,
     _host: string,
@@ -205,13 +173,6 @@ export class Reward extends BaseContract {
     cfaV1(
       overrides?: CallOverrides
     ): Promise<[string, string] & { host: string; cfa: string }>;
-
-    idFlowRates(overrides?: CallOverrides): Promise<BigNumber>;
-
-    idToflowRates(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     initialize(
       _superToken: string,
@@ -261,13 +222,6 @@ export class Reward extends BaseContract {
   estimateGas: {
     cfaV1(overrides?: CallOverrides): Promise<BigNumber>;
 
-    idFlowRates(overrides?: CallOverrides): Promise<BigNumber>;
-
-    idToflowRates(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     initialize(
       _superToken: string,
       _host: string,
@@ -291,13 +245,6 @@ export class Reward extends BaseContract {
 
   populateTransaction: {
     cfaV1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    idFlowRates(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    idToflowRates(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     initialize(
       _superToken: string,
