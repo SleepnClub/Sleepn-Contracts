@@ -21,19 +21,16 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
     event BuyNft(uint256 category, uint256 _designId, uint256 sleepTokenAmount, address buyer);
     event UpgradeNft(uint256 tokenId, uint256 action, uint256 _designId, uint256 sleepTokenAmount, address buyer);
 
-    function initialize(uint256 _totalSupply, address _bedroomNftAddress) initializer public {
+    function initialize(uint256 _totalSupply, BedroomNftInterface _bedroomNftAddress) initializer public {
         __ERC20_init("Sleep Token", "$SLEEP");
         __ERC20Burnable_init();
         __Pausable_init();
         __Ownable_init();
-        __initInstance(_bedroomNftAddress);
-        _mint(address(this), _totalSupply * 10 ** decimals());
-    }
+        bedroomNftInstance = _bedroomNftAddress;
+        
+        assert(address(bedroomNftInstance) != address(0));
 
-    function __initInstance(
-        address _bedroomNftAddress
-    ) internal onlyInitializing {
-        bedroomNftInstance = BedroomNftInterface(_bedroomNftAddress);
+        _mint(address(this), _totalSupply * 10 ** decimals());
     }
 
     // Stop the contract
@@ -65,19 +62,23 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
     }
 
     // NFT Investment : Buy Nft
-    function buyNft(uint256 _amount, uint256 _designId, uint256 _categorie) public {
+    function buyNft(uint256 _amount, uint256 _designId, uint256 _categorie) external {
         require(_amount > 0, "Incorrect amount");
-        require(balanceOf(msg.sender) >= _amount,"Check the token allowance");
+        uint256 initialbalance = balanceOf(msg.sender);
+        require(initialbalance >= _amount,"Check the token allowance");
         burn(_amount);
+        require(balanceOf(msg.sender) + _amount == initialbalance, "An error occurred");
         bedroomNftInstance.mintingBedroomNft(_designId, _amount, _categorie, msg.sender);
         emit BuyNft(_categorie, _designId, _amount, msg.sender);
     }
 
     // NFT Investment : Upgrade Nft
-    function upgradeNft(uint256 _amount, uint256 _newDesignId, uint256 _tokenId, uint256 _action) public {
+    function upgradeNft(uint256 _amount, uint256 _newDesignId, uint256 _tokenId, uint256 _action) external {
         require(_amount > 0, "Incorrect amount");
-        require(balanceOf(msg.sender) >= _amount,"Check the token allowance");
+        uint256 initialbalance = balanceOf(msg.sender);
+        require(initialbalance >= _amount,"Check the token allowance");
         burn(_amount);
+        require(balanceOf(msg.sender) + _amount == initialbalance, "An error occurred");
         bedroomNftInstance.upgradeBedroomNft(_tokenId, _newDesignId, _amount, _action);
         emit UpgradeNft(_tokenId, _action,_newDesignId, _amount, msg.sender);
     }
