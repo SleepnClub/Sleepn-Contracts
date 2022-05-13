@@ -129,6 +129,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SleepTokenInterface__factory>;
     getContractFactory(
+      name: "BedroomNftInterface",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.BedroomNftInterface__factory>;
+    getContractFactory(
       name: "SleepToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SleepToken__factory>;
@@ -278,6 +282,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.SleepTokenInterface>;
+    getContractAt(
+      name: "BedroomNftInterface",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.BedroomNftInterface>;
     getContractAt(
       name: "SleepToken",
       address: string,
