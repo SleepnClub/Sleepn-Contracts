@@ -24,27 +24,27 @@ interface SleepTokenInterface extends ethers.utils.Interface {
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "bedroomNftInstance()": FunctionFragment;
     "burn(uint256)": FunctionFragment;
     "burnFrom(address,uint256)": FunctionFragment;
+    "buyNft(uint256,uint256,uint256)": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
-    "initialize(uint256)": FunctionFragment;
-    "investNft(address,uint256)": FunctionFragment;
+    "initialize(uint256,address)": FunctionFragment;
     "mint(uint256)": FunctionFragment;
     "name()": FunctionFragment;
-    "nftDexAddress()": FunctionFragment;
     "owner()": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "setDex(address)": FunctionFragment;
     "symbol()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "unpause()": FunctionFragment;
+    "upgradeNft(uint256,uint256,uint256,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -56,10 +56,18 @@ interface SleepTokenInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "bedroomNftInstance",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "burnFrom",
     values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "buyNft",
+    values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
@@ -72,18 +80,10 @@ interface SleepTokenInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "investNft",
-    values: [string, BigNumberish]
+    values: [BigNumberish, string]
   ): string;
   encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "nftDexAddress",
-    values?: undefined
-  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
@@ -91,7 +91,6 @@ interface SleepTokenInterface extends ethers.utils.Interface {
     functionFragment: "renounceOwnership",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "setDex", values: [string]): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
@@ -110,12 +109,21 @@ interface SleepTokenInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "upgradeNft",
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
+  ): string;
 
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "bedroomNftInstance",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "burnFrom", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "buyNft", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "decreaseAllowance",
@@ -126,13 +134,8 @@ interface SleepTokenInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "investNft", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "nftDexAddress",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
@@ -140,7 +143,6 @@ interface SleepTokenInterface extends ethers.utils.Interface {
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setDex", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
@@ -156,22 +158,27 @@ interface SleepTokenInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "upgradeNft", data: BytesLike): Result;
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
+    "BuyNft(uint256,uint256,uint256,address)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Paused(address)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
     "Unpaused(address)": EventFragment;
+    "UpgradeNft(uint256,uint256,uint256,uint256,address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "BuyNft"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpgradeNft"): EventFragment;
 }
 
 export type ApprovalEvent = TypedEvent<
@@ -179,6 +186,15 @@ export type ApprovalEvent = TypedEvent<
     owner: string;
     spender: string;
     value: BigNumber;
+  }
+>;
+
+export type BuyNftEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber, string] & {
+    category: BigNumber;
+    _designId: BigNumber;
+    sleepTokenAmount: BigNumber;
+    buyer: string;
   }
 >;
 
@@ -195,6 +211,16 @@ export type TransferEvent = TypedEvent<
 >;
 
 export type UnpausedEvent = TypedEvent<[string] & { account: string }>;
+
+export type UpgradeNftEvent = TypedEvent<
+  [BigNumber, BigNumber, BigNumber, BigNumber, string] & {
+    tokenId: BigNumber;
+    action: BigNumber;
+    _designId: BigNumber;
+    sleepTokenAmount: BigNumber;
+    buyer: string;
+  }
+>;
 
 export class SleepToken extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -254,6 +280,8 @@ export class SleepToken extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    bedroomNftInstance(overrides?: CallOverrides): Promise<[string]>;
+
     burn(
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -262,6 +290,13 @@ export class SleepToken extends BaseContract {
     burnFrom(
       account: string,
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    buyNft(
+      _amount: BigNumberish,
+      _designId: BigNumberish,
+      _categorie: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -281,12 +316,7 @@ export class SleepToken extends BaseContract {
 
     initialize(
       _totalSupply: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    investNft(
-      _owner: string,
-      _amount: BigNumberish,
+      _bedroomNftAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -297,8 +327,6 @@ export class SleepToken extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<[string]>;
 
-    nftDexAddress(overrides?: CallOverrides): Promise<[string]>;
-
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     pause(
@@ -308,11 +336,6 @@ export class SleepToken extends BaseContract {
     paused(overrides?: CallOverrides): Promise<[boolean]>;
 
     renounceOwnership(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    setDex(
-      _nftDexAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -341,6 +364,14 @@ export class SleepToken extends BaseContract {
     unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    upgradeNft(
+      _amount: BigNumberish,
+      _newDesignId: BigNumberish,
+      _tokenId: BigNumberish,
+      _action: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
   allowance(
@@ -357,6 +388,8 @@ export class SleepToken extends BaseContract {
 
   balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  bedroomNftInstance(overrides?: CallOverrides): Promise<string>;
+
   burn(
     _amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -365,6 +398,13 @@ export class SleepToken extends BaseContract {
   burnFrom(
     account: string,
     amount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  buyNft(
+    _amount: BigNumberish,
+    _designId: BigNumberish,
+    _categorie: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -384,12 +424,7 @@ export class SleepToken extends BaseContract {
 
   initialize(
     _totalSupply: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  investNft(
-    _owner: string,
-    _amount: BigNumberish,
+    _bedroomNftAddress: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -400,8 +435,6 @@ export class SleepToken extends BaseContract {
 
   name(overrides?: CallOverrides): Promise<string>;
 
-  nftDexAddress(overrides?: CallOverrides): Promise<string>;
-
   owner(overrides?: CallOverrides): Promise<string>;
 
   pause(
@@ -411,11 +444,6 @@ export class SleepToken extends BaseContract {
   paused(overrides?: CallOverrides): Promise<boolean>;
 
   renounceOwnership(
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  setDex(
-    _nftDexAddress: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -445,6 +473,14 @@ export class SleepToken extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  upgradeNft(
+    _amount: BigNumberish,
+    _newDesignId: BigNumberish,
+    _tokenId: BigNumberish,
+    _action: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
     allowance(
       owner: string,
@@ -460,11 +496,20 @@ export class SleepToken extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    bedroomNftInstance(overrides?: CallOverrides): Promise<string>;
+
     burn(_amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     burnFrom(
       account: string,
       amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    buyNft(
+      _amount: BigNumberish,
+      _designId: BigNumberish,
+      _categorie: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -484,20 +529,13 @@ export class SleepToken extends BaseContract {
 
     initialize(
       _totalSupply: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    investNft(
-      _owner: string,
-      _amount: BigNumberish,
+      _bedroomNftAddress: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
     mint(_amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     name(overrides?: CallOverrides): Promise<string>;
-
-    nftDexAddress(overrides?: CallOverrides): Promise<string>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -506,8 +544,6 @@ export class SleepToken extends BaseContract {
     paused(overrides?: CallOverrides): Promise<boolean>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-    setDex(_nftDexAddress: string, overrides?: CallOverrides): Promise<void>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
@@ -532,6 +568,14 @@ export class SleepToken extends BaseContract {
     ): Promise<void>;
 
     unpause(overrides?: CallOverrides): Promise<void>;
+
+    upgradeNft(
+      _amount: BigNumberish,
+      _newDesignId: BigNumberish,
+      _tokenId: BigNumberish,
+      _action: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
@@ -551,6 +595,36 @@ export class SleepToken extends BaseContract {
     ): TypedEventFilter<
       [string, string, BigNumber],
       { owner: string; spender: string; value: BigNumber }
+    >;
+
+    "BuyNft(uint256,uint256,uint256,address)"(
+      category?: null,
+      _designId?: null,
+      sleepTokenAmount?: null,
+      buyer?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, string],
+      {
+        category: BigNumber;
+        _designId: BigNumber;
+        sleepTokenAmount: BigNumber;
+        buyer: string;
+      }
+    >;
+
+    BuyNft(
+      category?: null,
+      _designId?: null,
+      sleepTokenAmount?: null,
+      buyer?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, string],
+      {
+        category: BigNumber;
+        _designId: BigNumber;
+        sleepTokenAmount: BigNumber;
+        buyer: string;
+      }
     >;
 
     "Initialized(uint8)"(
@@ -606,6 +680,40 @@ export class SleepToken extends BaseContract {
     ): TypedEventFilter<[string], { account: string }>;
 
     Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
+
+    "UpgradeNft(uint256,uint256,uint256,uint256,address)"(
+      tokenId?: null,
+      action?: null,
+      _designId?: null,
+      sleepTokenAmount?: null,
+      buyer?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, BigNumber, string],
+      {
+        tokenId: BigNumber;
+        action: BigNumber;
+        _designId: BigNumber;
+        sleepTokenAmount: BigNumber;
+        buyer: string;
+      }
+    >;
+
+    UpgradeNft(
+      tokenId?: null,
+      action?: null,
+      _designId?: null,
+      sleepTokenAmount?: null,
+      buyer?: null
+    ): TypedEventFilter<
+      [BigNumber, BigNumber, BigNumber, BigNumber, string],
+      {
+        tokenId: BigNumber;
+        action: BigNumber;
+        _designId: BigNumber;
+        sleepTokenAmount: BigNumber;
+        buyer: string;
+      }
+    >;
   };
 
   estimateGas: {
@@ -623,6 +731,8 @@ export class SleepToken extends BaseContract {
 
     balanceOf(account: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    bedroomNftInstance(overrides?: CallOverrides): Promise<BigNumber>;
+
     burn(
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -631,6 +741,13 @@ export class SleepToken extends BaseContract {
     burnFrom(
       account: string,
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    buyNft(
+      _amount: BigNumberish,
+      _designId: BigNumberish,
+      _categorie: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -650,12 +767,7 @@ export class SleepToken extends BaseContract {
 
     initialize(
       _totalSupply: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    investNft(
-      _owner: string,
-      _amount: BigNumberish,
+      _bedroomNftAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -666,8 +778,6 @@ export class SleepToken extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
-    nftDexAddress(overrides?: CallOverrides): Promise<BigNumber>;
-
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     pause(
@@ -677,11 +787,6 @@ export class SleepToken extends BaseContract {
     paused(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceOwnership(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    setDex(
-      _nftDexAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -710,6 +815,14 @@ export class SleepToken extends BaseContract {
     unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    upgradeNft(
+      _amount: BigNumberish,
+      _newDesignId: BigNumberish,
+      _tokenId: BigNumberish,
+      _action: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -730,6 +843,10 @@ export class SleepToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    bedroomNftInstance(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     burn(
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -738,6 +855,13 @@ export class SleepToken extends BaseContract {
     burnFrom(
       account: string,
       amount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    buyNft(
+      _amount: BigNumberish,
+      _designId: BigNumberish,
+      _categorie: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -757,12 +881,7 @@ export class SleepToken extends BaseContract {
 
     initialize(
       _totalSupply: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    investNft(
-      _owner: string,
-      _amount: BigNumberish,
+      _bedroomNftAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -773,8 +892,6 @@ export class SleepToken extends BaseContract {
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    nftDexAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pause(
@@ -784,11 +901,6 @@ export class SleepToken extends BaseContract {
     paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceOwnership(
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setDex(
-      _nftDexAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -815,6 +927,14 @@ export class SleepToken extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     unpause(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    upgradeNft(
+      _amount: BigNumberish,
+      _newDesignId: BigNumberish,
+      _tokenId: BigNumberish,
+      _action: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

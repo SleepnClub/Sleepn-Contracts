@@ -49,7 +49,7 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     "totalSupply(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "updateChainlink(uint16,uint32,uint64,bytes32)": FunctionFragment;
-    "upgradeBedroomNft(uint256,uint256,uint256)": FunctionFragment;
+    "upgradeBedroomNft(uint256,uint256,uint256,uint256)": FunctionFragment;
     "uri(uint256)": FunctionFragment;
   };
 
@@ -161,7 +161,7 @@ interface BedroomNftInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "upgradeBedroomNft",
-    values: [BigNumberish, BigNumberish, BigNumberish]
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "uri", values: [BigNumberish]): string;
 
@@ -689,6 +689,7 @@ export class BedroomNft extends BaseContract {
       _tokenId: BigNumberish,
       _newDesignId: BigNumberish,
       _amount: BigNumberish,
+      _action: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -857,6 +858,7 @@ export class BedroomNft extends BaseContract {
     _tokenId: BigNumberish,
     _newDesignId: BigNumberish,
     _amount: BigNumberish,
+    _action: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1017,6 +1019,7 @@ export class BedroomNft extends BaseContract {
       _tokenId: BigNumberish,
       _newDesignId: BigNumberish,
       _amount: BigNumberish,
+      _action: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1639,6 +1642,7 @@ export class BedroomNft extends BaseContract {
       _tokenId: BigNumberish,
       _newDesignId: BigNumberish,
       _amount: BigNumberish,
+      _action: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1802,6 +1806,7 @@ export class BedroomNft extends BaseContract {
       _tokenId: BigNumberish,
       _newDesignId: BigNumberish,
       _amount: BigNumberish,
+      _action: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

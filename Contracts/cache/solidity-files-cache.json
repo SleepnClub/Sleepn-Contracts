@@ -675,8 +675,8 @@
       ]
     },
     "/Users/alexisbalayre/Sleepn/Contracts/contracts/SleepToken.sol": {
-      "lastModificationDate": 1652347412665,
-      "contentHash": "a94b03ed83492ebf1e2c09361b94186c",
+      "lastModificationDate": 1652426373035,
+      "contentHash": "c6f75ec178d167316bbad2a25470f65f",
       "sourceName": "contracts/SleepToken.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -707,12 +707,14 @@
         "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol",
         "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol",
         "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol"
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "./BedroomNft.sol"
       ],
       "versionPragmas": [
         "0.8.13"
       ],
       "artifacts": [
+        "BedroomNftInterface",
         "SleepToken"
       ]
     },
@@ -1136,52 +1138,9 @@
         "AddressUpgradeable"
       ]
     },
-    "/Users/alexisbalayre/Sleepn/Contracts/contracts/Dex.sol": {
-      "lastModificationDate": 1652351698345,
-      "contentHash": "6f7871355e9cbe7aaf6e937507574f00",
-      "sourceName": "contracts/Dex.sol",
-      "solcConfig": {
-        "version": "0.8.13",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "storageLayout"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "./SleepToken.sol",
-        "./BedroomNft.sol"
-      ],
-      "versionPragmas": [
-        "0.8.13"
-      ],
-      "artifacts": [
-        "BedroomNftInterface",
-        "Dex",
-        "SleepTokenInterface"
-      ]
-    },
     "/Users/alexisbalayre/Sleepn/Contracts/contracts/BedroomNft.sol": {
-      "lastModificationDate": 1652351395634,
-      "contentHash": "effab56fd71e680c8ba5c71ae36b2709",
+      "lastModificationDate": 1652374417752,
+      "contentHash": "76927fd1ef69b4f360d3b079280ffdbd",
       "sourceName": "contracts/BedroomNft.sol",
       "solcConfig": {
         "version": "0.8.13",

@@ -55,6 +55,11 @@ const _abi = [
         name: "_amount",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "_action",
+        type: "uint256",
+      },
     ],
     name: "upgradeBedroomNft",
     outputs: [],
