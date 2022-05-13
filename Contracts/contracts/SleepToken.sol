@@ -7,20 +7,33 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, PausableUpgradeable, OwnableUpgradeable {
-    address public nftDexAddress;
+import "./BedroomNft.sol";
 
-    function initialize(uint256 _totalSupply) initializer public {
+interface BedroomNftInterface {
+    function mintingBedroomNft(uint256 _designId, uint256 _price, uint256 _categorie, address _owner) external;
+    function upgradeBedroomNft(uint256 _tokenId, uint256 _newDesignId, uint256 _amount, uint256 _action) external;
+}
+
+contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, PausableUpgradeable, OwnableUpgradeable {
+    BedroomNftInterface public bedroomNftInstance;
+
+    // Events 
+    event BuyNft(uint256 category, uint256 _designId, uint256 sleepTokenAmount, address buyer);
+    event UpgradeNft(uint256 tokenId, uint256 action, uint256 _designId, uint256 sleepTokenAmount, address buyer);
+
+    function initialize(uint256 _totalSupply, address _bedroomNftAddress) initializer public {
         __ERC20_init("SleepToken", "SLP");
         __ERC20Burnable_init();
         __Pausable_init();
         __Ownable_init();
+        __initInstance(_bedroomNftAddress);
         _mint(address(this), _totalSupply * 10 ** decimals());
     }
 
-    // set Dex address 
-    function setDex(address _nftDexAddress) public onlyOwner {
-        nftDexAddress = _nftDexAddress;
+    function __initInstance(
+        address _bedroomNftAddress
+    ) internal onlyInitializing {
+        bedroomNftInstance = BedroomNftInterface(_bedroomNftAddress);
     }
 
     // Stop the contract
@@ -51,14 +64,21 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
         super._beforeTokenTransfer(from, to, amount);
     }
 
-    // NFT Investment : Buy, Upgrade
-    function investNft(address _owner, uint256 _amount) external {
-        require(nftDexAddress != address(0), "Dex address is not configured");
-        require(msg.sender == nftDexAddress, "Access forbidden");
+    // NFT Investment : Buy Nft
+    function buyNft(uint256 _amount, uint256 _designId, uint256 _categorie) public {
         require(_amount > 0, "Incorrect amount");
-        uint256 allowance = allowance(_owner, msg.sender);
-        require(allowance >= _amount,"Check the token allowance");
-        _burn(_owner, _amount);
+        require(balanceOf(msg.sender) >= _amount,"Check the token allowance");
+        burn(_amount);
+        bedroomNftInstance.mintingBedroomNft(_designId, _amount, _categorie, msg.sender);
+        emit BuyNft(_categorie, _designId, _amount, msg.sender);
     }
 
+    // NFT Investment : Upgrade Nft
+    function upgradeNft(uint256 _amount, uint256 _newDesignId, uint256 _tokenId, uint256 _action) public {
+        require(_amount > 0, "Incorrect amount");
+        require(balanceOf(msg.sender) >= _amount,"Check the token allowance");
+        burn(_amount);
+        bedroomNftInstance.upgradeBedroomNft(_tokenId, _newDesignId, _amount, _action);
+        emit UpgradeNft(_tokenId, _action,_newDesignId, _amount, msg.sender);
+    }
 }

@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
+
 import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
@@ -269,7 +270,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     function mintingBedroomNft(uint256 _designId, uint256 _price, uint256 _categorie, address _owner) external {
         require(nftDexAddress != address(0), "Dex address is not configured");
         require(msg.sender == nftDexAddress, "Access forbidden");
-        
+
         uint256 requestId = COORDINATOR.requestRandomWords(
             keyHash,
             subscriptionId,
@@ -328,7 +329,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155Supply, ERC11
     }
 
     // NFT Upgrading
-    function upgradeBedroomNft(uint256 _tokenId, uint256 _newDesignId, uint256 _amount) external {
+    function upgradeBedroomNft(uint256 _tokenId, uint256 _newDesignId, uint256 _amount, uint256 _action) external {
         require(nftDexAddress != address(0), "Dex address is not configured");
         require(msg.sender == nftDexAddress, "Access forbidden");
 
