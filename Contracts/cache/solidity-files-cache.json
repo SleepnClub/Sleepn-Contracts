@@ -607,7 +607,7 @@
       "contentHash": "ad7c2d0af148c8f9f097d65deeb4da6b",
       "sourceName": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
       "solcConfig": {
-        "version": "0.8.4",
+        "version": "0.8.13",
         "settings": {
           "optimizer": {
             "enabled": false,
@@ -620,7 +620,8 @@
                 "evm.bytecode",
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
-                "metadata"
+                "metadata",
+                "storageLayout"
               ],
               "": [
                 "ast"
@@ -675,8 +676,8 @@
       ]
     },
     "/Users/alexisbalayre/Sleepn/Contracts/contracts/SleepToken.sol": {
-      "lastModificationDate": 1652426373035,
-      "contentHash": "c6f75ec178d167316bbad2a25470f65f",
+      "lastModificationDate": 1652477486367,
+      "contentHash": "5b44228402e8ae6d1cf2658e8de0edb5",
       "sourceName": "contracts/SleepToken.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -1139,8 +1140,8 @@
       ]
     },
     "/Users/alexisbalayre/Sleepn/Contracts/contracts/BedroomNft.sol": {
-      "lastModificationDate": 1652433748391,
-      "contentHash": "aae05a8188a7b61dc3c789ba8b375802",
+      "lastModificationDate": 1652456068591,
+      "contentHash": "1fb208c928e577b46a3149e0cbf8af81",
       "sourceName": "contracts/BedroomNft.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -1532,6 +1533,562 @@
       ],
       "artifacts": [
         "StringsUpgradeable"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/contracts/Reward.sol": {
+      "lastModificationDate": 1652477359968,
+      "contentHash": "c85401a957f7f1f869cc59b9b9f05d50",
+      "sourceName": "contracts/Reward.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol",
+        "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol",
+        "@superfluid-finance/ethereum-contracts/contracts/apps/CFAv1Library.sol",
+        "./SleepToken.sol"
+      ],
+      "versionPragmas": [
+        "0.8.13"
+      ],
+      "artifacts": [
+        "reward"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol": {
+      "lastModificationDate": 1652456440232,
+      "contentHash": "000d7ebe8a29ec2ad3211cd1cb65c37d",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./ISuperfluidGovernance.sol",
+        "./ISuperfluidToken.sol",
+        "./ISuperToken.sol",
+        "./ISuperTokenFactory.sol",
+        "./ISuperAgreement.sol",
+        "./ISuperApp.sol",
+        "./Definitions.sol",
+        "../tokens/TokenInfo.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/token/ERC777/IERC777.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "ISuperfluid"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol": {
+      "lastModificationDate": 1652456440068,
+      "contentHash": "659d614ce61f8ad958f93d60323d753a",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../superfluid/ISuperAgreement.sol",
+        "../superfluid/ISuperfluidToken.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "IConstantFlowAgreementV1"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/apps/CFAv1Library.sol": {
+      "lastModificationDate": 1652456439892,
+      "contentHash": "b68ebaea4eb0cfd91e3f60799ff41d60",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/apps/CFAv1Library.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../interfaces/superfluid/ISuperfluid.sol",
+        "../interfaces/agreements/IConstantFlowAgreementV1.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "CFAv1Library"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluidGovernance.sol": {
+      "lastModificationDate": 1652456440264,
+      "contentHash": "1b5a6cd4e7f9b5b33c42261db07c29ef",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluidGovernance.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./ISuperAgreement.sol",
+        "./ISuperToken.sol",
+        "./ISuperfluidToken.sol",
+        "./ISuperfluid.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "ISuperfluidGovernance"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluidToken.sol": {
+      "lastModificationDate": 1652456440275,
+      "contentHash": "6af8c46981c33eb2f13b7aac2bf34e7a",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluidToken.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./ISuperAgreement.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "ISuperfluidToken"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol": {
+      "lastModificationDate": 1652456440279,
+      "contentHash": "dbcf2ee0a785e2ec1f4725e8a69ea806",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./ISuperfluid.sol",
+        "./ISuperfluidToken.sol",
+        "../tokens/TokenInfo.sol",
+        "@openzeppelin/contracts/token/ERC777/IERC777.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "ISuperToken"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperTokenFactory.sol": {
+      "lastModificationDate": 1652456440281,
+      "contentHash": "78c9d7e553510ba136ebafc2dab49f84",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperTokenFactory.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./ISuperToken.sol",
+        "../tokens/ERC20WithTokenInfo.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "ISuperTokenFactory"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperAgreement.sol": {
+      "lastModificationDate": 1652456440227,
+      "contentHash": "2d64c005180c737dcb5206fb199ee410",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperAgreement.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./ISuperfluidToken.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "ISuperAgreement"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperApp.sol": {
+      "lastModificationDate": 1652456440229,
+      "contentHash": "14173bc1970975d856a048a5cda11e6f",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperApp.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./ISuperToken.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "ISuperApp"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/Definitions.sol": {
+      "lastModificationDate": 1652456439939,
+      "contentHash": "582984a4f61213bda4566cfb6029dae7",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/Definitions.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "BatchOperation",
+        "ContextDefinitions",
+        "FlowOperatorDefinitions",
+        "SuperAppDefinitions",
+        "SuperfluidGovernanceConfigs"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/TokenInfo.sol": {
+      "lastModificationDate": 1652456440800,
+      "contentHash": "fe802041bd6b048d85da932320da4798",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/TokenInfo.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "TokenInfo"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@openzeppelin/contracts/token/ERC777/IERC777.sol": {
+      "lastModificationDate": 1651915958639,
+      "contentHash": "840fa65314c73b948a5923169daa8cdc",
+      "sourceName": "@openzeppelin/contracts/token/ERC777/IERC777.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC777"
+      ]
+    },
+    "/Users/alexisbalayre/Sleepn/Contracts/node_modules/@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/ERC20WithTokenInfo.sol": {
+      "lastModificationDate": 1652456440027,
+      "contentHash": "f9a398f500009c0b16a69e0521170429",
+      "sourceName": "@superfluid-finance/ethereum-contracts/contracts/interfaces/tokens/ERC20WithTokenInfo.sol",
+      "solcConfig": {
+        "version": "0.8.13",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "./TokenInfo.sol"
+      ],
+      "versionPragmas": [
+        ">=0.8.0"
+      ],
+      "artifacts": [
+        "ERC20WithTokenInfo"
       ]
     }
   }
