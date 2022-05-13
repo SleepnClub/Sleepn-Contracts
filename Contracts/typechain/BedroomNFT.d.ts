@@ -23,13 +23,12 @@ interface BedroomNftInterface extends ethers.utils.Interface {
   functions: {
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
-    "exists(uint256)": FunctionFragment;
     "fileFormat()": FunctionFragment;
     "getName(uint256)": FunctionFragment;
     "getNftSpecifications(uint256,uint256)": FunctionFragment;
+    "initialize(uint64,address,address,bytes32)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mintingBedroomNft(uint256,uint256,uint256,address)": FunctionFragment;
-    "nftDexAddress()": FunctionFragment;
     "owner()": FunctionFragment;
     "rawFulfillRandomWords(uint256,uint256[])": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
@@ -38,17 +37,17 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setBaseURI(string)": FunctionFragment;
-    "setDex(address)": FunctionFragment;
     "setFileFormat(string)": FunctionFragment;
-    "setThresholds(uint256,uint256,uint256,uint256,uint256)": FunctionFragment;
+    "setSleepToken(address)": FunctionFragment;
+    "setThresholds(uint256,uint256,uint256,uint256)": FunctionFragment;
     "setTokenURI(uint256,string)": FunctionFragment;
+    "sleepTokenAddress()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "thresholds(uint256)": FunctionFragment;
     "tokenId()": FunctionFragment;
     "tokenIdToNftOwnership(uint256)": FunctionFragment;
-    "totalSupply(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "updateChainlink(uint16,uint32,uint64,bytes32)": FunctionFragment;
+    "updateChainlink(uint32,uint64,bytes32)": FunctionFragment;
     "upgradeBedroomNft(uint256,uint256,uint256,uint256)": FunctionFragment;
     "uri(uint256)": FunctionFragment;
   };
@@ -60,10 +59,6 @@ interface BedroomNftInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "balanceOfBatch",
     values: [string[], BigNumberish[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "exists",
-    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "fileFormat",
@@ -78,16 +73,16 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "initialize",
+    values: [BigNumberish, string, string, BytesLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "mintingBedroomNft",
     values: [BigNumberish, BigNumberish, BigNumberish, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "nftDexAddress",
-    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -115,24 +110,25 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     values: [string, boolean]
   ): string;
   encodeFunctionData(functionFragment: "setBaseURI", values: [string]): string;
-  encodeFunctionData(functionFragment: "setDex", values: [string]): string;
   encodeFunctionData(
     functionFragment: "setFileFormat",
     values: [string]
   ): string;
   encodeFunctionData(
+    functionFragment: "setSleepToken",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setThresholds",
-    values: [
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish
-    ]
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setTokenURI",
     values: [BigNumberish, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "sleepTokenAddress",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
@@ -148,16 +144,12 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "totalSupply",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "updateChainlink",
-    values: [BigNumberish, BigNumberish, BigNumberish, BytesLike]
+    values: [BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "upgradeBedroomNft",
@@ -170,23 +162,19 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     functionFragment: "balanceOfBatch",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "fileFormat", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getName", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getNftSpecifications",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "mintingBedroomNft",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "nftDexAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -215,9 +203,12 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setBaseURI", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "setDex", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setFileFormat",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setSleepToken",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -229,6 +220,10 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "sleepTokenAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
@@ -236,10 +231,6 @@ interface BedroomNftInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "tokenId", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "tokenIdToNftOwnership",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "totalSupply",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -260,6 +251,7 @@ interface BedroomNftInterface extends ethers.utils.Interface {
     "ApprovalForAll(address,address,bool)": EventFragment;
     "BedroomNftMinting(uint256,string,tuple)": EventFragment;
     "BedroomNftUpgrading(uint256,string,tuple)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "ReturnedRandomness(uint256[])": EventFragment;
     "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
@@ -270,6 +262,7 @@ interface BedroomNftInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BedroomNftMinting"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BedroomNftUpgrading"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ReturnedRandomness"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferBatch"): EventFragment;
@@ -445,6 +438,8 @@ export type BedroomNftUpgradingEvent = TypedEvent<
   }
 >;
 
+export type InitializedEvent = TypedEvent<[number] & { version: number }>;
+
 export type OwnershipTransferredEvent = TypedEvent<
   [string, string] & { previousOwner: string; newOwner: string }
 >;
@@ -533,8 +528,6 @@ export class BedroomNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber[]]>;
 
-    exists(id: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
-
     fileFormat(overrides?: CallOverrides): Promise<[string]>;
 
     getName(
@@ -547,6 +540,14 @@ export class BedroomNft extends BaseContract {
       _indexAttribute: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    initialize(
+      _subscriptionId: BigNumberish,
+      _vrfCoordinator: string,
+      _link_token_contract: string,
+      _keyHash: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     isApprovedForAll(
       account: string,
@@ -561,8 +562,6 @@ export class BedroomNft extends BaseContract {
       _owner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    nftDexAddress(overrides?: CallOverrides): Promise<[string]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -610,19 +609,18 @@ export class BedroomNft extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setDex(
-      _nftDexAddress: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     setFileFormat(
       _format: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setSleepToken(
+      _sleepTokenAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setThresholds(
       _indexAttribute: BigNumberish,
-      _initialScoreMax: BigNumberish,
       _upgradeIncreases: BigNumberish,
       _requiredLevel: BigNumberish,
       _multiplier: BigNumberish,
@@ -635,6 +633,8 @@ export class BedroomNft extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    sleepTokenAddress(overrides?: CallOverrides): Promise<[string]>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -644,8 +644,7 @@ export class BedroomNft extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        initialScoreMax: BigNumber;
+      [BigNumber, BigNumber, BigNumber] & {
         upgradeIncreases: BigNumber;
         requiredLevel: BigNumber;
         multiplier: BigNumber;
@@ -667,18 +666,12 @@ export class BedroomNft extends BaseContract {
       }
     >;
 
-    totalSupply(
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     updateChainlink(
-      _requestConfirmations: BigNumberish,
       _callbackGasLimit: BigNumberish,
       _subscriptionId: BigNumberish,
       _keyHash: BytesLike,
@@ -708,8 +701,6 @@ export class BedroomNft extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber[]>;
 
-  exists(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
-
   fileFormat(overrides?: CallOverrides): Promise<string>;
 
   getName(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
@@ -719,6 +710,14 @@ export class BedroomNft extends BaseContract {
     _indexAttribute: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  initialize(
+    _subscriptionId: BigNumberish,
+    _vrfCoordinator: string,
+    _link_token_contract: string,
+    _keyHash: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   isApprovedForAll(
     account: string,
@@ -733,8 +732,6 @@ export class BedroomNft extends BaseContract {
     _owner: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  nftDexAddress(overrides?: CallOverrides): Promise<string>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -782,19 +779,18 @@ export class BedroomNft extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setDex(
-    _nftDexAddress: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   setFileFormat(
     _format: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setSleepToken(
+    _sleepTokenAddress: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setThresholds(
     _indexAttribute: BigNumberish,
-    _initialScoreMax: BigNumberish,
     _upgradeIncreases: BigNumberish,
     _requiredLevel: BigNumberish,
     _multiplier: BigNumberish,
@@ -807,6 +803,8 @@ export class BedroomNft extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  sleepTokenAddress(overrides?: CallOverrides): Promise<string>;
+
   supportsInterface(
     interfaceId: BytesLike,
     overrides?: CallOverrides
@@ -816,8 +814,7 @@ export class BedroomNft extends BaseContract {
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber] & {
-      initialScoreMax: BigNumber;
+    [BigNumber, BigNumber, BigNumber] & {
       upgradeIncreases: BigNumber;
       requiredLevel: BigNumber;
       multiplier: BigNumber;
@@ -839,15 +836,12 @@ export class BedroomNft extends BaseContract {
     }
   >;
 
-  totalSupply(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
   transferOwnership(
     newOwner: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   updateChainlink(
-    _requestConfirmations: BigNumberish,
     _callbackGasLimit: BigNumberish,
     _subscriptionId: BigNumberish,
     _keyHash: BytesLike,
@@ -877,8 +871,6 @@ export class BedroomNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
 
-    exists(id: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
-
     fileFormat(overrides?: CallOverrides): Promise<string>;
 
     getName(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
@@ -888,6 +880,14 @@ export class BedroomNft extends BaseContract {
       _indexAttribute: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    initialize(
+      _subscriptionId: BigNumberish,
+      _vrfCoordinator: string,
+      _link_token_contract: string,
+      _keyHash: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     isApprovedForAll(
       account: string,
@@ -902,8 +902,6 @@ export class BedroomNft extends BaseContract {
       _owner: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    nftDexAddress(overrides?: CallOverrides): Promise<string>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -946,13 +944,15 @@ export class BedroomNft extends BaseContract {
 
     setBaseURI(_baseURI: string, overrides?: CallOverrides): Promise<void>;
 
-    setDex(_nftDexAddress: string, overrides?: CallOverrides): Promise<void>;
-
     setFileFormat(_format: string, overrides?: CallOverrides): Promise<void>;
+
+    setSleepToken(
+      _sleepTokenAddress: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     setThresholds(
       _indexAttribute: BigNumberish,
-      _initialScoreMax: BigNumberish,
       _upgradeIncreases: BigNumberish,
       _requiredLevel: BigNumberish,
       _multiplier: BigNumberish,
@@ -965,6 +965,8 @@ export class BedroomNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    sleepTokenAddress(overrides?: CallOverrides): Promise<string>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -974,8 +976,7 @@ export class BedroomNft extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber] & {
-        initialScoreMax: BigNumber;
+      [BigNumber, BigNumber, BigNumber] & {
         upgradeIncreases: BigNumber;
         requiredLevel: BigNumber;
         multiplier: BigNumber;
@@ -997,18 +998,12 @@ export class BedroomNft extends BaseContract {
       }
     >;
 
-    totalSupply(
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     transferOwnership(
       newOwner: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
     updateChainlink(
-      _requestConfirmations: BigNumberish,
       _callbackGasLimit: BigNumberish,
       _subscriptionId: BigNumberish,
       _keyHash: BytesLike,
@@ -1385,6 +1380,14 @@ export class BedroomNft extends BaseContract {
       }
     >;
 
+    "Initialized(uint8)"(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
+
+    Initialized(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
+
     "OwnershipTransferred(address,address)"(
       previousOwner?: string | null,
       newOwner?: string | null
@@ -1501,8 +1504,6 @@ export class BedroomNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    exists(id: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
     fileFormat(overrides?: CallOverrides): Promise<BigNumber>;
 
     getName(
@@ -1514,6 +1515,14 @@ export class BedroomNft extends BaseContract {
       _tokenId: BigNumberish,
       _indexAttribute: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    initialize(
+      _subscriptionId: BigNumberish,
+      _vrfCoordinator: string,
+      _link_token_contract: string,
+      _keyHash: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     isApprovedForAll(
@@ -1529,8 +1538,6 @@ export class BedroomNft extends BaseContract {
       _owner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
-
-    nftDexAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1578,19 +1585,18 @@ export class BedroomNft extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setDex(
-      _nftDexAddress: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     setFileFormat(
       _format: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setSleepToken(
+      _sleepTokenAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setThresholds(
       _indexAttribute: BigNumberish,
-      _initialScoreMax: BigNumberish,
       _upgradeIncreases: BigNumberish,
       _requiredLevel: BigNumberish,
       _multiplier: BigNumberish,
@@ -1602,6 +1608,8 @@ export class BedroomNft extends BaseContract {
       _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    sleepTokenAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
     supportsInterface(
       interfaceId: BytesLike,
@@ -1620,18 +1628,12 @@ export class BedroomNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    totalSupply(
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     updateChainlink(
-      _requestConfirmations: BigNumberish,
       _callbackGasLimit: BigNumberish,
       _subscriptionId: BigNumberish,
       _keyHash: BytesLike,
@@ -1662,11 +1664,6 @@ export class BedroomNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    exists(
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     fileFormat(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getName(
@@ -1678,6 +1675,14 @@ export class BedroomNft extends BaseContract {
       _tokenId: BigNumberish,
       _indexAttribute: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    initialize(
+      _subscriptionId: BigNumberish,
+      _vrfCoordinator: string,
+      _link_token_contract: string,
+      _keyHash: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     isApprovedForAll(
@@ -1693,8 +1698,6 @@ export class BedroomNft extends BaseContract {
       _owner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
-
-    nftDexAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1742,19 +1745,18 @@ export class BedroomNft extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setDex(
-      _nftDexAddress: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     setFileFormat(
       _format: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setSleepToken(
+      _sleepTokenAddress: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     setThresholds(
       _indexAttribute: BigNumberish,
-      _initialScoreMax: BigNumberish,
       _upgradeIncreases: BigNumberish,
       _requiredLevel: BigNumberish,
       _multiplier: BigNumberish,
@@ -1766,6 +1768,8 @@ export class BedroomNft extends BaseContract {
       _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    sleepTokenAddress(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     supportsInterface(
       interfaceId: BytesLike,
@@ -1784,18 +1788,12 @@ export class BedroomNft extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    totalSupply(
-      id: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     updateChainlink(
-      _requestConfirmations: BigNumberish,
       _callbackGasLimit: BigNumberish,
       _subscriptionId: BigNumberish,
       _keyHash: BytesLike,
