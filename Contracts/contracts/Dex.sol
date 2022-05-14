@@ -9,21 +9,15 @@ import "./SleepToken.sol";
 
 contract Dex is Initializable, OwnableUpgradeable {
     enum Category { Studio, Deluxe, Luxury }
-    
-    uint256 public studioPrice;
-    uint256 public deluxePrice;
-    uint256 public luxuryPrice;
+
+    mapping(Category => uint256) public prices;
 
     event ReceivedMoney(address indexed _from, uint _amount);
 
-    function setPrices(
-        uint256 _studioPrice, 
-        uint256 _deluxePrice, 
-        uint256 _luxuryPrice
+    function setPrice(
+        Category _categorie
     ) public onlyOwner {
-        studioPrice = _studioPrice;
-        deluxePrice = _deluxePrice;
-        luxuryPrice = _luxuryPrice;
+        prices[categorie] = _amount;
     }
 
     function withdrawMoney(address payable _to, uint256 _amount) public onlyOwner {
@@ -31,8 +25,8 @@ contract Dex is Initializable, OwnableUpgradeable {
         _to.transfer(_amount);
     }
 
-    function buyNft(Category _categorie) external {
-
+    function buyNft(Category _categorie) public payable {
+        require("")
     }
 
     receive() external payable {
