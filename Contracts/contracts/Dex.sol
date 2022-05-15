@@ -8,6 +8,9 @@ import "./SleepToken.sol";
 
 
 contract Dex is Initializable, OwnableUpgradeable {
+    // Team Wallet 
+    address public teamWallet;
+
     // NFT Categories
     enum Category { Studio, Deluxe, Luxury }
 
