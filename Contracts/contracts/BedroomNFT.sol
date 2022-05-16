@@ -87,13 +87,16 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
         uint256 pillowComfortabilityScore; // Index 15
     }
 
+    // NFT Categories
+    enum Category { Studio, Deluxe, Luxury }
+
     // NFT Ownership
     struct NftOwnership {
         address owner;
         uint256 price;
         uint256 designId;
         uint256 level; 
-        uint256 categorie;
+        Category categorie;
     }
 
     // Score thresholds 
@@ -302,7 +305,7 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
     }
 
     // This function is creating a new random bedroom NFT by generating a random number
-    function mintingBedroomNft(uint256 _designId, uint256 _price, uint256 _categorie, address _owner) external {
+    function mintingBedroomNft(uint256 _designId, uint256 _price, Category _categorie, address _owner) external {
         require(sleepTokenAddress != address(0), "Dex address is not configured");
         require(msg.sender == sleepTokenAddress, "Access forbidden");
 
