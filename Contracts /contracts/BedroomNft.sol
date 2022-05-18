@@ -132,7 +132,7 @@ contract BedroomNft is Initializable, VRFConsumerBaseV2Upgradable, ERC1155Upgrad
     event ReturnedRandomness(uint256[] randomWords);
 
     function initialize(
-        uint64 _subscriptionId, // 162
+        uint64 _subscriptionId, 
         address _vrfCoordinator, 
         address _link_token_contract,
         bytes32 _keyHash
