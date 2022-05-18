@@ -51,6 +51,13 @@ contract Dex is Initializable, OwnableUpgradeable {
     );
     event WithdrawMoney(address indexed receiver, uint256 amount);
 
+    // Init 
+    function initialize(
+        address _teamWallet
+    ) initializer public {
+        teamWallet = _teamWallet;
+    }
+
     // Set Team Wallet 
     function setTeamWallet(address _newAddress) public onlyOwner {
         teamWallet = _newAddress;
