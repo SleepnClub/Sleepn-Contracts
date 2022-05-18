@@ -7,7 +7,7 @@ async function main() {
   const sleepToken = await upgrades.deployProxy(SleepToken, [totalSupply], { initializer: "initialize"});
 
   await sleepToken.deployed();
-  console.log(sleepToken.address," sleepToken(proxy) address");
+  console.log('SleepToken contract Proxy deployed to:', sleepToken.address);
   console.log(await upgrades.erc1967.getImplementationAddress(sleepToken.address)," getImplementationAddress");
   console.log(await upgrades.erc1967.getAdminAddress(sleepToken.address)," getAdminAddress");
 
