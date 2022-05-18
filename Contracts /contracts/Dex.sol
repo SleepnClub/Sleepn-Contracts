@@ -53,9 +53,9 @@ contract Dex is Initializable, OwnableUpgradeable {
 
     // Init 
     function initialize(
-        address _owner
+        address _teamWallet
     ) initializer public {
-        walletTeam = _walletTeam;
+        teamWallet = _teamWallet;
     }
 
     // Set Team Wallet 
