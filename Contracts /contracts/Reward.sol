@@ -5,12 +5,30 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { ISuperfluid, ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import { ISuperfluid } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol";
 import { IConstantFlowAgreementV1 } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 import { CFAv1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/CFAv1Library.sol";
 
-import "./SleepToken.sol";
 
+
+// NFT Categories
+enum Category { Studio, Deluxe, Luxury }
+
+// NFT Ownership
+struct NftOwnership {
+    address owner;
+    uint256 price;
+    uint256 designId;
+    uint256 level; 
+    Category category;
+}
+
+interface BedroomNftInterface {
+    function tokenIdToNftOwnership(
+        uint256 _tokenId
+    ) external returns (NftOwnership memory _struct);
+}
 
 contract Reward is Initializable, OwnableUpgradeable {
     ISuperToken public superToken; // super token address
@@ -21,15 +39,26 @@ contract Reward is Initializable, OwnableUpgradeable {
     using CFAv1Library for CFAv1Library.InitData;
     CFAv1Library.InitData public cfaV1; //initialize cfaV1 variable
 
+    // Bedroom NFT Contract
+    BedroomNftInterface public bedroomNft;
+
+    // Index Reward to flow rate
+    mapping(uint256 => int96) public rewards;
+
+    // NFT Category to multiplier
+    mapping(Category => uint256) public multipliers;
+
     // Init 
     function initialize(
         ISuperToken _superToken, 
         ISuperfluid _host, 
-        IConstantFlowAgreementV1 _cfa
+        IConstantFlowAgreementV1 _cfa,
+        BedroomNftInterface _bedroomNft
     ) initializer public {
         superToken = _superToken;
         host = _host;
         cfa = _cfa;
+        bedroomNft = _bedroomNft;
         
         assert(address(superToken) != address(0));
         assert(address(host) != address(0));
@@ -43,6 +72,40 @@ contract Reward is Initializable, OwnableUpgradeable {
                 ))
             )
         );
+
+        // Init Base rewards : (Number of tokens / 60) * 10^18
+        rewards[0] = 166666666666666; // 10 SLP per minute of light sleep
+        rewards[1] = 333333333333333; // 20 SLP per minute of REM sleep
+        rewards[2] = 499999999999999;  // 30 SLP per minute of Deep sleep
+
+        // Set NFT categories multiplier 
+        multipliers[Category.Studio] = 10;
+        multipliers[Category.Deluxe] = 15;
+        multipliers[Category.Luxury] = 20;
+    }
+
+    // Set rewards flowrate : (Number of tokens / 60) * 10^18
+    function setRewards(uint256 _indexReward, int96 _flowRate) public onlyOwner {
+        rewards[_indexReward] = _flowRate;
+    }
+
+    // Set NFT Categories multipliers 
+    function setMultipliers(Category _category, uint256 _multiplier) public onlyOwner {
+        multipliers[_category] = _multiplier;
+    }
+
+    // Create a stream 
+    function createStream(
+        address _receiver, 
+        uint256 _tokenId,
+        uint256 _rewardIndex
+    ) public onlyOwner {
+        // Get NFT informations
+        NftOwnership memory nftOwnership = bedroomNft.tokenIdToNftOwnership(_tokenId);
+
+        // Verifies that the recipient is the owner of the NFT
+        Category categoryNft = bedroomNft.tokenIdToNftOwnership(_tokenId).category;
+        require(nftOwnership.owner == _receiver, "Wrong receiver");
     }
 
     // Increase the flow or create it

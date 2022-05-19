@@ -10,8 +10,6 @@ async function main() {
   const dex = await upgrades.deployProxy(Dex, [teamWallet], { initializer: "initialize"});
   await dex.deployed();
   console.log('Dex contract Proxy deployed to:', dex.address);
-  console.log(await upgrades.erc1967.getImplementationAddress(dex.address)," getImplementationAddress");
-  console.log(await upgrades.erc1967.getAdminAddress(dex.address)," getAdminAddress");
 }
 
 main().catch((error) => {
