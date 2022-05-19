@@ -23,7 +23,6 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
 
     // UniswapV3Factory Address 
     IUniswapV3Factory public factory;
-
     
     // Init 
     function initialize(
@@ -85,7 +84,7 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
     function createNewPool(
         address _tokenB,
         uint24 _fee,
-        uint160 sqrtPriceX96
+        uint160 _sqrtPriceX96
     ) external onlyOwner {
         address newPool = factory.createPool(
             address(this),
@@ -95,7 +94,7 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
         // Set new pool address
         pool = IUniswapV3Pool(newPool);
         // Init price of the pool
-        pool.newinitialize(
+        pool.initialize(
             _sqrtPriceX96
         );
     }
@@ -124,8 +123,8 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
         pool.burn(
             _tickLower,
             _tickUpper,
-            _amount,
-        )
+            _amount
+        );
     }
 
     // Collect fees
