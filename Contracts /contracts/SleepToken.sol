@@ -15,7 +15,7 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
         __Pausable_init();
         __Ownable_init();
 
-        _mint(address(this), _totalSupply * 10 ** decimals());
+        _mint(msg.sender, _totalSupply * 10 ** decimals());
     }
 
     // Stop the contract

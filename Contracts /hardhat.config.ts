@@ -10,6 +10,8 @@ import '@openzeppelin/hardhat-upgrades';
 
 dotenv.config();
 
+const {} = process.env
+
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
@@ -25,19 +27,26 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 const config: HardhatUserConfig = {
   solidity: "0.8.13",
+  defaultNetwork: "matic",
   networks: {
+    hardhat: {
+    },
     ropsten: {
       url: process.env.ROPSTEN_URL || "",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    matic: {
+      url: "https://rpc-mumbai.maticvigil.com/v1/780b3e83d8907f14bb6d386ee18f107e6851e0ba",
+      accounts: [process.env.SIGNER_MUMBAI || ""]
+    }
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: process.env.POLYGONSCAN_API_KEY,
   },
 };
 

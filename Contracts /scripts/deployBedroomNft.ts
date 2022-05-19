@@ -22,8 +22,6 @@ async function main() {
   );
   await bedroomNft.deployed();
   console.log('BedroomNft contract Proxy deployed to:', bedroomNft.address);
-  console.log(await upgrades.erc1967.getImplementationAddress(bedroomNft.address)," getImplementationAddress");
-  console.log(await upgrades.erc1967.getAdminAddress(bedroomNft.address)," getAdminAddress");
 }
 
 main().catch((error) => {
