@@ -128,7 +128,10 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
     }
 
     // Collect fees
-    function collectFee(int24 _tickLower, int24 _tickUpper) external onlyOwner {
+    function collectFee(
+        int24 _tickLower, 
+        int24 _tickUpper
+    ) external onlyOwner {
         pool.collect(
             teamWallet,
             _tickLower,
