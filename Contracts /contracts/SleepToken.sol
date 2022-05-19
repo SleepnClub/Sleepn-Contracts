@@ -81,6 +81,53 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
         super._beforeTokenTransfer(from, to, amount);
     }
 
+    // Create a new Pool and set the initial price for the pool
+    function createNewPool(
+        address _tokenB,
+        uint24 _fee,
+        uint160 sqrtPriceX96
+    ) external onlyOwner {
+        address newPool = factory.createPool(
+            address(this),
+            _tokenB,
+            _fee
+        );
+        // Set new pool address
+        pool = IUniswapV3Pool(newPool);
+        // Init price of the pool
+        pool.newinitialize(
+            _sqrtPriceX96
+        );
+    }
+
+    // Add liquidity to the Pool
+    function addLiquidity(
+        int24 _tickLower, 
+        int24 _tickUpper, 
+        uint128 _amount
+    ) external onlyOwner {
+        pool.mint(
+            address(this),
+            _tickLower,
+            _tickUpper,
+            _amount,
+            ""
+        );
+    }
+
+    // Burn liquidity from the sender and account tokens owed 
+    function burnLiquidity(
+        int24 _tickLower, 
+        int24 _tickUpper, 
+        uint128 _amount
+    ) external onlyOwner {
+        pool.burn(
+            _tickLower,
+            _tickUpper,
+            _amount,
+        )
+    }
+
     // Collect fees
     function collectFee(int24 _tickLower, int24 _tickUpper) external onlyOwner {
         pool.collect(
@@ -90,18 +137,5 @@ contract SleepToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
             type(uint128).max,
             type(uint128).max
         ); 
-    }
-
-    // Create a new Pool
-    function createNewPool(
-        address _tokenB,
-        uint24 _fee
-    ) external onlyOwner {
-        address newPool = factory.createPool(
-            address(this),
-            _tokenB,
-            _fee
-        );
-        pool = IUniswapV3Pool(newPool);
     }
 }
