@@ -37,10 +37,10 @@ contract Reward is Initializable, OwnableUpgradeable {
     IConstantFlowAgreementV1 private cfa; // the stored constant flow agreement class address
 
     using CFAv1Library for CFAv1Library.InitData;
-    CFAv1Library.InitData public cfaV1; //initialize cfaV1 variable
+    CFAv1Library.InitData private cfaV1; //initialize cfaV1 variable
 
     // Bedroom NFT Contract
-    BedroomNftInterface public bedroomNft;
+    BedroomNftInterface private bedroomNft;
 
     // Index Reward to flow rate
     mapping(uint256 => int96) public rewards;
