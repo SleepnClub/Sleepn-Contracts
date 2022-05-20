@@ -44,6 +44,14 @@ interface IBedroomNft is IERC1155Upgradeable {
         uint256 pillowComfortabilityScore; // Index 16
     }
 
+    /// @notice Inits contracts addresses
+    /// @param _dexAddress Address of the Dex contract
+    /// @param _upgradeNftAddress Address of the Upgrade NFT contract
+    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called 1 time
+    function initContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
+        external;
+
     /// @notice Returns the administration informations of a Bedroom NFT
     /// @param _tokenId The id of the NFT
     /// @return _struct NftOwnership struct of the Nft

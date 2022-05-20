@@ -105,6 +105,7 @@ contract BedroomNft is
     );
     event ReturnedRandomness(uint256[] randomWords);
 
+    /// @dev Init function
     function initialize(
         uint64 _subscriptionId,
         address _vrfCoordinator,
@@ -125,7 +126,7 @@ contract BedroomNft is
         tokenId = 0;
     }
 
-    // set Dex Contract address
+    /// @dev Init function
     function initContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
         external
         onlyOwner
