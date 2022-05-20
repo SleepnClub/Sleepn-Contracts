@@ -92,7 +92,8 @@ contract UpgradeNft is
     // Upgrade Specifications
     struct UpgradeSpecifications {
         uint256 attributeIndex;
-        uint256 attributeValue;
+        uint256 valueToAdd;
+        uint256 valueToAddMax;
         address owner;
         uint256 price;
         uint256 newDesignId;
@@ -104,9 +105,6 @@ contract UpgradeNft is
 
     // Number of NFT
     uint256 public tokenId;
-
-    // Upgrade Value Max
-    uint256 public upgradeValueMax;
 
     // Mappings
     mapping(uint256 => uint256) public requestIdToTokenId;
@@ -139,7 +137,6 @@ contract UpgradeNft is
         requestConfirmations = 3;
         numWords = 1;
         tokenId = 0;
-        upgradeValueMax = 30;
     }
 
     // set Dex address
@@ -150,11 +147,6 @@ contract UpgradeNft is
     // set BedroomNft address
     function setBedroomNft(IBedroomNft _bedroomNftAddress) external onlyOwner {
         bedroomNftInstance = _bedroomNftAddress;
-    }
-
-    // Set Upgrade Value Max
-    function setUpgradeValueMax(uint256 _newValue) external onlyOwner {
-        upgradeValueMax = _newValue;
     }
 
     // update chainlink
@@ -179,6 +171,7 @@ contract UpgradeNft is
         uint256 _upgradeDesignId,
         uint256 _price,
         uint256 _indexAttribute,
+        uint256 _valueToAddMax,
         address _owner
     ) external {
         require(dexAddress != address(0), "dex address is not configured");
@@ -197,6 +190,7 @@ contract UpgradeNft is
         tokenIdToUpgradeSpecifications[tokenId] = UpgradeSpecifications(
             _indexAttribute,
             0,
+            _valueToAddMax,
             _owner,
             _price,
             _newDesignId,
@@ -225,8 +219,9 @@ contract UpgradeNft is
         internal
     {
         // Create new random upgrade
-        tokenIdToUpgradeSpecifications[_tokenId].attributeValue =
-            (_randomWords[0] % upgradeValueMax) +
+        tokenIdToUpgradeSpecifications[_tokenId].valueToAdd =
+            (_randomWords[0] %
+                tokenIdToUpgradeSpecifications[_tokenId].valueToAddMax) +
             1;
 
         // Minting of the new Bedroom NFT
@@ -251,7 +246,7 @@ contract UpgradeNft is
         bedroomNftInstance.upgradeBedroomNft(
             _tokenId,
             tokenIdToUpgradeSpecifications[_tokenId].attributeIndex,
-            tokenIdToUpgradeSpecifications[_tokenId].attributeValue,
+            tokenIdToUpgradeSpecifications[_tokenId].valueToAdd,
             tokenIdToUpgradeSpecifications[_tokenId].newDesignId,
             tokenIdToUpgradeSpecifications[_tokenId].price
         );
