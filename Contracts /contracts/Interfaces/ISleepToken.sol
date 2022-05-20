@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 
-/// @title Interface of the SleepToken Contract
+/// @title Interface of the Sleep Token Contract
 /// @author Alexis Balayre
 /// @notice Contains the external functions of the SleepToken Contract
 interface ISleepToken is IERC20Upgradeable {
