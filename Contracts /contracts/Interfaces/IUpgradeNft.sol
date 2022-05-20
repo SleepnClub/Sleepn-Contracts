@@ -23,6 +23,7 @@ interface IUpgradeNft is IERC1155Upgradeable {
         uint256 _upgradeDesignId,
         uint256 _price,
         uint256 _indexAttribute,
+        uint256 _valueToAddMax,
         address _owner
     ) external;
 

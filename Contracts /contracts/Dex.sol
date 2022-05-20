@@ -8,7 +8,6 @@ import "./Interfaces/ISleepToken.sol";
 import "./Interfaces/IBedroomNft.sol";
 import "./Interfaces/IUpgradeNft.sol";
 
-
 contract Dex is Initializable, OwnableUpgradeable {
     // Team Wallet
     address internal teamWallet;
@@ -22,18 +21,29 @@ contract Dex is Initializable, OwnableUpgradeable {
     // UpgradeNFT Contract
     IUpgradeNft public upgradeNftInstance;
 
-    // Prices
-    struct NftPrices {
-        uint256 purchaseCost; // Initial Cost
-        mapping(uint256 => uint256) upgradesPrices; // Upgrades Cost
+    /// @notice Informations about an upgrade
+    struct upgradeInfos {
+        uint256 indexAttribute;
+        uint256 valueToAddMax;
+        uint256 price;
     }
 
-    // Prices
+    /// @notice Purchase cost and Upgrade costs
+    struct NftPrices {
+        uint256 purchaseCost; // Initial Cost
+        mapping(uint256 => upgradeInfos) upgradeCosts; // Upgrade Costs
+    }
+
+    /// @notice Purchase cost and Upgrade costs depending on the category of the NFT
     mapping(IBedroomNft.Category => NftPrices) public prices;
 
     // Events
-    event ReceivedMoney(address indexed sender, uint256 amount);
-    event BuyNft(address indexed owner, IBedroomNft.Category category, uint256 designId);
+    event ReceivedMoney(address indexed sender, uint256 price);
+    event BuyNft(
+        address indexed owner,
+        IBedroomNft.Category category,
+        uint256 designId
+    );
     event UpgradeNft(
         address indexed owner,
         IBedroomNft.Category category,
@@ -41,9 +51,9 @@ contract Dex is Initializable, OwnableUpgradeable {
         uint256 newDesignId,
         uint256 upgradeDesignId,
         uint256 upgradeIndex,
-        uint256 amount
+        uint256 price
     );
-    event WithdrawMoney(address indexed receiver, uint256 amount);
+    event WithdrawMoney(address indexed receiver, uint256 price);
 
     // Init
     function initialize(
@@ -68,30 +78,36 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     // Set NFT prices - Buying prices
-    function setBuyingPrices(IBedroomNft.Category _category, uint256 _amount)
+    function setBuyingPrices(IBedroomNft.Category _category, uint256 _price)
         public
         onlyOwner
     {
-        prices[_category].purchaseCost = _amount;
+        prices[_category].purchaseCost = _price;
     }
 
     // Set NFT prices - Upgrading prices
     function setUpgradePrices(
         IBedroomNft.Category _category,
         uint256 _upgradeIndex,
-        uint256 _amount
+        uint256 _indexAttribute,
+        uint256 _valueToAddMax,
+        uint256 _price
     ) public onlyOwner {
-        prices[_category].upgradesPrices[_upgradeIndex] = _amount;
+        prices[_category].upgradeCosts[_upgradeIndex] = upgradeInfos(
+            _upgradeIndex,
+            _valueToAddMax,
+            _price
+        );
     }
 
     // Withdraw Money
     function withdrawMoney() internal {
         address payable teamWalletAddress = payable(teamWallet);
-        uint256 amount = address(this).balance;
+        uint256 price = address(this).balance;
 
-        teamWalletAddress.transfer(amount);
+        teamWalletAddress.transfer(price);
 
-        emit WithdrawMoney(teamWalletAddress, amount);
+        emit WithdrawMoney(teamWalletAddress, price);
     }
 
     // getBalance
@@ -100,7 +116,10 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     // Buy NFT
-    function buyNft(IBedroomNft.Category _categorie, uint256 _designId) public payable {
+    function buyNft(IBedroomNft.Category _categorie, uint256 _designId)
+        public
+        payable
+    {
         require(
             msg.value >= prices[_categorie].purchaseCost,
             "Not enough money was sent"
@@ -119,38 +138,43 @@ contract Dex is Initializable, OwnableUpgradeable {
         uint256 _newDesignId,
         uint256 _upgradeDesignId,
         uint256 _upgradeIndex,
-        uint256 _amount
+        uint256 _price
     ) public {
         // Get NFT informations
         IBedroomNft.NftOwnership memory nftOwnership = bedroomNftInstance
             .tokenIdToNftOwnership(_tokenId);
         IBedroomNft.Category category = nftOwnership.category;
 
+        // Get Upgrade infos
+        uint256 price = prices[category].upgradeCosts[_upgradeIndex].price;
+        uint256 value = prices[category].upgradeCosts[_upgradeIndex].valueToAddMax;
+        uint256 index = prices[category].upgradeCosts[_upgradeIndex].indexAttribute;
+
         // Sender is owner
         require(msg.sender == nftOwnership.owner, "Wrong sender");
 
         // Good amount of tokens
         require(
-            _amount == prices[category].upgradesPrices[_upgradeIndex],
+            _price == price,
             "Wrong tx"
         );
 
         // Check Balance of sender
         uint256 initialBalance = sleepTokenInstance.balanceOf(msg.sender);
-        require(initialBalance >= _amount, "Not enough funds");
+        require(initialBalance >= _price, "Not enough funds");
 
         // Tx to approve before
         require(
-            sleepTokenInstance.allowance(msg.sender, address(this)) >= _amount,
+            sleepTokenInstance.allowance(msg.sender, address(this)) >= _price,
             "Check allowance"
         );
 
         // Burns tokens
-        sleepTokenInstance.burnFrom(msg.sender, _amount);
+        sleepTokenInstance.burnFrom(msg.sender, _price);
 
         // Checks that the tokens were burned
         require(
-            sleepTokenInstance.balanceOf(msg.sender) + _amount ==
+            sleepTokenInstance.balanceOf(msg.sender) + _price ==
                 initialBalance,
             "An error occurred"
         );
@@ -159,8 +183,9 @@ contract Dex is Initializable, OwnableUpgradeable {
         upgradeNftInstance.mintingUpgradeNft(
             _newDesignId,
             _upgradeDesignId,
-            _amount,
-            _upgradeIndex,
+            _price,
+            index,
+            value,
             msg.sender
         );
         emit UpgradeNft(
@@ -170,7 +195,7 @@ contract Dex is Initializable, OwnableUpgradeable {
             _newDesignId,
             _upgradeDesignId,
             _upgradeIndex,
-            _amount
+            _price
         );
     }
 

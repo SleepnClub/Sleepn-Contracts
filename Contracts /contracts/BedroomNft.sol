@@ -86,7 +86,7 @@ contract BedroomNft is
     uint64 private subscriptionId;
     bytes32 private keyHash;
 
-    // NFT Specifications
+    /// @notice Scores of a Bedroom NFT
     struct NftSpecifications {
         uint256 lightIsolationScore; // Index 0
         uint256 bedroomThermalIsolationScore; // Index 1
@@ -107,13 +107,14 @@ contract BedroomNft is
         uint256 pillowComfortabilityScore; // Index 16
     }
 
+    /// @notice Enumeration of the different categories of a Bedroom NFT
     enum Category {
         Studio,
         Deluxe,
         Luxury
     }
 
-    // NFT Ownership
+    /// @notice Administration informations of a Bedroom NFT
     struct NftOwnership {
         address owner;
         uint256 price;
@@ -132,7 +133,6 @@ contract BedroomNft is
     mapping(uint256 => uint256) private requestIdToTokenId;
     mapping(uint256 => NftSpecifications) private tokenIdToNftSpecifications;
     mapping(uint256 => NftOwnership) private tokenIdToNftOwnership;
-    mapping(Category => uint256) private categoryToMultiplier;
 
     // Events
     event BedroomNftMinting(
@@ -168,12 +168,15 @@ contract BedroomNft is
     }
 
     // set Dex Contract address
-    function initContracts(
-        address _dexAddress,
-        IUpgradeNft _upgradeNftAddress
-    ) external onlyOwner {
+    function initContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
+        external
+        onlyOwner
+    {
         require(dexAddress == address(0), "Address already initialized");
-        require(address(upgradeNftInstance) == address(0), "Contract already initialized");
+        require(
+            address(upgradeNftInstance) == address(0),
+            "Contract already initialized"
+        );
         dexAddress = _dexAddress;
         upgradeNftInstance = _upgradeNftAddress;
     }
@@ -254,14 +257,6 @@ contract BedroomNft is
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
         callbackGasLimit = _callbackGasLimit;
-    }
-
-    // Set NFT Multiplier
-    function setNftMultiplier(Category _category, uint256 _multiplier)
-        external
-        onlyOwner
-    {
-        categoryToMultiplier[_category] = _multiplier;
     }
 
     // Set file format
