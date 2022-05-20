@@ -79,7 +79,7 @@ contract Reward is Initializable, OwnableUpgradeable {
         IBedroomNft.Category _category,
         uint256 _indexReward,
         int96 _flowRate
-    ) public onlyOwner {
+    ) external onlyOwner {
         rewardsByCategory[_category][_indexReward] = _flowRate;
     }
 
@@ -88,23 +88,18 @@ contract Reward is Initializable, OwnableUpgradeable {
         address _receiver,
         uint256 _tokenId,
         uint256 _rewardIndex
-    ) public onlyOwner {
+    ) external onlyOwner {
+        require(
+            _receiver != address(this),
+            "Receiver must be different than sender"
+        );
+
         // Get NFT informations
         IBedroomNft.NftOwnership memory nftOwnership = bedroomNft
             .tokenIdToNftOwnership(_tokenId);
 
         // Verifies that the recipient is the owner of the NFT
         require(nftOwnership.owner == _receiver, "Wrong receiver");
-
-        
-    }
-
-    // Increase the flow or create it
-    function _increaseFlow(address _receiver, int96 _flowRate) internal {
-        require(
-            _receiver != address(this),
-            "Receiver must be different than sender"
-        );
 
         (, int96 outFlowRate, , ) = cfa.getFlow(
             superToken,
@@ -113,29 +108,26 @@ contract Reward is Initializable, OwnableUpgradeable {
         );
 
         if (outFlowRate == 0) {
-            cfaV1.createFlow(_receiver, superToken, _flowRate);
+            cfaV1.createFlow(
+                _receiver,
+                superToken,
+                rewardsByCategory[nftOwnership.category][_rewardIndex]
+            );
         } else {
-            cfaV1.updateFlow(_receiver, superToken, outFlowRate + _flowRate);
+            cfaV1.updateFlow(
+                _receiver,
+                superToken,
+                rewardsByCategory[nftOwnership.category][_rewardIndex]
+            );
         }
     }
 
-    // Reduce the flow or delete it
-    function _reduceFlow(address _receiver, int96 _flowRate) internal {
+    // Close a stream
+    function closeStream(address _receiver) external onlyOwner {
         require(
             _receiver != address(this),
             "Receiver must be different than sender"
         );
-
-        (, int96 outFlowRate, , ) = cfa.getFlow(
-            superToken,
-            address(this),
-            _receiver
-        );
-
-        if (outFlowRate == _flowRate) {
-            cfaV1.deleteFlow(address(this), _receiver, superToken);
-        } else if (outFlowRate > _flowRate) {
-            cfaV1.updateFlow(_receiver, superToken, outFlowRate - _flowRate);
-        }
+        cfaV1.deleteFlow(address(this), _receiver, superToken);
     }
 }
