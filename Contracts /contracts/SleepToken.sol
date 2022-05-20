@@ -18,10 +18,10 @@ contract SleepToken is
     OwnableUpgradeable
 {
     // Reward Contract Address
-    address private rewardContract;
+    address public rewardContract;
 
     // Team Wallet
-    address private teamWallet;
+    address public teamWallet;
 
     // Pool Address
     IUniswapV3Pool public pool;

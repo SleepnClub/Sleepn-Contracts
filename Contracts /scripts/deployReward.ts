@@ -2,17 +2,16 @@ import { ethers, upgrades } from 'hardhat';
 
 async function main() {
   // Parameters
-  const superToken = "0xEbD1E9E455744e87251dDD969BDa123ffce46229";
-  const host = "0xEB796bdb90fFA0f28255275e16936D25d3418603";
-  const cfa = "0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873";
-  const bedroomNftContract = "";
+  const host = "0x3E14dC1b13c488a8d5D310918780c983bD5982E7";
+  const cfa = "0x6EeE6060f715257b970700bc2656De21dEdF074C";
+  const bedroomNftContract = "0xb150a58d376DeF437AB8b19ab351db7BA2C1eDEe";
 
   // Deployment
   const Reward = await ethers.getContractFactory('Reward');
   console.log('Deploying Reward contract...');
   const reward = await upgrades.deployProxy(
     Reward, 
-    [superToken, host, cfa, bedroomNftContract], 
+    [host, cfa, bedroomNftContract], 
     { initializer: "initialize"}
   );
   await reward.deployed();
