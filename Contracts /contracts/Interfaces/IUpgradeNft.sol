@@ -14,11 +14,6 @@ interface IUpgradeNft is IERC1155Upgradeable {
     /// @dev This function can only be called by the owner of the contract
     function setDex(address _dexAddress) external;
 
-    /// @notice Settles the BedroomNft contract address
-    /// @param _bedroomNftAddress Address of the BedroomNft contract
-    /// @dev This function can only be called by the owner of the contract
-    function setBedroomNft(IBedroomNft _bedroomNftAddress) external;
-
     /// @notice Updates chainlink variables
     /// @param _callbackGasLimit Callback Gas Limit
     /// @param _subscriptionId Chainlink subscription Id

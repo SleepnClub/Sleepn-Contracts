@@ -73,7 +73,8 @@ contract UpgradeNft is
         uint64 _subscriptionId,
         address _vrfCoordinator,
         address _link_token_contract,
-        bytes32 _keyHash
+        bytes32 _keyHash,
+        IBedroomNft _bedroomNftAddress
     ) public initializer {
         __ERC1155_init("");
         __Ownable_init();
@@ -87,16 +88,12 @@ contract UpgradeNft is
         requestConfirmations = 3;
         numWords = 1;
         tokenId = 0;
+        bedroomNftInstance = _bedroomNftAddress;
     }
 
     // set Dex address
     function setDex(address _dexAddress) external onlyOwner {
         dexAddress = _dexAddress;
-    }
-
-    // set BedroomNft address
-    function setBedroomNft(IBedroomNft _bedroomNftAddress) external onlyOwner {
-        bedroomNftInstance = _bedroomNftAddress;
     }
 
     // update chainlink
