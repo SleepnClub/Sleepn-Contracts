@@ -23,13 +23,13 @@ contract BedroomNft is
     OwnableUpgradeable,
     ERC1155URIStorageUpgradeable
 {
-    // Dex Address
+    /// @dev Dex Contract address
     address private dexAddress;
 
-    // Upgrade Nft
+    /// @dev Upgrade NFT Contract address
     IUpgradeNft private upgradeNftInstance;
 
-    // Chainlink VRF Variables
+    /// @dev Chainlink VRF Variables
     VRFCoordinatorV2Interface private COORDINATOR;
     LinkTokenInterface private LINKTOKEN;
     uint32 private numWords;
@@ -75,23 +75,29 @@ contract BedroomNft is
         Category category;
     }
 
-    // File format
+    /// @dev File format of NFT design files 
     string private fileFormat;
 
-    // Number of NFT
+    /// @dev Number of NFT
     uint256 private tokenId;
 
-    // Mappings
+    /// @dev Maps Chainlink VRF Random Number Request Id to NFT Id 
     mapping(uint256 => uint256) private requestIdToTokenId;
+
+    /// @dev Maps NFT Scores to NFT Id
     mapping(uint256 => NftSpecifications) private tokenIdToNftSpecifications;
+
+    /// @dev Maps NFT Informations to NFT Id
     mapping(uint256 => NftOwnership) private tokenIdToNftOwnership;
 
-    // Events
+    /// @notice Emits an event when a Bedroom NFT is minted
     event BedroomNftMinting(
         uint256 tokenId,
         string tokenURI,
         NftSpecifications specifications
     );
+
+    /// @notice Emits an event when a Bedroom NFT is upgraded
     event BedroomNftUpgrading(
         uint256 tokenId,
         string newTokenURI,
