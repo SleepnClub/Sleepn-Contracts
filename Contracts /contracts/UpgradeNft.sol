@@ -148,10 +148,7 @@ contract UpgradeNft is
     }
 
     // set BedroomNft address
-    function setBedroomNft(IBedroomNft _bedroomNftAddress)
-        external
-        onlyOwner
-    {
+    function setBedroomNft(IBedroomNft _bedroomNftAddress) external onlyOwner {
         bedroomNftInstance = _bedroomNftAddress;
     }
 

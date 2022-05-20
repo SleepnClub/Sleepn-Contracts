@@ -8,7 +8,6 @@ import "./Interfaces/ISleepToken.sol";
 import "./Interfaces/IBedroomNft.sol";
 import "./Interfaces/IUpgradeNft.sol";
 
-
 contract Dex is Initializable, OwnableUpgradeable {
     // Team Wallet
     address internal teamWallet;
@@ -33,7 +32,11 @@ contract Dex is Initializable, OwnableUpgradeable {
 
     // Events
     event ReceivedMoney(address indexed sender, uint256 amount);
-    event BuyNft(address indexed owner, IBedroomNft.Category category, uint256 designId);
+    event BuyNft(
+        address indexed owner,
+        IBedroomNft.Category category,
+        uint256 designId
+    );
     event UpgradeNft(
         address indexed owner,
         IBedroomNft.Category category,
@@ -100,7 +103,10 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     // Buy NFT
-    function buyNft(IBedroomNft.Category _categorie, uint256 _designId) public payable {
+    function buyNft(IBedroomNft.Category _categorie, uint256 _designId)
+        public
+        payable
+    {
         require(
             msg.value >= prices[_categorie].purchaseCost,
             "Not enough money was sent"

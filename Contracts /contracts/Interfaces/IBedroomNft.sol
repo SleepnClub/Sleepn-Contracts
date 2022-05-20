@@ -3,7 +3,6 @@ pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 
-
 /// @title Interface of the BedroomNft Contract
 /// @author Alexis Balayre
 /// @notice Contains the external functions of the BedroomNft Contract
@@ -23,7 +22,7 @@ interface IBedroomNft is IERC1155Upgradeable {
         uint256 level;
         Category category;
     }
-    
+
     /// @notice Returns the administration informations of a Bedroom NFT
     /// @param _tokenId The id of the NFT
     /// @return _struct NftOwnership struct of the Nft
@@ -59,6 +58,13 @@ interface IBedroomNft is IERC1155Upgradeable {
     /// @param _format New file format
     function setFileFormat(string memory _format) external;
 
+    /// @notice BedroomNft minting event
+    event BedroomNftMinting(
+        uint256 tokenId,
+        string tokenURI,
+        NftSpecifications specifications
+    );
+
     /// @notice Mints a Bedroom NFT
     /// @param _designId Design If the NFT
     /// @param _price Price of the NFT
@@ -71,8 +77,23 @@ interface IBedroomNft is IERC1155Upgradeable {
         address _owner
     ) external;
 
+    /// @notice Mints a Bedroom NFT
     function getName(uint256 _tokenId) external view returns (string memory);
 
+    /// @notice Mints a Bedroom NFT
+    event BedroomNftUpgrading(
+        uint256 tokenId,
+        string newTokenURI,
+        NftSpecifications specifications
+    );
+
+    /// @notice Upgrades a Bedroom NFT
+    /// @param _tokenId Id of the NFT
+    /// @param _attributeIndex Index of the upgrading attribute
+    /// @param _valueToAdd Value to add to the upgrading attribute
+    /// @param _newDesignId New design Id of the NFT
+    /// @param _amount Price of the upgrade
+    /// @dev This function can only be called by the Dex contract
     function upgradeBedroomNft(
         uint256 _tokenId,
         uint256 _attributeIndex,
@@ -81,7 +102,9 @@ interface IBedroomNft is IERC1155Upgradeable {
         uint256 _amount
     ) external;
 
+    /// @notice Settles Token URL
     function setTokenURI(uint256 _tokenId, string memory _tokenURI) external;
 
+    /// @notice Settles Base URL
     function setBaseURI(string memory _baseURI) external;
 }

@@ -168,12 +168,15 @@ contract BedroomNft is
     }
 
     // set Dex Contract address
-    function initContracts(
-        address _dexAddress,
-        IUpgradeNft _upgradeNftAddress
-    ) external onlyOwner {
+    function initContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
+        external
+        onlyOwner
+    {
         require(dexAddress == address(0), "Address already initialized");
-        require(address(upgradeNftInstance) == address(0), "Contract already initialized");
+        require(
+            address(upgradeNftInstance) == address(0),
+            "Contract already initialized"
+        );
         dexAddress = _dexAddress;
         upgradeNftInstance = _upgradeNftAddress;
     }
