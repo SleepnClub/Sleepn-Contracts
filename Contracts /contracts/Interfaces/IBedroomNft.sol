@@ -3,6 +3,8 @@ pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 
+import "./IUpgradeNft.sol";
+
 /// @title Interface of the BedroomNft Contract
 /// @author Alexis Balayre
 /// @notice Contains the external functions of the BedroomNft Contract
@@ -44,6 +46,14 @@ interface IBedroomNft is IERC1155Upgradeable {
         uint256 pillowComfortabilityScore; // Index 16
     }
 
+    /// @notice Inits contracts addresses
+    /// @param _dexAddress Address of the Dex contract
+    /// @param _upgradeNftAddress Address of the Upgrade NFT contract
+    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called 1 time
+    function initContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
+        external;
+
     /// @notice Returns the administration informations of a Bedroom NFT
     /// @param _tokenId The id of the NFT
     /// @return _struct NftOwnership struct of the Nft
@@ -71,11 +81,6 @@ interface IBedroomNft is IERC1155Upgradeable {
         bytes32 _keyHash
     ) external;
 
-    /// @notice Updates Nft Multipliers
-    /// @param _category Category of the NFT
-    /// @param _multiplier Value of the category reward multiplier
-    /// @dev This function can only be called by the owner of the contract
-    function setNftMultiplier(Category _category, uint256 _multiplier) external;
 
     /// @notice Settles File format
     /// @param _format New file format
@@ -89,7 +94,7 @@ interface IBedroomNft is IERC1155Upgradeable {
         NftSpecifications specifications
     );
 
-    /// @notice Mints a Bedroom NFT
+    /// @notice Launches the procedure to create an NFT
     /// @param _designId Design If the NFT
     /// @param _price Price of the NFT
     /// @param _category Category of the NFT
@@ -101,8 +106,10 @@ interface IBedroomNft is IERC1155Upgradeable {
         address _owner
     ) external;
 
-    /// @notice Mints a Bedroom NFT
-    function getName(uint256 _tokenId) external view returns (string memory);
+    /// Gets the name of a Nft
+    /// @param _tokenId Id of the NFT
+    /// @return _name Name of thr NFT
+    function getName(uint256 _tokenId) external view returns (string memory _name);
 
     /// @notice Mints a Bedroom NFT
     event BedroomNftUpgrading(
