@@ -11,8 +11,8 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 
-import "Interfaces/ISleepToken.sol";
-import "Interfaces/IBedroomNft.sol";
+import "./Interfaces/ISleepToken.sol";
+import "./Interfaces/IBedroomNft.sol";
 
 abstract contract VRFConsumerBaseV2Upgradable is
     Initializable,
@@ -78,7 +78,7 @@ contract UpgradeNft is
     address public dexAddress;
 
     // bedroomNft Contract
-    BedroomNftInterface public bedroomNftInstance;
+    IBedroomNft public bedroomNftInstance;
 
     // Chainlink VRF Variables
     VRFCoordinatorV2Interface private COORDINATOR;
@@ -148,7 +148,7 @@ contract UpgradeNft is
     }
 
     // set BedroomNft address
-    function setBedroomNft(BedroomNftInterface _bedroomNftAddress)
+    function setBedroomNft(IBedroomNft _bedroomNftAddress)
         external
         onlyOwner
     {
