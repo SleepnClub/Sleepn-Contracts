@@ -73,6 +73,7 @@ interface IBedroomNft is IERC1155Upgradeable {
     /// @notice Updates Nft Multipliers
     /// @param _category Category of the NFT
     /// @param _multiplier Value of the category reward multiplier
+    
     function setNftMultiplier(Category _category, uint256 _multiplier) external;
 
     /// @notice Settles File format

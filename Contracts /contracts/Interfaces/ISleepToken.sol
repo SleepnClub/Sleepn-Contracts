@@ -10,14 +10,18 @@ import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 /// @author Alexis Balayre
 /// @notice Contains the external functions of the SleepToken Contract
 interface ISleepToken is IERC20Upgradeable {
-    /// @notice Burns tokens from an account 
+    /// @notice Burns tokens from an account
     /// @param _account Address of the account
     /// @param _amount Number of tokens to burn
     function burnFrom(address _account, uint256 _amount) external;
 
     /// @notice Gets balance of an account
     /// @param _account Address of the account
-    function balanceOf(address _account) external view returns (uint256);
+    /// @return _balance Balance of the account
+    function balanceOf(address _account)
+        external
+        view
+        returns (uint256 _balance);
 
     /// @notice Settles the address of the Pool
     /// @param _newAddress New address of the pool
@@ -32,13 +36,18 @@ interface ISleepToken is IERC20Upgradeable {
     /// @dev Only Owner contract
     function unpause() external;
 
-    /// @notice Mints tokens for the smartcontract
+    /// @notice Mints tokens for the smartcontract account
     /// @param _amount Number of tokens to mint
     /// @dev Only Owner contract
     function mintTokens(uint256 _amount) external;
 
+    /// @notice Burns tokens from the smartcontract account
+    /// @param _amount Number of tokens to burn
+    /// @dev Only Owner contract
+    function burnTokens(uint256 _amount) external;
+
     /// @notice Sends tokens to Reward Contract
-    /// @param _amount Number of tokens to send 
+    /// @param _amount Number of tokens to send
     /// @dev Only Owner contract
     function supplyRewardContract(uint256 _amount) external;
 
@@ -64,7 +73,7 @@ interface ISleepToken is IERC20Upgradeable {
         uint128 _amount
     ) external;
 
-    /// @notice Burns liquidity in the pool 
+    /// @notice Burns liquidity in the pool
     /// @param _tickLower tick Lower
     /// @param _tickUpper tick Upper
     /// @param _amount Amount of tokens to burn
