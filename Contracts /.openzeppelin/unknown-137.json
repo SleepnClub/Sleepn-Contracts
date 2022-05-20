@@ -24,6 +24,11 @@
       "address": "0x45D484c35f13e6FFe370a881728508bf48da77CB",
       "txHash": "0xfb4b055ecacadc1a15b4c8089507268d0db75a5a2a9dcaee8087ffa025fdb760",
       "kind": "transparent"
+    },
+    {
+      "address": "0x4FC7D46Ebc6165A72926d0711f0855f14bAeaAd7",
+      "txHash": "0x5cc58026c38fcc79369f9a085330187f4548268cd50ad2661943b86347fc6da2",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -1267,6 +1272,192 @@
           "t_uint64": {
             "label": "uint64",
             "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "7fcbe9d65cd4757231fbb0d72545aa8c234993bd94741bfd3fe4dbfb9195e127": {
+      "address": "0x510DC797d36eaf8AD0C01A114937cfc7f718b46d",
+      "txHash": "0x8732dabf39739a37e35c2bf088fb05b6f79e831d24caa28d31b381a6451d9651",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "teamWallet",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_address",
+            "contract": "Dex",
+            "src": "contracts/Dex.sol:13"
+          },
+          {
+            "label": "sleepTokenInstance",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_contract(ISleepToken)2014",
+            "contract": "Dex",
+            "src": "contracts/Dex.sol:16"
+          },
+          {
+            "label": "bedroomNftInstance",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_contract(IBedroomNft)1918",
+            "contract": "Dex",
+            "src": "contracts/Dex.sol:19"
+          },
+          {
+            "label": "upgradeNftInstance",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_contract(IUpgradeNft)2082",
+            "contract": "Dex",
+            "src": "contracts/Dex.sol:22"
+          },
+          {
+            "label": "prices",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_enum(Category)1757,t_struct(NftPrices)1324_storage)",
+            "contract": "Dex",
+            "src": "contracts/Dex.sol:38"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IBedroomNft)1918": {
+            "label": "contract IBedroomNft",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISleepToken)2014": {
+            "label": "contract ISleepToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IUpgradeNft)2082": {
+            "label": "contract IUpgradeNft",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Category)1757": {
+            "label": "enum IBedroomNft.Category",
+            "members": [
+              "Studio",
+              "Deluxe",
+              "Luxury"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_enum(Category)1757,t_struct(NftPrices)1324_storage)": {
+            "label": "mapping(enum IBedroomNft.Category => struct Dex.NftPrices)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(upgradeInfos)1316_storage)": {
+            "label": "mapping(uint256 => struct Dex.upgradeInfos)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(NftPrices)1324_storage": {
+            "label": "struct Dex.NftPrices",
+            "members": [
+              {
+                "label": "purchaseCost",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "upgradeCosts",
+                "type": "t_mapping(t_uint256,t_struct(upgradeInfos)1316_storage)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(upgradeInfos)1316_storage": {
+            "label": "struct Dex.upgradeInfos",
+            "members": [
+              {
+                "label": "indexAttribute",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "valueToAddMax",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
           },
           "t_uint8": {
             "label": "uint8",
