@@ -10,8 +10,25 @@ import {ISuperToken} from "@superfluid-finance/ethereum-contracts/contracts/inte
 import {IConstantFlowAgreementV1} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 import {CFAv1Library} from "@superfluid-finance/ethereum-contracts/contracts/apps/CFAv1Library.sol";
 
-import "Interfaces/ISleepToken.sol";
-import "Interfaces/IBedroomNft.sol";
+import "./Interfaces/ISleepToken.sol";
+import "./Interfaces/IBedroomNft.sol";
+
+
+enum Category {
+    Studio,
+    Deluxe,
+    Luxury
+}
+
+/// @notice Administration informations of a Bedroom NFT
+struct NftOwnership {
+    address owner;
+    uint256 price;
+    uint256 designId;
+    uint256 level;
+    Category category;
+}
+
 
 contract Reward is Initializable, OwnableUpgradeable {
     ISuperToken public superToken; // super token address
@@ -23,7 +40,7 @@ contract Reward is Initializable, OwnableUpgradeable {
     CFAv1Library.InitData private cfaV1; //initialize cfaV1 variable
 
     // Bedroom NFT Contract
-    BedroomNftInterface private bedroomNft;
+    IBedroomNft private bedroomNft;
 
     // Index Reward to flow rate
     mapping(uint256 => int96) public rewards;
@@ -36,7 +53,7 @@ contract Reward is Initializable, OwnableUpgradeable {
         ISuperToken _superToken,
         ISuperfluid _host,
         IConstantFlowAgreementV1 _cfa,
-        BedroomNftInterface _bedroomNft
+        IBedroomNft _bedroomNft
     ) public initializer {
         superToken = _superToken;
         host = _host;
@@ -94,12 +111,12 @@ contract Reward is Initializable, OwnableUpgradeable {
         uint256 _rewardIndex
     ) public onlyOwner {
         // Get NFT informations
-        NftOwnership memory nftOwnership = bedroomNft.tokenIdToNftOwnership(
+        IBedroomNft.NftOwnership memory nftOwnership = bedroomNft.tokenIdToNftOwnership(
             _tokenId
         );
 
         // Verifies that the recipient is the owner of the NFT
-        Category categoryNft = bedroomNft
+        IBedroomNft.Category categoryNft = bedroomNft
             .tokenIdToNftOwnership(_tokenId)
             .category;
         require(nftOwnership.owner == _receiver, "Wrong receiver");

@@ -4,16 +4,17 @@ pragma solidity 0.8.13;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-import "Interfaces/ISleepToken.sol";
-import "Interfaces/IBedroomNft.sol";
-import "IUpgradeNft.sol";
+import "./Interfaces/ISleepToken.sol";
+import "./Interfaces/IBedroomNft.sol";
+import "./Interfaces/IUpgradeNft.sol";
+
 
 contract Dex is Initializable, OwnableUpgradeable {
     // Team Wallet
     address internal teamWallet;
 
     // Sleep Token Contract
-    ISleepToken.sol public sleepTokenInstance;
+    ISleepToken public sleepTokenInstance;
 
     // Bedroom NFT Contract
     IBedroomNft public bedroomNftInstance;
@@ -28,14 +29,14 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     // Prices
-    mapping(Category => NftPrices) public prices;
+    mapping(IBedroomNft.Category => NftPrices) public prices;
 
     // Events
     event ReceivedMoney(address indexed sender, uint256 amount);
-    event BuyNft(address indexed owner, Category category, uint256 designId);
+    event BuyNft(address indexed owner, IBedroomNft.Category category, uint256 designId);
     event UpgradeNft(
         address indexed owner,
-        Category category,
+        IBedroomNft.Category category,
         uint256 tokenId,
         uint256 newDesignId,
         uint256 upgradeDesignId,
@@ -47,7 +48,7 @@ contract Dex is Initializable, OwnableUpgradeable {
     // Init
     function initialize(
         address _teamWallet,
-        ISleepToken.sol _sleepToken,
+        ISleepToken _sleepToken,
         IBedroomNft _bedroomNft,
         IUpgradeNft _upgradeNft
     ) public initializer {
@@ -67,7 +68,7 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     // Set NFT prices - Buying prices
-    function setBuyingPrices(Category _category, uint256 _amount)
+    function setBuyingPrices(IBedroomNft.Category _category, uint256 _amount)
         public
         onlyOwner
     {
@@ -76,7 +77,7 @@ contract Dex is Initializable, OwnableUpgradeable {
 
     // Set NFT prices - Upgrading prices
     function setUpgradePrices(
-        Category _category,
+        IBedroomNft.Category _category,
         uint256 _upgradeIndex,
         uint256 _amount
     ) public onlyOwner {
@@ -99,7 +100,7 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     // Buy NFT
-    function buyNft(Category _categorie, uint256 _designId) public payable {
+    function buyNft(IBedroomNft.Category _categorie, uint256 _designId) public payable {
         require(
             msg.value >= prices[_categorie].purchaseCost,
             "Not enough money was sent"
@@ -121,9 +122,9 @@ contract Dex is Initializable, OwnableUpgradeable {
         uint256 _amount
     ) public {
         // Get NFT informations
-        NftOwnership memory nftOwnership = bedroomNftInstance
+        IBedroomNft.NftOwnership memory nftOwnership = bedroomNftInstance
             .tokenIdToNftOwnership(_tokenId);
-        Category category = nftOwnership.category;
+        IBedroomNft.Category category = nftOwnership.category;
 
         // Sender is owner
         require(msg.sender == nftOwnership.owner, "Wrong sender");

@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 
-import "Interfaces/IUpgradeNft.sol";
+import "./Interfaces/IUpgradeNft.sol";
 
 abstract contract VRFConsumerBaseV2Upgradable is
     Initializable,
@@ -107,7 +107,6 @@ contract BedroomNft is
         uint256 pillowComfortabilityScore; // Index 16
     }
 
-    // NFT category
     enum Category {
         Studio,
         Deluxe,
@@ -171,8 +170,10 @@ contract BedroomNft is
     // set Dex Contract address
     function initContracts(
         address _dexAddress,
-        UpgradeNftInterface _upgradeNftAddress
+        IUpgradeNft _upgradeNftAddress
     ) external onlyOwner {
+        require(dexAddress == address(0), "Address already initialized");
+        require(address(upgradeNftInstance) == address(0), "Contract already initialized");
         dexAddress = _dexAddress;
         upgradeNftInstance = _upgradeNftAddress;
     }

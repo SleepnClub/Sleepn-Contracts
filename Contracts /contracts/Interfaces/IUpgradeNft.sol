@@ -1,17 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8;
+pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 
 import "./IBedroomNft.sol";
-
-struct UpgradeSpecifications {
-    uint256 attributeIndex;
-    uint256 attributeValue;
-    address owner;
-    uint256 price;
-    uint256 designId;
-}
 
 interface IUpgradeNft is IERC1155Upgradeable {
     function setDex(address _dexAddress) external;
