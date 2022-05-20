@@ -29,6 +29,16 @@ contract Reward is Initializable, OwnableUpgradeable {
     mapping(IBedroomNft.Category => mapping(uint256 => int96))
         public rewardsByCategory;
 
+    // events 
+    event OpenUpdateStream(
+        address receiver,
+        int96 flowRate
+    );
+
+    event CloseStream(
+        address receiver
+    );
+
     // Init
     function initialize(
         ISuperfluid _host,
@@ -84,7 +94,7 @@ contract Reward is Initializable, OwnableUpgradeable {
     }
 
     // Create a stream
-    function createStream(
+    function createUpdateStream(
         address _receiver,
         uint256 _tokenId,
         uint256 _rewardIndex
@@ -101,6 +111,9 @@ contract Reward is Initializable, OwnableUpgradeable {
         // Verifies that the recipient is the owner of the NFT
         require(nftOwnership.owner == _receiver, "Wrong receiver");
 
+        // Gets flow rate 
+        int96 flowrate = rewardsByCategory[nftOwnership.category][_rewardIndex];
+
         (, int96 outFlowRate, , ) = cfa.getFlow(
             superToken,
             address(this),
@@ -111,15 +124,21 @@ contract Reward is Initializable, OwnableUpgradeable {
             cfaV1.createFlow(
                 _receiver,
                 superToken,
-                rewardsByCategory[nftOwnership.category][_rewardIndex]
+                flowrate
             );
         } else {
             cfaV1.updateFlow(
                 _receiver,
                 superToken,
-                rewardsByCategory[nftOwnership.category][_rewardIndex]
+                flowrate
             );
         }
+
+        emit OpenUpdateStream(
+            _receiver,
+            flowrate
+        );
+
     }
 
     // Close a stream
@@ -128,6 +147,9 @@ contract Reward is Initializable, OwnableUpgradeable {
             _receiver != address(this),
             "Receiver must be different than sender"
         );
+
         cfaV1.deleteFlow(address(this), _receiver, superToken);
+
+        emit CloseStream(_receiver);
     }
 }
