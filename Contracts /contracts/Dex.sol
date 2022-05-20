@@ -10,7 +10,7 @@ import "./Interfaces/IUpgradeNft.sol";
 
 contract Dex is Initializable, OwnableUpgradeable {
     // Team Wallet
-    address internal teamWallet;
+    address public teamWallet;
 
     // Sleep Token Contract
     ISleepToken public sleepTokenInstance;
@@ -67,9 +67,10 @@ contract Dex is Initializable, OwnableUpgradeable {
         bedroomNftInstance = _bedroomNft;
         upgradeNftInstance = _upgradeNft;
 
-        assert(address(sleepTokenInstance) != address(0));
+        assert(teamWallet != address(0));
         assert(address(bedroomNftInstance) != address(0));
         assert(address(upgradeNftInstance) != address(0));
+        assert(address(sleepTokenInstance) != address(0));
     }
 
     // Set Team Wallet
