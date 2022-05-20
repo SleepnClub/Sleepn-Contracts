@@ -64,6 +64,7 @@ interface IBedroomNft is IERC1155Upgradeable {
     /// @param _callbackGasLimit Callback Gas Limit
     /// @param _subscriptionId Chainlink subscription Id
     /// @param _keyHash Chainlink Key Hash
+    /// @dev This function can only be called by the owner of the contract
     function updateChainlink(
         uint32 _callbackGasLimit,
         uint64 _subscriptionId,
@@ -73,11 +74,12 @@ interface IBedroomNft is IERC1155Upgradeable {
     /// @notice Updates Nft Multipliers
     /// @param _category Category of the NFT
     /// @param _multiplier Value of the category reward multiplier
-    
+    /// @dev This function can only be called by the owner of the contract
     function setNftMultiplier(Category _category, uint256 _multiplier) external;
 
     /// @notice Settles File format
     /// @param _format New file format
+    /// @dev This function can only be called by the owner of the contract
     function setFileFormat(string memory _format) external;
 
     /// @notice BedroomNft minting event
@@ -125,8 +127,10 @@ interface IBedroomNft is IERC1155Upgradeable {
     ) external;
 
     /// @notice Settles Token URL
+    /// @dev This function can only be called by the owner of the contract
     function setTokenURI(uint256 _tokenId, string memory _tokenURI) external;
 
     /// @notice Settles Base URL
+    /// @dev This function can only be called by the owner of the contract
     function setBaseURI(string memory _baseURI) external;
 }
