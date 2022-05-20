@@ -23,6 +23,27 @@ interface IBedroomNft is IERC1155Upgradeable {
         Category category;
     }
 
+    /// @notice Scores of a Bedroom NFT
+    struct NftSpecifications {
+        uint256 lightIsolationScore; // Index 0
+        uint256 bedroomThermalIsolationScore; // Index 1
+        uint256 soundIsolationScore; // Index 2
+        uint256 temperatureScore; // Index 3
+        uint256 humidityScore; // Index 4
+        uint256 sleepAidMachinesScore; // Index 5
+        uint256 circadianRhythmRegulation; // Index 6
+        uint256 sizeScore; // Index 7
+        uint256 heightScore; // Index 8
+        uint256 bedBaseScore; // Index 9
+        uint256 mattressTechnologyScore; // Index 10
+        uint256 mattressThicknessScore; // Index 11
+        uint256 mattressDeformationScore; // Index 12
+        uint256 thermalIsolationScore; // Index 13
+        uint256 hygrometricRegulationScore; // Index 14
+        uint256 comforterComfortabilityScore; // Index 15
+        uint256 pillowComfortabilityScore; // Index 16
+    }
+
     /// @notice Returns the administration informations of a Bedroom NFT
     /// @param _tokenId The id of the NFT
     /// @return _struct NftOwnership struct of the Nft

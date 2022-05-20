@@ -21,13 +21,20 @@ contract Dex is Initializable, OwnableUpgradeable {
     // UpgradeNFT Contract
     IUpgradeNft public upgradeNftInstance;
 
-    // Prices
-    struct NftPrices {
-        uint256 purchaseCost; // Initial Cost
-        mapping(uint256 => uint256) upgradesPrices; // Upgrades Cost
+    /// @notice Informations about an upgrade 
+    struct upgradeInfos {
+        uint256 indexAttribute;
+        uint256 valueToAddMax;
+        uint256 price;
     }
 
-    // Prices
+    /// @notice Purchase cost and Upgrade costs 
+    struct NftPrices {
+        uint256 purchaseCost; // Initial Cost
+        mapping(uint256 => upgradeInfos) UpgradeCosts; // Upgrade Costs
+    }
+
+    /// @notice Purchase cost and Upgrade costs depending on the category of the NFT
     mapping(IBedroomNft.Category => NftPrices) public prices;
 
     // Events
