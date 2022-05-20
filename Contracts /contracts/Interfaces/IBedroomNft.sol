@@ -3,6 +3,8 @@ pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 
+import "./IUpgradeNft.sol";
+
 /// @title Interface of the BedroomNft Contract
 /// @author Alexis Balayre
 /// @notice Contains the external functions of the BedroomNft Contract
