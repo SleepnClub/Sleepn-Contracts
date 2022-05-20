@@ -13,23 +13,6 @@ import {CFAv1Library} from "@superfluid-finance/ethereum-contracts/contracts/app
 import "./Interfaces/ISleepToken.sol";
 import "./Interfaces/IBedroomNft.sol";
 
-
-enum Category {
-    Studio,
-    Deluxe,
-    Luxury
-}
-
-/// @notice Administration informations of a Bedroom NFT
-struct NftOwnership {
-    address owner;
-    uint256 price;
-    uint256 designId;
-    uint256 level;
-    Category category;
-}
-
-
 contract Reward is Initializable, OwnableUpgradeable {
     ISuperToken public superToken; // super token address
 
@@ -42,25 +25,20 @@ contract Reward is Initializable, OwnableUpgradeable {
     // Bedroom NFT Contract
     IBedroomNft private bedroomNft;
 
-    // Index Reward to flow rate
-    mapping(uint256 => int96) public rewards;
-
-    // NFT Category to multiplier
-    mapping(Category => uint256) public multipliers;
+    // NFT Category to Index Reward to flow rate
+    mapping(IBedroomNft.Category => mapping(uint256 => int96))
+        public rewardsByCategory;
 
     // Init
     function initialize(
-        ISuperToken _superToken,
         ISuperfluid _host,
         IConstantFlowAgreementV1 _cfa,
         IBedroomNft _bedroomNft
     ) public initializer {
-        superToken = _superToken;
         host = _host;
         cfa = _cfa;
         bedroomNft = _bedroomNft;
 
-        assert(address(superToken) != address(0));
         assert(address(host) != address(0));
         assert(address(cfa) != address(0));
 
@@ -78,30 +56,31 @@ contract Reward is Initializable, OwnableUpgradeable {
         );
 
         // Init Base rewards : (Number of tokens / 60) * 10^18
-        rewards[0] = 166666666666666; // 10 SLP per minute of light sleep
-        rewards[1] = 333333333333333; // 20 SLP per minute of REM sleep
-        rewards[2] = 499999999999999; // 30 SLP per minute of Deep sleep
+        rewardsByCategory[IBedroomNft.Category.Studio][0] = 166666666666666; // 10 SLP per minute of light sleep
+        rewardsByCategory[IBedroomNft.Category.Studio][1] = 333333333333333; // 20 SLP per minute of REM sleep
+        rewardsByCategory[IBedroomNft.Category.Studio][2] = 499999999999999; // 30 SLP per minute of Deep sleep
 
-        // Set NFT categories multiplier
-        multipliers[Category.Studio] = 10;
-        multipliers[Category.Deluxe] = 15;
-        multipliers[Category.Luxury] = 20;
+        rewardsByCategory[IBedroomNft.Category.Deluxe][0] = 249999999999999; // 15 SLP per minute of light sleep
+        rewardsByCategory[IBedroomNft.Category.Deluxe][1] = 499999999999999; // 30 SLP per minute of REM sleep
+        rewardsByCategory[IBedroomNft.Category.Deluxe][2] = 749999999999998; // 45 SLP per minute of Deep sleep
+
+        rewardsByCategory[IBedroomNft.Category.Luxury][0] = 333333333333332; // 20 SLP per minute of light sleep
+        rewardsByCategory[IBedroomNft.Category.Luxury][1] = 666666666666666; // 40 SLP per minute of REM sleep
+        rewardsByCategory[IBedroomNft.Category.Luxury][2] = 999999999999998; // 60 SLP per minute of Deep sleep
+    }
+
+    function setSuperToken(ISuperToken _superToken) external onlyOwner {
+        superToken = _superToken;
+        assert(address(superToken) != address(0));
     }
 
     // Set rewards flowrate : (Number of tokens / 60) * 10^18
-    function setRewards(uint256 _indexReward, int96 _flowRate)
-        public
-        onlyOwner
-    {
-        rewards[_indexReward] = _flowRate;
-    }
-
-    // Set NFT Categories multipliers
-    function setMultipliers(Category _category, uint256 _multiplier)
-        public
-        onlyOwner
-    {
-        multipliers[_category] = _multiplier;
+    function setRewards(
+        IBedroomNft.Category _category,
+        uint256 _indexReward,
+        int96 _flowRate
+    ) public onlyOwner {
+        rewardsByCategory[_category][_indexReward] = _flowRate;
     }
 
     // Create a stream
@@ -111,15 +90,13 @@ contract Reward is Initializable, OwnableUpgradeable {
         uint256 _rewardIndex
     ) public onlyOwner {
         // Get NFT informations
-        IBedroomNft.NftOwnership memory nftOwnership = bedroomNft.tokenIdToNftOwnership(
-            _tokenId
-        );
+        IBedroomNft.NftOwnership memory nftOwnership = bedroomNft
+            .tokenIdToNftOwnership(_tokenId);
 
         // Verifies that the recipient is the owner of the NFT
-        IBedroomNft.Category categoryNft = bedroomNft
-            .tokenIdToNftOwnership(_tokenId)
-            .category;
         require(nftOwnership.owner == _receiver, "Wrong receiver");
+
+        
     }
 
     // Increase the flow or create it
