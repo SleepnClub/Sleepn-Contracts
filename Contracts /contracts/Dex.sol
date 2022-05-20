@@ -94,7 +94,7 @@ contract Dex is Initializable, OwnableUpgradeable {
         uint256 _price
     ) public onlyOwner {
         prices[_category].upgradeCosts[_upgradeIndex] = upgradeInfos(
-            _upgradeIndex,
+            _indexAttribute,
             _valueToAddMax,
             _price
         );
