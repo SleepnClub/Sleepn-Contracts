@@ -81,11 +81,6 @@ interface IBedroomNft is IERC1155Upgradeable {
         bytes32 _keyHash
     ) external;
 
-    /// @notice Updates Nft Multipliers
-    /// @param _category Category of the NFT
-    /// @param _multiplier Value of the category reward multiplier
-    /// @dev This function can only be called by the owner of the contract
-    function setNftMultiplier(Category _category, uint256 _multiplier) external;
 
     /// @notice Settles File format
     /// @param _format New file format
@@ -99,7 +94,7 @@ interface IBedroomNft is IERC1155Upgradeable {
         NftSpecifications specifications
     );
 
-    /// @notice Mints a Bedroom NFT
+    /// @notice Launches the procedure to create an NFT
     /// @param _designId Design If the NFT
     /// @param _price Price of the NFT
     /// @param _category Category of the NFT
@@ -111,8 +106,10 @@ interface IBedroomNft is IERC1155Upgradeable {
         address _owner
     ) external;
 
-    /// @notice Mints a Bedroom NFT
-    function getName(uint256 _tokenId) external view returns (string memory);
+    /// Gets the name of a Nft
+    /// @param _tokenId Id of the NFT
+    /// @return _name Name of thr NFT
+    function getName(uint256 _tokenId) external view returns (string memory _name);
 
     /// @notice Mints a Bedroom NFT
     event BedroomNftUpgrading(
