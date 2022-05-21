@@ -51,35 +51,36 @@ interface IBedroomNft is IERC1155Upgradeable {
     /// @param _upgradeNftAddress Address of the Upgrade NFT contract
     /// @dev This function can only be called by the owner of the contract
     /// @dev This function can only be called 1 time
-    function initContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
+    function setContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
         external;
 
     /// @notice Returns the administration informations of a Bedroom NFT
     /// @param _tokenId The id of the NFT
-    /// @return _struct NftOwnership struct of the Nft
+    /// @return _infos NftOwnership struct of the Nft
     function getNftOwnership(uint256 _tokenId)
-        external 
-        view
-        returns (NftOwnership memory _struct);
-
-    /// @notice Returns the score of a Bedroom NFT attribute
-    /// @param _tokenId The id of the NFT
-    /// @param _indexAttribute The index of the desired attribute
-    /// @return _score Score of the desired attribute
-    function getNftSpecifications(uint256 _tokenId, uint256 _indexAttribute)
         external
         view
-        returns (uint256 _score);
+        returns (NftOwnership memory _infos);
+
+    /// @notice Returns thes score of a Bedroom NFT
+    /// @param _tokenId The id of the NFT
+    /// @return _scores Scores of the NFT
+    function getNftSpecifications(uint256 _tokenId)
+        external
+        view
+        returns (NftSpecifications memory _scores);
 
     /// @notice Updates chainlink variables
     /// @param _callbackGasLimit Callback Gas Limit
     /// @param _subscriptionId Chainlink subscription Id
     /// @param _keyHash Chainlink Key Hash
+    /// @param _requestConfirmations Number of request confirmations
     /// @dev This function can only be called by the owner of the contract
     function updateChainlink(
         uint32 _callbackGasLimit,
         uint64 _subscriptionId,
-        bytes32 _keyHash
+        bytes32 _keyHash,
+        uint16 _requestConfirmations
     ) external;
 
     /// @notice Settles File format

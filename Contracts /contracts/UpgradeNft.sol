@@ -1,38 +1,28 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
 import "./Interfaces/ISleepToken.sol";
 import "./Interfaces/IBedroomNft.sol";
-import "./Utils/VRFConsumerBaseV2Upgradable.sol";
 
 /// @title Upgrade Nft Contract
 /// @author Alexis Balayre
-contract UpgradeNft is
-    Initializable,
-    VRFConsumerBaseV2Upgradable,
-    ERC1155Upgradeable,
-    OwnableUpgradeable,
-    ERC1155URIStorageUpgradeable
-{
-    // Dex Address
+contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
+    /// @dev Dex Contract address
     address public dexAddress;
 
-    // bedroomNft Contract
+    /// @dev Bedroom NFT Contract address
     IBedroomNft public bedroomNftInstance;
 
-    // Chainlink VRF Variables
-    VRFCoordinatorV2Interface private COORDINATOR;
-    LinkTokenInterface private LINKTOKEN;
+    /// @dev Chainlink VRF Variables
+    VRFCoordinatorV2Interface public immutable COORDINATOR;
     uint32 private numWords;
     uint32 private callbackGasLimit;
     uint16 private requestConfirmations;
@@ -57,9 +47,9 @@ contract UpgradeNft is
     uint256 public tokenId;
 
     // Mappings
-    mapping(uint256 => uint256) public requestIdToTokenId;
+    mapping(uint256 => uint256) private requestIdToTokenId;
     mapping(uint256 => UpgradeSpecifications)
-        public tokenIdToUpgradeSpecifications;
+        private tokenIdToUpgradeSpecifications;
 
     // Events
     event UpgradeNftMinting(
@@ -69,42 +59,59 @@ contract UpgradeNft is
     );
     event ReturnedRandomness(uint256[] randomWords);
 
-    function initialize(
+    /// @dev Constructor
+    constructor(
         uint64 _subscriptionId,
         address _vrfCoordinator,
-        address _link_token_contract,
-        bytes32 _keyHash,
-        IBedroomNft _bedroomNftAddress
-    ) public initializer {
-        __ERC1155_init("");
-        __Ownable_init();
-        __VrfCoordinator_init(_vrfCoordinator);
-
+        bytes32 _keyHash
+    ) ERC1155("") VRFConsumerBaseV2(_vrfCoordinator) {
         COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
-        LINKTOKEN = LinkTokenInterface(_link_token_contract);
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
-        callbackGasLimit = 200000;
+        callbackGasLimit = 50000;
         requestConfirmations = 3;
         numWords = 1;
         tokenId = 0;
-        bedroomNftInstance = _bedroomNftAddress;
     }
 
-    // set Dex address
-    function setDex(address _dexAddress) external onlyOwner {
+    /// @notice Settles contracts addresses
+    /// @param _dexAddress Address of the Dex contract
+    /// @param _bedroomNft Address of the Bedroom NFT contract
+    /// @dev This function can only be called by the owner of the contract
+    function setContracts(address _dexAddress, IBedroomNft _bedroomNft)
+        external
+        onlyOwner
+    {
         dexAddress = _dexAddress;
+        bedroomNftInstance = _bedroomNft;
     }
 
-    // update chainlink
+    /// @notice Returns informations about a NFT
+    /// @param _tokenId The id of the NFT
+    /// @return _infos Informations about the NFT
+    function getUpgradeNftSpecifications(uint256 _tokenId)
+        external
+        view
+        returns (UpgradeSpecifications memory)
+    {
+        return tokenIdToUpgradeSpecifications[_tokenId];
+    }
+
+    /// @notice Updates chainlink variables
+    /// @param _callbackGasLimit Callback Gas Limit
+    /// @param _subscriptionId Chainlink subscription Id
+    /// @param _keyHash Chainlink Key Hash
+    /// @dev This function can only be called by the owner of the contract
     function updateChainlink(
         uint32 _callbackGasLimit,
         uint64 _subscriptionId,
-        bytes32 _keyHash
+        bytes32 _keyHash,
+        uint16 _requestConfirmations
     ) external onlyOwner {
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
         callbackGasLimit = _callbackGasLimit;
+        requestConfirmations = _requestConfirmations;
     }
 
     // Set file format
@@ -209,7 +216,7 @@ contract UpgradeNft is
     function uri(uint256 _tokenId)
         public
         view
-        override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
+        override(ERC1155, ERC1155URIStorage)
         returns (string memory)
     {
         return super.uri(_tokenId);

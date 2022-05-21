@@ -7,6 +7,7 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 import '@openzeppelin/hardhat-upgrades';
+import "@tenderly/hardhat-tenderly";
 
 dotenv.config();
 
@@ -52,6 +53,10 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: process.env.POLYGONSCAN_API_KEY,
   },
+  tenderly: {
+    project: "Sleepn",
+    username: "Alex19132",
+  }
 };
 
 export default config;

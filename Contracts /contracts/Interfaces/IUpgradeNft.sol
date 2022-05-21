@@ -9,20 +9,43 @@ import "./IBedroomNft.sol";
 /// @author Alexis Balayre
 /// @notice Contains the external functions of the UpgradeNft Contract
 interface IUpgradeNft is IERC1155Upgradeable {
-    /// @notice Settles the Dex contract address
+    /// @notice Informations of an Upgrade NFT
+    struct UpgradeSpecifications {
+        uint256 attributeIndex;
+        uint256 valueToAdd;
+        uint256 valueToAddMax;
+        address owner;
+        uint256 price;
+        uint256 newDesignId;
+        uint256 upgradeDesignId;
+    }
+
+    /// @notice Settles the address of contracts 
     /// @param _dexAddress Address of the Dex contract
+    /// @param _bedroomNft Address of the Bedroom NFT Contract
     /// @dev This function can only be called by the owner of the contract
-    function setDex(address _dexAddress) external;
+    function setContracts(address _dexAddress, IBedroomNft _bedroomNft)
+        external;
+
+    /// @notice Returns some informations about a NFT
+    /// @param _tokenId Id of the NFT
+    /// @return _infos Informations of the NFT
+    function getUpgradeNftSpecifications(uint256 _tokenId)
+        external
+        view
+        returns (UpgradeSpecifications memory _infos);
 
     /// @notice Updates chainlink variables
     /// @param _callbackGasLimit Callback Gas Limit
     /// @param _subscriptionId Chainlink subscription Id
     /// @param _keyHash Chainlink Key Hash
+    /// @param _requestConfirmations Number of request confirmations
     /// @dev This function can only be called by the owner of the contract
     function updateChainlink(
         uint32 _callbackGasLimit,
         uint64 _subscriptionId,
-        bytes32 _keyHash
+        bytes32 _keyHash,
+        uint16 _requestConfirmations
     ) external;
 
     /// @notice Mints a new upgrade NFT
