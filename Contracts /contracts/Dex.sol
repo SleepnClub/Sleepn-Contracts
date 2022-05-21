@@ -123,8 +123,8 @@ contract Dex is Initializable, OwnableUpgradeable {
         payable
     {
         require(
-            msg.value >= prices[_category].purchaseCost,
-            "Not enough money was sent"
+            msg.value == prices[_category].purchaseCost,
+            "Wrong tx"
         );
         bedroomNftInstance.mintingBedroomNft(
             _designId,

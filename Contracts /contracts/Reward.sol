@@ -13,6 +13,7 @@ import {CFAv1Library} from "@superfluid-finance/ethereum-contracts/contracts/app
 import "./Interfaces/ISleepToken.sol";
 import "./Interfaces/IBedroomNft.sol";
 
+
 contract Reward is Initializable, OwnableUpgradeable {
     ISuperToken public superToken; // super token address
 
