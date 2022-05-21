@@ -120,8 +120,8 @@ contract BedroomNft is
         LINKTOKEN = LinkTokenInterface(_link_token_contract);
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
-        callbackGasLimit = 200000;
-        requestConfirmations = 3;
+        callbackGasLimit = 450000;
+        requestConfirmations = 6;
         numWords = 17;
         tokenId = 0;
     }
@@ -225,11 +225,14 @@ contract BedroomNft is
     function updateChainlink(
         uint32 _callbackGasLimit,
         uint64 _subscriptionId,
-        bytes32 _keyHash
+        bytes32 _keyHash,
+        uint16 _requestConfirmations
+
     ) external onlyOwner {
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
         callbackGasLimit = _callbackGasLimit;
+        requestConfirmations = _requestConfirmations;
     }
 
     /// @notice Settles File format
