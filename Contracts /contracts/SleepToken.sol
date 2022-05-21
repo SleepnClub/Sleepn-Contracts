@@ -46,6 +46,11 @@ contract SleepToken is
         _mint(msg.sender, _totalSupply * 10**decimals());
     }
 
+    // Set rewardContract
+    function setRewardContract(address _rewardContract) external onlyOwner {
+        rewardContract = _rewardContract;
+    }
+
     // Set pool address
     function setPool(IUniswapV3Pool _newAddress) external onlyOwner {
         pool = _newAddress;

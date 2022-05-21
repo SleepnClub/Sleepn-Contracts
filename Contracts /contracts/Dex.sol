@@ -62,6 +62,7 @@ contract Dex is Initializable, OwnableUpgradeable {
         IBedroomNft _bedroomNft,
         IUpgradeNft _upgradeNft
     ) public initializer {
+        __Ownable_init();
         teamWallet = _teamWallet;
         sleepTokenInstance = _sleepToken;
         bedroomNftInstance = _bedroomNft;
@@ -74,13 +75,13 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     // Set Team Wallet
-    function setTeamWallet(address _newAddress) public onlyOwner {
+    function setTeamWallet(address _newAddress) external onlyOwner {
         teamWallet = _newAddress;
     }
 
     // Set NFT prices - Buying prices
     function setBuyingPrices(IBedroomNft.Category _category, uint256 _price)
-        public
+        external
         onlyOwner
     {
         prices[_category].purchaseCost = _price;
@@ -93,7 +94,7 @@ contract Dex is Initializable, OwnableUpgradeable {
         uint256 _indexAttribute,
         uint256 _valueToAddMax,
         uint256 _price
-    ) public onlyOwner {
+    ) external onlyOwner {
         prices[_category].upgradeCosts[_upgradeIndex] = upgradeInfos(
             _indexAttribute,
             _valueToAddMax,
@@ -102,7 +103,7 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     // Withdraw Money
-    function withdrawMoney() internal {
+    function withdrawMoney() external onlyOwner {
         address payable teamWalletAddress = payable(teamWallet);
         uint256 price = address(this).balance;
 
@@ -118,7 +119,7 @@ contract Dex is Initializable, OwnableUpgradeable {
 
     // Buy NFT
     function buyNft(IBedroomNft.Category _categorie, uint256 _designId)
-        public
+        external
         payable
     {
         require(
@@ -140,7 +141,7 @@ contract Dex is Initializable, OwnableUpgradeable {
         uint256 _upgradeDesignId,
         uint256 _upgradeIndex,
         uint256 _price
-    ) public {
+    ) external {
         // Get NFT informations
         IBedroomNft.NftOwnership memory nftOwnership = bedroomNftInstance
             .tokenIdToNftOwnership(_tokenId);
