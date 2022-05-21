@@ -75,13 +75,13 @@ contract BedroomNft is
         Category category;
     }
 
-    /// @dev File format of NFT design files 
+    /// @dev File format of NFT design files
     string private fileFormat;
 
     /// @dev Number of NFT
     uint256 private tokenId;
 
-    /// @dev Maps Chainlink VRF Random Number Request Id to NFT Id 
+    /// @dev Maps Chainlink VRF Random Number Request Id to NFT Id
     mapping(uint256 => uint256) private requestIdToTokenId;
 
     /// @dev Maps NFT Scores to NFT Id
@@ -130,18 +130,20 @@ contract BedroomNft is
     /// @param _dexAddress Address of the Dex contract
     /// @param _upgradeNftAddress Address of the Upgrade NFT contract
     /// @dev This function can only be called by the owner of the contract
-    /// @dev This function can only be called 1 time
     function initContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
         external
         onlyOwner
     {
-        require(dexAddress == address(0), "Address already initialized");
-        require(
-            address(upgradeNftInstance) == address(0),
-            "Contract already initialized"
-        );
         dexAddress = _dexAddress;
         upgradeNftInstance = _upgradeNftAddress;
+    }
+
+    function getNftOwnership(uint256 _tokenId)
+        external
+        view
+        returns (NftOwnership memory)
+    {
+        return tokenIdToNftOwnership[_tokenId];
     }
 
     /// @notice Returns the score of a NFT attribute
@@ -363,7 +365,6 @@ contract BedroomNft is
         }
     }
 
-
     /// @notice Launches the procedure to create an NFT
     /// @param _designId Design If the NFT
     /// @param _price Price of the NFT
@@ -419,15 +420,15 @@ contract BedroomNft is
     /// @dev Callback function with the requested random numbers
     /// @param _requestId Chainlink VRF Random Number Request Id
     /// @param _randomWords List of random words
-    function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords)
-        internal
-        override
-    {
+    function fulfillRandomWords(
+        uint256 _requestId,
+        uint256[] memory _randomWords
+    ) internal override {
         _mintingBedroomNft(requestIdToTokenId[_requestId], _randomWords);
         emit ReturnedRandomness(_randomWords);
     }
 
-    /// @dev Mints a new Bedroom NFT 
+    /// @dev Mints a new Bedroom NFT
     /// @param _tokenId Id of the NFT
     /// @param _randomWords List of random words
     function _mintingBedroomNft(uint256 _tokenId, uint256[] memory _randomWords)

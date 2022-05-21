@@ -107,7 +107,7 @@ contract Reward is Initializable, OwnableUpgradeable {
 
         // Get NFT informations
         IBedroomNft.NftOwnership memory nftOwnership = bedroomNft
-            .tokenIdToNftOwnership(_tokenId);
+            .getNftOwnership(_tokenId);
 
         // Verifies that the recipient is the owner of the NFT
         require(nftOwnership.owner == _receiver, "Wrong receiver");

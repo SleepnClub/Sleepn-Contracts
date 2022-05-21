@@ -118,19 +118,24 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     // Buy NFT
-    function buyNft(IBedroomNft.Category _categorie, uint256 _designId)
+    function buyNft(IBedroomNft.Category _category, uint256 _designId)
         external
         payable
     {
         require(
-            msg.value >= prices[_categorie].purchaseCost,
+            msg.value >= prices[_category].purchaseCost,
             "Not enough money was sent"
         );
         bedroomNftInstance.mintingBedroomNft(
             _designId,
             msg.value,
-            _categorie,
+            _category,
             msg.sender
+        );
+        emit BuyNft(
+            msg.sender,
+            _category,
+            _designId
         );
     }
 
@@ -144,7 +149,7 @@ contract Dex is Initializable, OwnableUpgradeable {
     ) external {
         // Get NFT informations
         IBedroomNft.NftOwnership memory nftOwnership = bedroomNftInstance
-            .tokenIdToNftOwnership(_tokenId);
+            .getNftOwnership(_tokenId);
         IBedroomNft.Category category = nftOwnership.category;
 
         // Get Upgrade infos

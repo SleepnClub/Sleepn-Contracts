@@ -57,8 +57,9 @@ interface IBedroomNft is IERC1155Upgradeable {
     /// @notice Returns the administration informations of a Bedroom NFT
     /// @param _tokenId The id of the NFT
     /// @return _struct NftOwnership struct of the Nft
-    function tokenIdToNftOwnership(uint256 _tokenId)
-        external
+    function getNftOwnership(uint256 _tokenId)
+        external 
+        view
         returns (NftOwnership memory _struct);
 
     /// @notice Returns the score of a Bedroom NFT attribute
@@ -80,7 +81,6 @@ interface IBedroomNft is IERC1155Upgradeable {
         uint64 _subscriptionId,
         bytes32 _keyHash
     ) external;
-
 
     /// @notice Settles File format
     /// @param _format New file format
@@ -109,7 +109,10 @@ interface IBedroomNft is IERC1155Upgradeable {
     /// Gets the name of a Nft
     /// @param _tokenId Id of the NFT
     /// @return _name Name of thr NFT
-    function getName(uint256 _tokenId) external view returns (string memory _name);
+    function getName(uint256 _tokenId)
+        external
+        view
+        returns (string memory _name);
 
     /// @notice Mints a Bedroom NFT
     event BedroomNftUpgrading(
