@@ -45,12 +45,14 @@ contract Reward is Initializable, OwnableUpgradeable {
         IConstantFlowAgreementV1 _cfa,
         IBedroomNft _bedroomNft
     ) public initializer {
+        __Ownable_init();
         host = _host;
         cfa = _cfa;
         bedroomNft = _bedroomNft;
 
         assert(address(host) != address(0));
         assert(address(cfa) != address(0));
+        assert(address(bedroomNft) != address(0));
 
         cfaV1 = CFAv1Library.InitData(
             _host,
@@ -81,7 +83,6 @@ contract Reward is Initializable, OwnableUpgradeable {
 
     function setSuperToken(ISuperToken _superToken) external onlyOwner {
         superToken = _superToken;
-        assert(address(superToken) != address(0));
     }
 
     // Set rewards flowrate : (Number of tokens / 60) * 10^18

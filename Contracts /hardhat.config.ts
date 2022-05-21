@@ -41,7 +41,7 @@ const config: HardhatUserConfig = {
       accounts: [process.env.SIGNER_MUMBAI || ""]
     },
     matic: {
-      url: "https://rpc-mainnet.maticvigil.com/v1/780b3e83d8907f14bb6d386ee18f107e6851e0ba",
+      url: "https://polygon-rpc.com",
       accounts: [process.env.SIGNER_MATIC || ""]
     }
   },
