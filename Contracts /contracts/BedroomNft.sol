@@ -1,37 +1,28 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-import "@chainlink/contracts/src/v0.8/interfaces/LinkTokenInterface.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
+import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
 import "./Interfaces/IUpgradeNft.sol";
-import "./Utils/VRFConsumerBaseV2Upgradable.sol";
 
 /// @title Bedroom NFT Contract
 /// @author Alexis Balayre
 /// @notice Bedroom NFT is the main NFT of GetSleepn app
-contract BedroomNft is
-    Initializable,
-    VRFConsumerBaseV2Upgradable,
-    ERC1155Upgradeable,
-    OwnableUpgradeable,
-    ERC1155URIStorageUpgradeable
-{
+contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     /// @dev Dex Contract address
-    address private dexAddress;
+    address public dexAddress;
 
     /// @dev Upgrade NFT Contract address
-    IUpgradeNft private upgradeNftInstance;
+    IUpgradeNft public upgradeNftInstance;
 
     /// @dev Chainlink VRF Variables
-    VRFCoordinatorV2Interface private COORDINATOR;
-    LinkTokenInterface private LINKTOKEN;
+    VRFCoordinatorV2Interface public immutable COORDINATOR;
     uint32 private numWords;
     uint32 private callbackGasLimit;
     uint16 private requestConfirmations;
@@ -76,10 +67,10 @@ contract BedroomNft is
     }
 
     /// @dev File format of NFT design files
-    string private fileFormat;
+    string public fileFormat;
 
     /// @dev Number of NFT
-    uint256 private tokenId;
+    uint256 public tokenId;
 
     /// @dev Maps Chainlink VRF Random Number Request Id to NFT Id
     mapping(uint256 => uint256) private requestIdToTokenId;
@@ -105,32 +96,26 @@ contract BedroomNft is
     );
     event ReturnedRandomness(uint256[] randomWords);
 
-    /// @dev Init function
-    function initialize(
+    /// @dev Constructor
+    constructor(
         uint64 _subscriptionId,
         address _vrfCoordinator,
-        address _link_token_contract,
         bytes32 _keyHash
-    ) public initializer {
-        __ERC1155_init("");
-        __Ownable_init();
-        __VrfCoordinator_init(_vrfCoordinator);
-
+    ) ERC1155("") VRFConsumerBaseV2(_vrfCoordinator) {
         COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
-        LINKTOKEN = LinkTokenInterface(_link_token_contract);
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
-        callbackGasLimit = 450000;
+        callbackGasLimit = 500000;
         requestConfirmations = 6;
         numWords = 17;
         tokenId = 0;
     }
 
-    /// @notice Inits contracts addresses
+    /// @notice Settles contracts addresses
     /// @param _dexAddress Address of the Dex contract
     /// @param _upgradeNftAddress Address of the Upgrade NFT contract
     /// @dev This function can only be called by the owner of the contract
-    function initContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
+    function setContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
         external
         onlyOwner
     {
@@ -138,6 +123,9 @@ contract BedroomNft is
         upgradeNftInstance = _upgradeNftAddress;
     }
 
+    /// @notice Returns the informations of a NFT
+    /// @param _tokenId The id of the NFT
+    /// @return _infos Informations about the NFT
     function getNftOwnership(uint256 _tokenId)
         external
         view
@@ -146,75 +134,15 @@ contract BedroomNft is
         return tokenIdToNftOwnership[_tokenId];
     }
 
-    /// @notice Returns the score of a NFT attribute
+    /// @notice Returns the scores of a NFT
     /// @param _tokenId The id of the NFT
-    /// @param _indexAttribute The index of the desired attribute
-    /// @return _score Score of the desired attribute
-    function getNftSpecifications(uint256 _tokenId, uint256 _indexAttribute)
+    /// @return _scores Scores of the desired attribute
+    function getNftSpecifications(uint256 _tokenId)
         external
         view
-        returns (uint256)
+        returns (NftSpecifications memory)
     {
-        if (_indexAttribute == 0) {
-            return tokenIdToNftSpecifications[_tokenId].lightIsolationScore;
-        }
-        if (_indexAttribute == 1) {
-            return
-                tokenIdToNftSpecifications[_tokenId]
-                    .bedroomThermalIsolationScore;
-        }
-        if (_indexAttribute == 2) {
-            return tokenIdToNftSpecifications[_tokenId].soundIsolationScore;
-        }
-        if (_indexAttribute == 3) {
-            return tokenIdToNftSpecifications[_tokenId].temperatureScore;
-        }
-        if (_indexAttribute == 4) {
-            return tokenIdToNftSpecifications[_tokenId].humidityScore;
-        }
-        if (_indexAttribute == 5) {
-            return tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore;
-        }
-        if (_indexAttribute == 6) {
-            return
-                tokenIdToNftSpecifications[_tokenId].circadianRhythmRegulation;
-        }
-        if (_indexAttribute == 7) {
-            return tokenIdToNftSpecifications[_tokenId].sizeScore;
-        }
-        if (_indexAttribute == 8) {
-            return tokenIdToNftSpecifications[_tokenId].heightScore;
-        }
-        if (_indexAttribute == 9) {
-            return tokenIdToNftSpecifications[_tokenId].bedBaseScore;
-        }
-        if (_indexAttribute == 10) {
-            return tokenIdToNftSpecifications[_tokenId].mattressTechnologyScore;
-        }
-        if (_indexAttribute == 11) {
-            return tokenIdToNftSpecifications[_tokenId].mattressThicknessScore;
-        }
-        if (_indexAttribute == 12) {
-            return
-                tokenIdToNftSpecifications[_tokenId].mattressDeformationScore;
-        }
-        if (_indexAttribute == 13) {
-            return tokenIdToNftSpecifications[_tokenId].thermalIsolationScore;
-        }
-        if (_indexAttribute == 14) {
-            return
-                tokenIdToNftSpecifications[_tokenId].hygrometricRegulationScore;
-        }
-        if (_indexAttribute == 15) {
-            return
-                tokenIdToNftSpecifications[_tokenId]
-                    .comforterComfortabilityScore;
-        }
-        if (_indexAttribute == 16) {
-            return
-                tokenIdToNftSpecifications[_tokenId].pillowComfortabilityScore;
-        }
-        return 0;
+        return tokenIdToNftSpecifications[_tokenId];
     }
 
     /// @notice Updates chainlink variables
@@ -227,7 +155,6 @@ contract BedroomNft is
         uint64 _subscriptionId,
         bytes32 _keyHash,
         uint16 _requestConfirmations
-
     ) external onlyOwner {
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
@@ -499,7 +426,7 @@ contract BedroomNft is
     function uri(uint256 _tokenId)
         public
         view
-        override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
+        override(ERC1155, ERC1155URIStorage)
         returns (string memory)
     {
         return super.uri(_tokenId);

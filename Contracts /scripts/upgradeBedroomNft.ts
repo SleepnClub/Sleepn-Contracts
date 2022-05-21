@@ -7,6 +7,7 @@ async function main() {
     // Upgrades
     const BedroomNftV2 = await ethers.getContractFactory('BedroomNft');
     console.log('Upgrading BedroomNft contract...');
+    await upgrades.forceImport(addressProxy, BedroomNftV2);
     await upgrades.upgradeProxy(addressProxy, BedroomNftV2);
     console.log('BedroomNft contract upgraded');
 }
