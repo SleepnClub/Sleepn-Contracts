@@ -2,13 +2,13 @@ import { ethers, upgrades } from 'hardhat';
 
 async function main() {
     // Parameters
-    const addressProxy = "0x4FC7D46Ebc6165A72926d0711f0855f14bAeaAd7";
+    const addressProxy = "0xb150a58d376DeF437AB8b19ab351db7BA2C1eDEe";
 
     // Upgrades
-    const DexV2 = await ethers.getContractFactory('Dex');
-    console.log('Upgrading Dex contract...');
-    await upgrades.upgradeProxy(addressProxy, DexV2);
-    console.log('Dex contract upgraded');
+    const BedroomNftV2 = await ethers.getContractFactory('BedroomNft');
+    console.log('Upgrading BedroomNft contract...');
+    await upgrades.upgradeProxy(addressProxy, BedroomNftV2);
+    console.log('BedroomNft contract upgraded');
 }
 
 main().catch((error) => {
