@@ -8,3 +8,16 @@ node_modules
 #Hardhat files
 ./cache
 ./artifacts
+.prettierrc
+.prettierignore
+.npmignore
+.solhintignore
+.eslintignore
+.eslintrc.js
+.solhint.json
+
+hardhat.config.ts
+package-lock.json
+package.json
+tenderly.yaml
+tsconfig.json
