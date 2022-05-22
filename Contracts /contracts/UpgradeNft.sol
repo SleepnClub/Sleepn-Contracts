@@ -14,14 +14,15 @@ import "./Interfaces/IBedroomNft.sol";
 
 /// @title Upgrade Nft Contract
 /// @author Alexis Balayre
+/// @notice An update NFT is used to upgrade a Bedroom NFT
 contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
-    /// @dev Dex Contract address
+    /// @notice Dex Contract address
     address public dexAddress;
 
-    /// @dev Bedroom NFT Contract address
+    /// @notice Bedroom NFT Contract address
     IBedroomNft public bedroomNftInstance;
 
-    /// @dev Chainlink VRF Variables
+    /// @notice Chainlink VRF Variables
     VRFCoordinatorV2Interface public immutable COORDINATOR;
     uint32 private numWords;
     uint32 private callbackGasLimit;
@@ -29,7 +30,7 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     uint64 private subscriptionId;
     bytes32 private keyHash;
 
-    // Upgrade Specifications
+    /// @notice Upgrade Specifications
     struct UpgradeSpecifications {
         uint256 attributeIndex;
         uint256 valueToAdd;
@@ -40,26 +41,33 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         uint256 upgradeDesignId;
     }
 
-    // File format
+    /// @notice File format
     string public fileFormat;
 
-    // Number of NFT
+    /// @notice Number of NFT
     uint256 public tokenId;
 
-    // Mappings
+    /// @notice Maps an NFT ID to a Chainlink VRF Request ID
     mapping(uint256 => uint256) private requestIdToTokenId;
+
+    /// @notice Maps the Upgrade NFT specifications to an NFT ID
     mapping(uint256 => UpgradeSpecifications)
         private tokenIdToUpgradeSpecifications;
 
-    // Events
+    /// @notice Upgrade NFT Minting Event 
     event UpgradeNftMinting(
         uint256 tokenId,
         string tokenURI,
         UpgradeSpecifications specifications
     );
+
+    /// @notice Returned Random Numbers Event 
     event ReturnedRandomness(uint256[] randomWords);
 
-    /// @dev Constructor
+    /// @notice Constructor
+    /// @param _subscriptionId Chainlink VRF Id Subscription
+    /// @param _vrfCoordinator Address of the Coordinator Contract
+    /// @param _keyHash Chainlink VRF key hash
     constructor(
         uint64 _subscriptionId,
         address _vrfCoordinator,
@@ -101,6 +109,7 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     /// @param _callbackGasLimit Callback Gas Limit
     /// @param _subscriptionId Chainlink subscription Id
     /// @param _keyHash Chainlink Key Hash
+    /// @param _requestConfirmations Number of request confirmations
     /// @dev This function can only be called by the owner of the contract
     function updateChainlink(
         uint32 _callbackGasLimit,
@@ -114,12 +123,21 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         requestConfirmations = _requestConfirmations;
     }
 
-    // Set file format
+    /// @notice Settles File format
+    /// @param _format New file format
+    /// @dev This function can only be called by the owner of the contract
     function setFileFormat(string memory _format) external onlyOwner {
         fileFormat = _format;
     }
 
-    // This function is creating a new random Upgrade NFT by generating a random number
+    /// @notice Launches the procedure to create an NFT
+    /// @param _newDesignId New Design Id of the Bedroom NFT
+    /// @param _upgradeDesignId Design Id of the Upgrade NFT
+    /// @param _price Price of the Upgrade NFT
+    /// @param _indexAttribute Index of the Bedroom NFT attribute to upgrade
+    /// @param _valueToAddMax Value Max to add to the score of desired Bedroom NFT attribute
+    /// @param _owner Owner of the NFT
+    /// @dev This function can only be called by Dex Contract
     function mintingUpgradeNft(
         uint256 _newDesignId,
         uint256 _upgradeDesignId,
@@ -155,12 +173,16 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         tokenId++;
     }
 
-    // Get Token Name
+    /// Gets the name of a NFT
+    /// @param _tokenId Id of the NFT
+    /// @return _name Name of the NFT
     function getName(uint256 _tokenId) external pure returns (string memory) {
         return string(abi.encodePacked("Token #", Strings.toString(_tokenId)));
     }
 
-    // Callback function used by VRF Coordinator
+    /// @dev Callback function with the requested random numbers
+    /// @param _requestId Chainlink VRF Random Number Request Id
+    /// @param _randomWords List of random words
     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords)
         internal
         override
@@ -169,6 +191,9 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         emit ReturnedRandomness(randomWords);
     }
 
+    /// @dev Mints a new Upgrade NFT
+    /// @param _tokenId Id of the NFT
+    /// @param _randomWords List of random words
     function _mintingUpgradeNft(uint256 _tokenId, uint256[] memory _randomWords)
         internal
     {
@@ -212,7 +237,8 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         );
     }
 
-    // This implementation returns the concatenation of the _baseURI and the token-specific uri if the latter is set
+    /// @notice Returns the concatenation of the _baseURI and the token-specific uri if the latter is set
+    /// @param _tokenId Id of the NFT
     function uri(uint256 _tokenId)
         public
         view
@@ -222,7 +248,10 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         return super.uri(_tokenId);
     }
 
-    // Sets tokenURI as the tokenURI of tokenId.
+    /// @notice Settles the URI of a NFT
+    /// @param _tokenId Id of the NFT
+    /// @param _tokenURI Uri of the NFT
+    /// @dev This function can only be called by the owner of the contract
     function setTokenURI(uint256 _tokenId, string memory _tokenURI)
         external
         onlyOwner
@@ -230,7 +259,9 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         _setURI(_tokenId, _tokenURI);
     }
 
-    // Sets baseURI as the _baseURI for all tokens
+    /// Settles baseURI as the _baseURI for all tokens
+    /// @param _baseURI Base URI of NFTs
+    /// @dev This function can only be called by the owner of the contract
     function setBaseURI(string memory _baseURI) external onlyOwner {
         _setBaseURI(_baseURI);
     }

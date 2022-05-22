@@ -94,6 +94,8 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         string newTokenURI,
         NftSpecifications specifications
     );
+
+    /// @notice Returned Random Numbers Event 
     event ReturnedRandomness(uint256[] randomWords);
 
     /// @notice Constructor

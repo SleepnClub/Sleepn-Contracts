@@ -64,11 +64,11 @@ contract Dex is Initializable, OwnableUpgradeable {
     /// @notice Withdraw Money Event
     event WithdrawMoney(address indexed receiver, uint256 price);
 
-    /// @notice Constructor 
+    /// @notice Constructor
     /// @param _teamWallet Team Wallet address
     /// @param _sleepToken Sleep Token Contract address
     /// @param _bedroomNft Bedroom NFT Contract address
-    /// @param _UpgradeNft Upgrade NFT Contract address
+    /// @param _upgradeNft Upgrade NFT Contract address
     function initialize(
         address _teamWallet,
         ISleepToken _sleepToken,
@@ -88,7 +88,7 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     /// @notice Settles Team Wallet contract address
-    /// @param _newAddress New Team Wallet address 
+    /// @param _newAddress New Team Wallet address
     /// @dev This function can only be called by the owner of the contract
     function setTeamWallet(address _newAddress) external onlyOwner {
         teamWallet = _newAddress;
@@ -122,7 +122,7 @@ contract Dex is Initializable, OwnableUpgradeable {
 
     /// @notice Settles NFTs upgrade prices
     /// @param _category Category of the Bedroom NFT
-    /// @param _upgradeIndex Index of the upgrade 
+    /// @param _upgradeIndex Index of the upgrade
     /// @param _indexAttribute Index of the attribute concerned by the upgrade
     /// @param _valueToAddMax Value max to add to the existing score
     /// @param _price Purchase price of the Upgrade NFT
@@ -162,7 +162,7 @@ contract Dex is Initializable, OwnableUpgradeable {
         public
         payable
     {
-        require(msg.value == prices[_category].purchaseCost*1e18, "Wrong tx");
+        require(msg.value == prices[_category].purchaseCost * 1e18, "Wrong tx");
         bedroomNftInstance.mintingBedroomNft(
             _designId,
             msg.value,
@@ -173,12 +173,13 @@ contract Dex is Initializable, OwnableUpgradeable {
         emit ReceivedMoney(msg.sender, msg.value);
     }
 
-    /// @notice Launches the mint procedure of a Bedroom NFT
+    /// @notice Launches the mint procedure of an Upgrade NFT
+    /// @notice Update NFT minting will automatically update the Bedroom NFT
     /// @param _tokenId Category of the desired Bedroom NFT
     /// @param _newDesignId Design Id of the NFT
     /// @param _upgradeDesignId Category of the desired Bedroom NFT
-    /// @param _upgradeIndex Design Id of the NFT
-    /// @param _price Design Id of the NFT
+    /// @param _upgradeIndex Index of the upgrade
+    /// @param _price Price of the NFT
     function upgradeNft(
         uint256 _tokenId,
         uint256 _newDesignId,
