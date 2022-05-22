@@ -4,8 +4,8 @@ async function main() {
   // Parameters
   const teamWallet = "0x151C165898908E827FF0389eA5a3A679AbD2aa54";
   const sleepTokenContract = "0x920907cbc06f10bcC141c4126eEd398492398793";
-  const bedroomNftContract = "0xb150a58d376DeF437AB8b19ab351db7BA2C1eDEe";
-  const upgradeNftContract = "0x45D484c35f13e6FFe370a881728508bf48da77CB";
+  const bedroomNftContract = "0xa7E90a744302c3B8e888dbf140dD4C6Afdb3e5B3";
+  const upgradeNftContract = "0x3537980f3CB0C24A4a3B2541AD525fCFE5f18160";
 
   // Deployment
   const Dex = await ethers.getContractFactory('Dex');

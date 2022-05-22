@@ -79,6 +79,21 @@ contract Dex is Initializable, OwnableUpgradeable {
         teamWallet = _newAddress;
     }
 
+    /// @notice Settles contracts addresses
+    /// @param _sleepToken Address of the Sleep Token contract
+    /// @param _bedroomNft Address of the Bedroom NFT contract
+    /// @param _upgradeNft Address of the Upgrade NFT contract
+    /// @dev This function can only be called by the owner of the contract
+    function setContracts(
+        ISleepToken _sleepToken,
+        IBedroomNft _bedroomNft,
+        IUpgradeNft _upgradeNft
+    ) external onlyOwner {
+        sleepTokenInstance = _sleepToken;
+        bedroomNftInstance = _bedroomNft;
+        upgradeNftInstance = _upgradeNft;
+    }
+
     // Set NFT prices - Buying prices
     function setBuyingPrices(IBedroomNft.Category _category, uint256 _price)
         external
@@ -103,40 +118,31 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     // Withdraw Money
-    function withdrawMoney() external onlyOwner {
-        address payable teamWalletAddress = payable(teamWallet);
-        uint256 price = address(this).balance;
-
-        teamWalletAddress.transfer(price);
-
-        emit WithdrawMoney(teamWalletAddress, price);
+    function withdrawMoney() public onlyOwner {
+        address payable to = payable(teamWallet);
+        to.transfer(address(this).balance);
+        emit WithdrawMoney(teamWallet, address(this).balance);
     }
 
     // getBalance
-    function getBalance() public view onlyOwner returns (uint256) {
+    function getBalance() external view onlyOwner returns (uint256) {
         return address(this).balance;
     }
 
     // Buy NFT
     function buyNft(IBedroomNft.Category _category, uint256 _designId)
-        external
+        public
         payable
     {
-        require(
-            msg.value == prices[_category].purchaseCost,
-            "Wrong tx"
-        );
+        require(msg.value == prices[_category].purchaseCost*1e18, "Wrong tx");
         bedroomNftInstance.mintingBedroomNft(
             _designId,
             msg.value,
             _category,
             msg.sender
         );
-        emit BuyNft(
-            msg.sender,
-            _category,
-            _designId
-        );
+        emit BuyNft(msg.sender, _category, _designId);
+        emit ReceivedMoney(msg.sender, msg.value);
     }
 
     // Upgrade NFT
@@ -154,17 +160,18 @@ contract Dex is Initializable, OwnableUpgradeable {
 
         // Get Upgrade infos
         uint256 price = prices[category].upgradeCosts[_upgradeIndex].price;
-        uint256 value = prices[category].upgradeCosts[_upgradeIndex].valueToAddMax;
-        uint256 index = prices[category].upgradeCosts[_upgradeIndex].indexAttribute;
+        uint256 value = prices[category]
+            .upgradeCosts[_upgradeIndex]
+            .valueToAddMax;
+        uint256 index = prices[category]
+            .upgradeCosts[_upgradeIndex]
+            .indexAttribute;
 
         // Sender is owner
         require(msg.sender == nftOwnership.owner, "Wrong sender");
 
         // Good amount of tokens
-        require(
-            _price == price,
-            "Wrong tx"
-        );
+        require(_price == price, "Wrong tx");
 
         // Check Balance of sender
         uint256 initialBalance = sleepTokenInstance.balanceOf(msg.sender);
@@ -181,8 +188,7 @@ contract Dex is Initializable, OwnableUpgradeable {
 
         // Checks that the tokens were burned
         require(
-            sleepTokenInstance.balanceOf(msg.sender) + _price ==
-                initialBalance,
+            sleepTokenInstance.balanceOf(msg.sender) + _price == initialBalance,
             "An error occurred"
         );
 
@@ -204,10 +210,5 @@ contract Dex is Initializable, OwnableUpgradeable {
             _upgradeIndex,
             _price
         );
-    }
-
-    // Receive Money fallback function
-    receive() external payable {
-        emit ReceivedMoney(msg.sender, msg.value);
     }
 }

@@ -2,6 +2,8 @@
 pragma solidity 0.8.13;
 
 import "./IBedroomNft.sol";
+import "./ISleepToken.sol";
+import "./IUpgradeNft.sol";
 
 interface IDex {
     event ReceivedMoney(address indexed sender, uint256 price);
@@ -22,6 +24,12 @@ interface IDex {
     event WithdrawMoney(address indexed receiver, uint256 price);
 
     function setTeamWallet(address _newAddress) external;
+
+    function setContracts(
+        ISleepToken _sleepToken,
+        IBedroomNft _bedroomNft,
+        IUpgradeNft _upgradeNft
+    ) external;
 
     function setBuyingPrices(IBedroomNft.Category _category, uint256 _price)
         external;
