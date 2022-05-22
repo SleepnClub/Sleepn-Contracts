@@ -19,42 +19,47 @@ GetSleepn Smartcontracts are deployed on Polygon Mainet.
 | Super Sleep Token Contract | [0x38270a994843BeB153e9c7D1cb35878D83E6ab86](https://polygonscan.com/address/0x38270a994843BeB153e9c7D1cb35878D83E6ab86)
 
 ## Technologies
-Chainlink VRF V2 : Used in Bedroom and Upgrade NFTs contracts to generate random scores.
-```solidity
-uint256 requestId = COORDINATOR.requestRandomWords(
-    keyHash,
-    subscriptionId,
-    requestConfirmations,
-    callbackGasLimit,
-    numWords
-);
+- Chainlink VRF V2 : Used in Bedroom and Upgrade NFTs contracts to generate random scores.
+    ```solidity
+    uint256 requestId = COORDINATOR.requestRandomWords(
+        keyHash,
+        subscriptionId,
+        requestConfirmations,
+        callbackGasLimit,
+        numWords
+    );
 
-function fulfillRandomWords(
-    uint256 _requestId,
-    uint256[] memory _randomWords
-) internal override {
-    _mintingBedroomNft(requestIdToTokenId[_requestId], _randomWords);
-    emit ReturnedRandomness(_randomWords);
-}
-```
+    function fulfillRandomWords(
+        uint256 _requestId,
+        uint256[] memory _randomWords
+    ) internal override {
+        _mintingBedroomNft(requestIdToTokenId[_requestId], _randomWords);
+        emit ReturnedRandomness(_randomWords);
+    }
+    ```
 
-Superfluid : Used to stream $SLEEP Token to GetSleepn users in Reward contract
-```solidity
-(, int96 outFlowRate, , ) = cfa.getFlow(
-    superToken,
-    address(this),
-    _receiver
-);
+- Superfluid : Used to stream $SLEEP Token to GetSleepn users in Reward contract
+    ```solidity
+    (, int96 outFlowRate, , ) = cfa.getFlow(
+        superToken,
+        address(this),
+        _receiver
+    );
 
-if (outFlowRate == 0) {
-    cfaV1.createFlow(_receiver, superToken, flowrate);
-} else {
-    cfaV1.updateFlow(_receiver, superToken, flowrate);
-}
+    if (outFlowRate == 0) {
+        cfaV1.createFlow(_receiver, superToken, flowrate);
+    } else {
+        cfaV1.updateFlow(_receiver, superToken, flowrate);
+    }
 
-cfaV1.deleteFlow(address(this), _receiver, superToken);
-```
+    cfaV1.deleteFlow(address(this), _receiver, superToken);
+    ```
 
+- Gnosis Safe : Cash management and contract management  
+
+- IPFS + Unstoppable Domains : NFTs storage <br>
+Example -> [Click On Me](https://getsleepn.crypto/0.png)<br>
+This requires a Web3.0 browser such as Brave, which supports IPFS and Unstoppable Domains.
 
 ## License
 MIT
