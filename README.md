@@ -60,7 +60,7 @@ This requires a Web3.0 browser such as Brave, which supports IPFS and Unstoppabl
 
     cfaV1.deleteFlow(address(this), _receiver, superToken);
     ```
-- Uniswap : Used for the liquidity pool of $SLEEP/USDC 
+- Uniswap : Used for the liquidity pool of $SLEEP/USDC in SleepToken contrat
     ```solidity
     function createNewPool(
         address _tokenB,
