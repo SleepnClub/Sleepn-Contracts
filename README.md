@@ -25,7 +25,7 @@ GetSleepn Smartcontracts are deployed on Polygon Mainet.
 Example -> [Click On Me](https://getsleepn.crypto/1.png)<br>
 This requires a Web3.0 browser such as Brave, which supports IPFS and Unstoppable Domains.
 
-- Chainlink VRF V2 : Used in Bedroom and Upgrade NFTs contracts to generate random scores.
+- Chainlink VRF V2 : Used in Bedroom and Upgrade NFTs contracts to generate random scores
     ```solidity
     uint256 requestId = COORDINATOR.requestRandomWords(
         keyHash,
@@ -44,7 +44,7 @@ This requires a Web3.0 browser such as Brave, which supports IPFS and Unstoppabl
     }
     ```
 
-- Superfluid : Used to stream $SLEEP Token to GetSleepn users in Reward contract
+- Superfluid : Used to stream $SLEEP to GetSleepn users in Reward contract
     ```solidity
     (, int96 outFlowRate, , ) = cfa.getFlow(
         superToken,
