@@ -8,6 +8,7 @@ import "hardhat-gas-reporter";
 import "solidity-coverage";
 import '@openzeppelin/hardhat-upgrades';
 import "@tenderly/hardhat-tenderly";
+import "hardhat-docgen";
 
 dotenv.config();
 
@@ -56,6 +57,11 @@ const config: HardhatUserConfig = {
   tenderly: {
     project: "Sleepn",
     username: "Alex19132",
+  },
+  docgen: {
+    path: './docs',
+    clear: true,
+    runOnCompile: true
   }
 };
 
