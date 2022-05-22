@@ -1,46 +1,61 @@
-# Advanced Sample Hardhat Project
+# GetSleepn - Smartcontracts
+## Contracts Source Codes
+- Bedroom NFT Contract : contracts/BedroomNft.sol  
+- Upgrade NFT Contract : contracts/Upgrade.sol 
+- Decentralized Exchange Contract : contracts/Dex.sol
+- Stream Reward Contract : contracts/Reward.sol
+- Sleep Token Contract : contracts/SleepToken.sol
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+## Contracts Addresses
+GetSleepn Smartcontracts are deployed on Polygon Mainet.
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+| CONTRACTS | ADDRESSES |
+| ------ | ------ |
+| Bedroom NFT Contract | [0xa7E90a744302c3B8e888dbf140dD4C6Afdb3e5B3](https://polygonscan.com/address/0xa7E90a744302c3B8e888dbf140dD4C6Afdb3e5B3) 
+| Upgrade NFT Contract | [0x3537980f3CB0C24A4a3B2541AD525fCFE5f18160](https://polygonscan.com/address/0x3537980f3CB0C24A4a3B2541AD525fCFE5f18160)
+| Dex Contract | [0x3240E10ad3EBc6b66E8FaAA0E288123702B3A29f](https://polygonscan.com/address/0x3240E10ad3EBc6b66E8FaAA0E288123702B3A29f)
+| Reward Contract | [0xa87637C7E74B6f74be80EA0507C7AfDb204F950A](https://polygonscan.com/address/0xa87637C7E74B6f74be80EA0507C7AfDb204F950A)
+| Sleep Token Contract | [0x920907cbc06f10bcC141c4126eEd398492398793](https://polygonscan.com/token/0x920907cbc06f10bcC141c4126eEd398492398793)
+| Super Sleep Token Contract | [0x38270a994843BeB153e9c7D1cb35878D83E6ab86](https://polygonscan.com/address/0x38270a994843BeB153e9c7D1cb35878D83E6ab86)
 
-Try running some of the following tasks:
+## Technologies
+Chainlink VRF V2 : Used in Bedroom and Upgrade NFTs contracts to generate random scores.
+```solidity
+uint256 requestId = COORDINATOR.requestRandomWords(
+    keyHash,
+    subscriptionId,
+    requestConfirmations,
+    callbackGasLimit,
+    numWords
+);
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
+function fulfillRandomWords(
+    uint256 _requestId,
+    uint256[] memory _randomWords
+) internal override {
+    _mintingBedroomNft(requestIdToTokenId[_requestId], _randomWords);
+    emit ReturnedRandomness(_randomWords);
+}
 ```
 
-# Etherscan verification
+Superfluid : Used to stream $SLEEP Token to GetSleepn users in Reward contract
+```solidity
+(, int96 outFlowRate, , ) = cfa.getFlow(
+    superToken,
+    address(this),
+    _receiver
+);
 
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
+if (outFlowRate == 0) {
+    cfaV1.createFlow(_receiver, superToken, flowrate);
+} else {
+    cfaV1.updateFlow(_receiver, superToken, flowrate);
+}
 
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
-
-```shell
-hardhat run --network ropsten scripts/deploy.ts
+cfaV1.deleteFlow(address(this), _receiver, superToken);
 ```
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
 
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
+## License
+MIT
 
-# Performance optimizations
-
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
