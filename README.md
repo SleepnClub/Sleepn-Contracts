@@ -19,7 +19,7 @@ GetSleepn Smartcontracts are deployed on Polygon Mainet.
 | Super Sleep Token Contract | [0x38270a994843BeB153e9c7D1cb35878D83E6ab86](https://polygonscan.com/address/0x38270a994843BeB153e9c7D1cb35878D83E6ab86)
 
 ## Technologies
-- Gnosis Safe : Cash management and contract management  
+- Gnosis Safe : Cash management + Contracts Ownership management 
 
 - IPFS + Unstoppable Domains : NFTs storage <br>
 Example -> [Click On Me](https://getsleepn.crypto/1.png)<br>
