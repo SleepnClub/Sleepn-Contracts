@@ -8,17 +8,20 @@ import "./Interfaces/ISleepToken.sol";
 import "./Interfaces/IBedroomNft.sol";
 import "./Interfaces/IUpgradeNft.sol";
 
+/// @title GetSleepn Decentralized Exchange Contract
+/// @author Alexis Balayre
+/// @notice This contract can be use to mint and upgrade a Bedroom NFT
 contract Dex is Initializable, OwnableUpgradeable {
-    // Team Wallet
+    /// @notice Dex Contract address
     address public teamWallet;
 
-    // Sleep Token Contract
+    /// @notice Sleep Token Contract
     ISleepToken public sleepTokenInstance;
 
-    // Bedroom NFT Contract
+    /// @notice Bedroom NFT Contract
     IBedroomNft public bedroomNftInstance;
 
-    // UpgradeNFT Contract
+    /// @notice UpgradeNFT Contract
     IUpgradeNft public upgradeNftInstance;
 
     /// @notice Informations about an upgrade
@@ -37,13 +40,17 @@ contract Dex is Initializable, OwnableUpgradeable {
     /// @notice Purchase cost and Upgrade costs depending on the category of the NFT
     mapping(IBedroomNft.Category => NftPrices) public prices;
 
-    // Events
+    /// @notice Received Money Event
     event ReceivedMoney(address indexed sender, uint256 price);
+
+    /// @notice Buy NFT Event
     event BuyNft(
         address indexed owner,
         IBedroomNft.Category category,
         uint256 designId
     );
+
+    /// @notice Upgrade NFT Event
     event UpgradeNft(
         address indexed owner,
         IBedroomNft.Category category,
@@ -53,9 +60,15 @@ contract Dex is Initializable, OwnableUpgradeable {
         uint256 upgradeIndex,
         uint256 price
     );
+
+    /// @notice Withdraw Money Event
     event WithdrawMoney(address indexed receiver, uint256 price);
 
-    // Init
+    /// @notice Constructor 
+    /// @param _teamWallet Team Wallet address
+    /// @param _sleepToken Sleep Token Contract address
+    /// @param _bedroomNft Bedroom NFT Contract address
+    /// @param _UpgradeNft Upgrade NFT Contract address
     function initialize(
         address _teamWallet,
         ISleepToken _sleepToken,
@@ -74,7 +87,9 @@ contract Dex is Initializable, OwnableUpgradeable {
         assert(address(sleepTokenInstance) != address(0));
     }
 
-    // Set Team Wallet
+    /// @notice Settles Team Wallet contract address
+    /// @param _newAddress New Team Wallet address 
+    /// @dev This function can only be called by the owner of the contract
     function setTeamWallet(address _newAddress) external onlyOwner {
         teamWallet = _newAddress;
     }
@@ -94,7 +109,10 @@ contract Dex is Initializable, OwnableUpgradeable {
         upgradeNftInstance = _upgradeNft;
     }
 
-    // Set NFT prices - Buying prices
+    /// @notice Settles NFTs purchase prices
+    /// @param _category Category of the NFT
+    /// @param _price Purchase price of the NFT
+    /// @dev This function can only be called by the owner of the contract
     function setBuyingPrices(IBedroomNft.Category _category, uint256 _price)
         external
         onlyOwner
@@ -102,7 +120,13 @@ contract Dex is Initializable, OwnableUpgradeable {
         prices[_category].purchaseCost = _price;
     }
 
-    // Set NFT prices - Upgrading prices
+    /// @notice Settles NFTs upgrade prices
+    /// @param _category Category of the Bedroom NFT
+    /// @param _upgradeIndex Index of the upgrade 
+    /// @param _indexAttribute Index of the attribute concerned by the upgrade
+    /// @param _valueToAddMax Value max to add to the existing score
+    /// @param _price Purchase price of the Upgrade NFT
+    /// @dev This function can only be called by the owner of the contract
     function setUpgradePrices(
         IBedroomNft.Category _category,
         uint256 _upgradeIndex,
@@ -117,19 +141,23 @@ contract Dex is Initializable, OwnableUpgradeable {
         );
     }
 
-    // Withdraw Money
+    /// @notice Withdraws the money from the contract
+    /// @dev This function can only be called by the owner of the contract
     function withdrawMoney() public onlyOwner {
         address payable to = payable(teamWallet);
         to.transfer(address(this).balance);
         emit WithdrawMoney(teamWallet, address(this).balance);
     }
 
-    // getBalance
+    /// @notice Returns the balance of the contract
+    /// @return _balance Balance of the contract
     function getBalance() external view onlyOwner returns (uint256) {
         return address(this).balance;
     }
 
-    // Buy NFT
+    /// @notice Launches the mint procedure of a Bedroom NFT
+    /// @param _category Category of the desired Bedroom NFT
+    /// @param _designId Design Id of the NFT
     function buyNft(IBedroomNft.Category _category, uint256 _designId)
         public
         payable
@@ -145,7 +173,12 @@ contract Dex is Initializable, OwnableUpgradeable {
         emit ReceivedMoney(msg.sender, msg.value);
     }
 
-    // Upgrade NFT
+    /// @notice Launches the mint procedure of a Bedroom NFT
+    /// @param _tokenId Category of the desired Bedroom NFT
+    /// @param _newDesignId Design Id of the NFT
+    /// @param _upgradeDesignId Category of the desired Bedroom NFT
+    /// @param _upgradeIndex Design Id of the NFT
+    /// @param _price Design Id of the NFT
     function upgradeNft(
         uint256 _tokenId,
         uint256 _newDesignId,

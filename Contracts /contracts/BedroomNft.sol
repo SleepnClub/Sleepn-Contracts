@@ -15,13 +15,13 @@ import "./Interfaces/IUpgradeNft.sol";
 /// @author Alexis Balayre
 /// @notice Bedroom NFT is the main NFT of GetSleepn app
 contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
-    /// @dev Dex Contract address
+    /// @notice Dex Contract address
     address public dexAddress;
 
-    /// @dev Upgrade NFT Contract address
+    /// @notice Upgrade NFT Contract address
     IUpgradeNft public upgradeNftInstance;
 
-    /// @dev Chainlink VRF Variables
+    /// @notice Chainlink VRF Variables
     VRFCoordinatorV2Interface public immutable COORDINATOR;
     uint32 private numWords;
     uint32 private callbackGasLimit;
@@ -66,19 +66,19 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         Category category;
     }
 
-    /// @dev File format of NFT design files
+    /// @notice File format of NFT design files
     string public fileFormat;
 
-    /// @dev Number of NFT
+    /// @notice Number of NFT
     uint256 public tokenId;
 
-    /// @dev Maps Chainlink VRF Random Number Request Id to NFT Id
+    /// @notice Maps Chainlink VRF Random Number Request Id to NFT Id
     mapping(uint256 => uint256) private requestIdToTokenId;
 
-    /// @dev Maps NFT Scores to NFT Id
+    /// @notice Maps NFT Scores to NFT Id
     mapping(uint256 => NftSpecifications) private tokenIdToNftSpecifications;
 
-    /// @dev Maps NFT Informations to NFT Id
+    /// @notice Maps NFT Informations to NFT Id
     mapping(uint256 => NftOwnership) private tokenIdToNftOwnership;
 
     /// @notice Emits an event when a Bedroom NFT is minted
@@ -96,7 +96,10 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     );
     event ReturnedRandomness(uint256[] randomWords);
 
-    /// @dev Constructor
+    /// @notice Constructor
+    /// @param _subscriptionId Chainlink VRF Id Subscription
+    /// @param _vrfCoordinator Address of the Coordinator Contract
+    /// @param _keyHash Chainlink VRF key hash
     constructor(
         uint64 _subscriptionId,
         address _vrfCoordinator,
@@ -136,7 +139,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
 
     /// @notice Returns the scores of a NFT
     /// @param _tokenId The id of the NFT
-    /// @return _scores Scores of the desired attribute
+    /// @return _scores Scores of the NFT
     function getNftSpecifications(uint256 _tokenId)
         external
         view
@@ -149,6 +152,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     /// @param _callbackGasLimit Callback Gas Limit
     /// @param _subscriptionId Chainlink subscription Id
     /// @param _keyHash Chainlink Key Hash
+    /// @param _requestConfirmations Number of request confirmations
     /// @dev This function can only be called by the owner of the contract
     function updateChainlink(
         uint32 _callbackGasLimit,
@@ -296,7 +300,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     }
 
     /// @notice Launches the procedure to create an NFT
-    /// @param _designId Design If the NFT
+    /// @param _designId Design Id the NFT
     /// @param _price Price of the NFT
     /// @param _category Category of the NFT
     /// @param _owner Owner of the NFT
@@ -332,9 +336,9 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         tokenId++;
     }
 
-    /// Gets the name of a Nft
+    /// Gets the name of a NFT
     /// @param _tokenId Id of the NFT
-    /// @return _name Name of thr NFT
+    /// @return _name Name of the NFT
     function getName(uint256 _tokenId) external view returns (string memory) {
         return
             string(
@@ -386,7 +390,13 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         );
     }
 
-    // NFT Upgrading
+    /// @notice Launches the procedure to update an NFT
+    /// @param _tokenId Id of the NFT
+    /// @param _attributeIndex Index of the attribute to upgrade
+    /// @param _valueToAdd Value to add to the attribute score
+    /// @param _newDesignId New design Id of the NFT
+    /// @param _amount Price of the upgrade
+    /// @dev This function can only be called by Dex Contract
     function upgradeBedroomNft(
         uint256 _tokenId,
         uint256 _attributeIndex,
@@ -422,7 +432,8 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         );
     }
 
-    // This implementation returns the concatenation of the _baseURI and the token-specific uri if the latter is set
+    /// @notice Returns the concatenation of the _baseURI and the token-specific uri if the latter is set
+    /// @param _tokenId Id of the NFT
     function uri(uint256 _tokenId)
         public
         view
@@ -432,7 +443,10 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         return super.uri(_tokenId);
     }
 
-    // Sets tokenURI as the tokenURI of tokenId.
+    /// @notice Settles the URI of a NFT
+    /// @param _tokenId Id of the NFT
+    /// @param _tokenURI Uri of the NFT
+    /// @dev This function can only be called by the owner of the contract
     function setTokenURI(uint256 _tokenId, string memory _tokenURI)
         external
         onlyOwner
@@ -440,7 +454,9 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         _setURI(_tokenId, _tokenURI);
     }
 
-    // Sets baseURI as the _baseURI for all tokens
+    /// Settles baseURI as the _baseURI for all tokens
+    /// @param _baseURI Base URI of NFTs
+    /// @dev This function can only be called by the owner of the contract
     function setBaseURI(string memory _baseURI) external onlyOwner {
         _setBaseURI(_baseURI);
     }
