@@ -100,9 +100,9 @@ contract SleepToken is
     }
 
     /// @dev Function called before each transfert
-    /// @param _from Sender Address
-    /// @param _to Receiver Address
-    /// @param _amount Amount of tokens to send
+    /// @param from Sender Address
+    /// @param to Receiver Address
+    /// @param amount Amount of tokens to send
     function _beforeTokenTransfer(
         address from,
         address to,

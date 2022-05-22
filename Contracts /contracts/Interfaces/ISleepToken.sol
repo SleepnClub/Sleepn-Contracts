@@ -6,9 +6,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 
-/// @title Interface of the Sleep Token Contract
+/// @title Interface of the $Sleep Token Contract
 /// @author Alexis Balayre
-/// @notice Contains the external functions of the SleepToken Contract
+/// @notice $Sleep is the official token of getSleepn App
 interface ISleepToken is IERC20Upgradeable {
     /// @notice Burns tokens from an account
     /// @param _account Address of the account
@@ -23,38 +23,38 @@ interface ISleepToken is IERC20Upgradeable {
         view
         returns (uint256 _balance);
 
-    /// @notice Settles the address of the Pool
-    /// @param _newAddress New address of the pool
+    /// @notice Settles Pool Address
+    /// @param _newAddress Address of the pool
     /// @dev This function can only be called by the owner of the contract
     function setPool(IUniswapV3Pool _newAddress) external;
 
-    /// @notice Pauses the contract
+    /// @notice Stops the contract
     /// @dev This function can only be called by the owner of the contract
     function pause() external;
 
-    /// @notice Starts of the contract
+    /// @notice Starts the contract
     /// @dev This function can only be called by the owner of the contract
     function unpause() external;
 
-    /// @notice Mints tokens for the smartcontract account
-    /// @param _amount Number of tokens to mint
+    /// @notice Mints tokens for this smart contract
+    /// @param _amount Amount of tokens to mint
     /// @dev This function can only be called by the owner of the contract
     function mintTokens(uint256 _amount) external;
 
-    /// @notice Burns tokens from the smartcontract account
-    /// @param _amount Number of tokens to burn
+    /// @notice Burns tokens of this smart contract
+    /// @param _amount Amount of tokens to burn
     /// @dev This function can only be called by the owner of the contract
     function burnTokens(uint256 _amount) external;
 
-    /// @notice Sends tokens to Reward Contract
-    /// @param _amount Number of tokens to send
+    /// @notice Sends tokens to reward Contract
+    /// @param _amount Amount of tokens to send
     /// @dev This function can only be called by the owner of the contract
     function supplyRewardContract(uint256 _amount) external;
 
-    /// @notice Creates a new pool on Uniswap
-    /// @param _tokenB Address of the collateral token
-    /// @param _fee Fee price of the pool
-    /// @param _sqrtPriceX96 Initial price of the token
+    /// @notice Creates a new Pool and settles the initial price for the pool
+    /// @param _tokenB Address of the pair token
+    /// @param _fee Fee of the pool
+    /// @param _sqrtPriceX96 Initial price of $Sleep
     /// @dev This function can only be called by the owner of the contract
     function createNewPool(
         address _tokenB,
@@ -62,10 +62,10 @@ interface ISleepToken is IERC20Upgradeable {
         uint160 _sqrtPriceX96
     ) external;
 
-    /// @notice Adds liquidity to the pool
-    /// @param _tickLower tick Lower
-    /// @param _tickUpper tick Upper
-    /// @param _amount Amount of tokens to add
+    /// @notice Adds liquidity to the Pool
+    /// @param _tickLower Lower tick
+    /// @param _tickUpper Upper tick
+    /// @param _amount Amount of tokens
     /// @dev This function can only be called by the owner of the contract
     function addLiquidity(
         int24 _tickLower,
@@ -73,10 +73,10 @@ interface ISleepToken is IERC20Upgradeable {
         uint128 _amount
     ) external;
 
-    /// @notice Burns liquidity in the pool
-    /// @param _tickLower tick Lower
-    /// @param _tickUpper tick Upper
-    /// @param _amount Amount of tokens to burn
+    /// @notice Burns liquidity from the sender and account tokens owed
+    /// @param _tickLower Lower tick
+    /// @param _tickUpper Upper tick
+    /// @param _amount Amount of tokens
     /// @dev This function can only be called by the owner of the contract
     function burnLiquidity(
         int24 _tickLower,
@@ -84,9 +84,9 @@ interface ISleepToken is IERC20Upgradeable {
         uint128 _amount
     ) external;
 
-    /// @notice Collectes fees
-    /// @param _tickLower tick Lower
-    /// @param _tickUpper tick Upper
+    /// @notice Collectes the pool fees
+    /// @param _tickLower Lower tick
+    /// @param _tickUpper Upper tick
     /// @dev This function can only be called by the owner of the contract
     function collectFee(int24 _tickLower, int24 _tickUpper) external;
 }

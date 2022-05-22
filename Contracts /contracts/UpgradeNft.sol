@@ -181,8 +181,8 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     }
 
     /// @dev Callback function with the requested random numbers
-    /// @param _requestId Chainlink VRF Random Number Request Id
-    /// @param _randomWords List of random words
+    /// @param requestId Chainlink VRF Random Number Request Id
+    /// @param randomWords List of random words
     function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords)
         internal
         override
