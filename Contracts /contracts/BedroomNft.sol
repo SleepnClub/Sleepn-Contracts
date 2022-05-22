@@ -95,10 +95,10 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         NftSpecifications specifications
     );
 
-    /// @notice Returned Random Numbers Event 
+    /// @notice Returned Random Numbers Event
     event ReturnedRandomness(uint256[] randomWords);
 
-    /// @notice Constructor
+    /// @dev Constructor
     /// @param _subscriptionId Chainlink VRF Id Subscription
     /// @param _vrfCoordinator Address of the Coordinator Contract
     /// @param _keyHash Chainlink VRF key hash

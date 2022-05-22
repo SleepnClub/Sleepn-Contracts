@@ -54,17 +54,17 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     mapping(uint256 => UpgradeSpecifications)
         private tokenIdToUpgradeSpecifications;
 
-    /// @notice Upgrade NFT Minting Event 
+    /// @notice Upgrade NFT Minting Event
     event UpgradeNftMinting(
         uint256 tokenId,
         string tokenURI,
         UpgradeSpecifications specifications
     );
 
-    /// @notice Returned Random Numbers Event 
+    /// @notice Returned Random Numbers Event
     event ReturnedRandomness(uint256[] randomWords);
 
-    /// @notice Constructor
+    /// @dev Constructor
     /// @param _subscriptionId Chainlink VRF Id Subscription
     /// @param _vrfCoordinator Address of the Coordinator Contract
     /// @param _keyHash Chainlink VRF key hash

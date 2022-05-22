@@ -64,7 +64,7 @@ contract Dex is Initializable, OwnableUpgradeable {
     /// @notice Withdraw Money Event
     event WithdrawMoney(address indexed receiver, uint256 price);
 
-    /// @notice Constructor
+    /// @dev Constructor
     /// @param _teamWallet Team Wallet address
     /// @param _sleepToken Sleep Token Contract address
     /// @param _bedroomNft Bedroom NFT Contract address

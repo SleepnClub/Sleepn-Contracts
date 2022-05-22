@@ -10,7 +10,9 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
 
-
+/// @title $Sleep Token Contract
+/// @author Alexis Balayre
+/// @notice $Sleep is the official token of getSleepn App
 contract SleepToken is
     Initializable,
     ERC20Upgradeable,
@@ -18,19 +20,22 @@ contract SleepToken is
     PausableUpgradeable,
     OwnableUpgradeable
 {
-    // Reward Contract Address
+    /// @notice Reward Contract Address
     address public rewardContract;
 
-    // Team Wallet
+    /// @notice Team Wallet
     address public teamWallet;
 
-    // Pool Address
+    /// @notice Uniswap Liquidity Pool Address
     IUniswapV3Pool public pool;
 
-    // UniswapV3Factory Address
+    /// @notice UniswapV3Factory Contract Address
     IUniswapV3Factory public factory;
 
-    // Init
+    /// @dev Initializer
+    /// @param _totalSupply Total Supply of $Sleep
+    /// @param _rewardContract Reward Contract Address
+    /// @param _teamWallet Team Wallet Address
     function initialize(
         uint256 _totalSupply,
         address _rewardContract,
@@ -47,42 +52,57 @@ contract SleepToken is
         _mint(msg.sender, _totalSupply * 10**decimals());
     }
 
-    // Set rewardContract
+    /// @notice Settles Reward Contract Address
+    /// @param _rewardContract Reward Contract Address
+    /// @dev This function can only be called by the owner of the contract
     function setRewardContract(address _rewardContract) external onlyOwner {
         rewardContract = _rewardContract;
     }
 
-    // Set pool address
+    /// @notice Settles Pool Address
+    /// @param _newAddress Address of the pool
+    /// @dev This function can only be called by the owner of the contract
     function setPool(IUniswapV3Pool _newAddress) external onlyOwner {
         pool = _newAddress;
     }
 
-    // Stop the contract
+    /// @notice Stops the contract
+    /// @dev This function can only be called by the owner of the contract
     function pause() external onlyOwner {
         _pause();
     }
 
-    // Start the contract
+    /// @notice Starts the contract
+    /// @dev This function can only be called by the owner of the contract
     function unpause() external onlyOwner {
         _unpause();
     }
 
-    // Mint tokens for this smart contract
+    /// @notice Mints tokens for this smart contract
+    /// @param _amount Amount of tokens to mint
+    /// @dev This function can only be called by the owner of the contract
     function mintTokens(uint256 _amount) external onlyOwner {
         _mint(address(this), _amount);
     }
 
-    // Burn tokens of this smart contract
+    /// @notice Burns tokens of this smart contract
+    /// @param _amount Amount of tokens to burn
+    /// @dev This function can only be called by the owner of the contract
     function burnTokens(uint256 _amount) external onlyOwner {
         _burn(address(this), _amount);
     }
 
-    // Send tokens to reward Contract
+    /// @notice Sends tokens to reward Contract
+    /// @param _amount Amount of tokens to send
+    /// @dev This function can only be called by the owner of the contract
     function supplyRewardContract(uint256 _amount) external onlyOwner {
         _transfer(address(this), rewardContract, _amount);
     }
 
-    // Before each transfert
+    /// @dev Function called before each transfert
+    /// @param _from Sender Address
+    /// @param _to Receiver Address
+    /// @param _amount Amount of tokens to send
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -91,7 +111,11 @@ contract SleepToken is
         super._beforeTokenTransfer(from, to, amount);
     }
 
-    // Create a new Pool and set the initial price for the pool
+    /// @notice Creates a new Pool and settles the initial price for the pool
+    /// @param _tokenB Address of the pair token
+    /// @param _fee Fee of the pool
+    /// @param _sqrtPriceX96 Initial price of $Sleep
+    /// @dev This function can only be called by the owner of the contract
     function createNewPool(
         address _tokenB,
         uint24 _fee,
@@ -104,7 +128,11 @@ contract SleepToken is
         pool.initialize(_sqrtPriceX96);
     }
 
-    // Add liquidity to the Pool
+    /// @notice Adds liquidity to the Pool
+    /// @param _tickLower Lower tick
+    /// @param _tickUpper Upper tick
+    /// @param _amount Amount of tokens
+    /// @dev This function can only be called by the owner of the contract
     function addLiquidity(
         int24 _tickLower,
         int24 _tickUpper,
@@ -113,7 +141,11 @@ contract SleepToken is
         pool.mint(address(this), _tickLower, _tickUpper, _amount, "");
     }
 
-    // Burn liquidity from the sender and account tokens owed
+    /// @notice Burns liquidity from the sender and account tokens owed
+    /// @param _tickLower Lower tick
+    /// @param _tickUpper Upper tick
+    /// @param _amount Amount of tokens
+    /// @dev This function can only be called by the owner of the contract
     function burnLiquidity(
         int24 _tickLower,
         int24 _tickUpper,
@@ -122,7 +154,10 @@ contract SleepToken is
         pool.burn(_tickLower, _tickUpper, _amount);
     }
 
-    // Collect fees
+    /// @notice Collectes the pool fees
+    /// @param _tickLower Lower tick
+    /// @param _tickUpper Upper tick
+    /// @dev This function can only be called by the owner of the contract
     function collectFee(int24 _tickLower, int24 _tickUpper) external onlyOwner {
         pool.collect(
             teamWallet,
