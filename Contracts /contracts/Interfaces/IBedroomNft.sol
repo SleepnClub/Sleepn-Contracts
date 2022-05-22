@@ -5,9 +5,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.so
 
 import "./IUpgradeNft.sol";
 
-/// @title Interface of the BedroomNft Contract
+/// @title Interface of the Bedroom NFT Contract
 /// @author Alexis Balayre
-/// @notice Contains the external functions of the BedroomNft Contract
+/// @notice Bedroom NFT is the main NFT of GetSleepn app
 interface IBedroomNft is IERC1155Upgradeable {
     /// @notice Enumeration of the different categories of a Bedroom NFT
     enum Category {
@@ -45,6 +45,23 @@ interface IBedroomNft is IERC1155Upgradeable {
         uint256 comforterComfortabilityScore; // Index 15
         uint256 pillowComfortabilityScore; // Index 16
     }
+
+    /// @notice Emits an event when a Bedroom NFT is minted
+    event BedroomNftMinting(
+        uint256 tokenId,
+        string tokenURI,
+        NftSpecifications specifications
+    );
+
+    /// @notice Emits an event when a Bedroom NFT is upgraded
+    event BedroomNftUpgrading(
+        uint256 tokenId,
+        string newTokenURI,
+        NftSpecifications specifications
+    );
+
+    /// @notice Returned Random Numbers Event
+    event ReturnedRandomness(uint256[] randomWords);
 
     /// @notice Inits contracts addresses
     /// @param _dexAddress Address of the Dex contract
@@ -88,13 +105,6 @@ interface IBedroomNft is IERC1155Upgradeable {
     /// @dev This function can only be called by the owner of the contract
     function setFileFormat(string memory _format) external;
 
-    /// @notice BedroomNft minting event
-    event BedroomNftMinting(
-        uint256 tokenId,
-        string tokenURI,
-        NftSpecifications specifications
-    );
-
     /// @notice Launches the procedure to create an NFT
     /// @param _designId Design If the NFT
     /// @param _price Price of the NFT
@@ -114,13 +124,6 @@ interface IBedroomNft is IERC1155Upgradeable {
         external
         view
         returns (string memory _name);
-
-    /// @notice Mints a Bedroom NFT
-    event BedroomNftUpgrading(
-        uint256 tokenId,
-        string newTokenURI,
-        NftSpecifications specifications
-    );
 
     /// @notice Upgrades a Bedroom NFT
     /// @param _tokenId Id of the NFT

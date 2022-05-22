@@ -5,9 +5,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.so
 
 import "./IBedroomNft.sol";
 
-/// @title Interface of the UpgradeNft Contract
+/// @title Interface of the Upgrade Nft Contract
 /// @author Alexis Balayre
-/// @notice Contains the external functions of the UpgradeNft Contract
+/// @notice An update NFT is used to upgrade a Bedroom NFT
 interface IUpgradeNft is IERC1155Upgradeable {
     /// @notice Informations of an Upgrade NFT
     struct UpgradeSpecifications {
@@ -20,7 +20,17 @@ interface IUpgradeNft is IERC1155Upgradeable {
         uint256 upgradeDesignId;
     }
 
-    /// @notice Settles the address of contracts 
+    /// @notice Upgrade NFT Minting Event
+    event UpgradeNftMinting(
+        uint256 tokenId,
+        string tokenURI,
+        UpgradeSpecifications specifications
+    );
+
+    /// @notice Returned Random Numbers Event
+    event ReturnedRandomness(uint256[] randomWords);
+
+    /// @notice Settles the address of contracts
     /// @param _dexAddress Address of the Dex contract
     /// @param _bedroomNft Address of the Bedroom NFT Contract
     /// @dev This function can only be called by the owner of the contract

@@ -13,34 +13,40 @@ import {CFAv1Library} from "@superfluid-finance/ethereum-contracts/contracts/app
 import "./Interfaces/ISleepToken.sol";
 import "./Interfaces/IBedroomNft.sol";
 
-
+/// @title GetSleepn Reward Contract
+/// @author Alexis Balayre
+/// @notice This contract is used to stream $Sleep to GetSleepn users
 contract Reward is Initializable, OwnableUpgradeable {
-    ISuperToken public superToken; // super token address
+    /// @notice Address of the super token address
+    ISuperToken public superToken;
 
+    /// @dev Address of the Superfluid Host contract
     ISuperfluid private host; // host
-    IConstantFlowAgreementV1 private cfa; // the stored constant flow agreement class address
 
+    /// @dev Address of the Superfluid CFA contract
+    IConstantFlowAgreementV1 private cfa;
+
+    /// @dev CFAv1 Library
     using CFAv1Library for CFAv1Library.InitData;
-    CFAv1Library.InitData private cfaV1; //initialize cfaV1 variable
+    CFAv1Library.InitData private cfaV1;
 
-    // Bedroom NFT Contract
+    /// @dev Bedroom NFT Contract
     IBedroomNft private bedroomNft;
 
-    // NFT Category to Index Reward to flow rate
+    /// @notice Maps rewards to NFT Category
     mapping(IBedroomNft.Category => mapping(uint256 => int96))
         public rewardsByCategory;
 
-    // events 
-    event OpenUpdateStream(
-        address receiver,
-        int96 flowRate
-    );
+    /// @notice Open or Update Stream Event
+    event OpenUpdateStream(address receiver, int96 flowRate);
 
-    event CloseStream(
-        address receiver
-    );
+    /// @notice Close Stream Event
+    event CloseStream(address receiver);
 
-    // Init
+    /// @dev Initializer
+    /// @param _host Superfluid Host Contract Address
+    /// @param _cfa Superfluid CFA Contract Address
+    /// @param _bedroomNft Bedroom NFT Contract Address
     function initialize(
         ISuperfluid _host,
         IConstantFlowAgreementV1 _cfa,
@@ -82,11 +88,19 @@ contract Reward is Initializable, OwnableUpgradeable {
         rewardsByCategory[IBedroomNft.Category.Luxury][2] = 999999999999998; // 60 SLP per minute of Deep sleep
     }
 
+    /// @notice Settles Super Token Address
+    /// @param _superToken Super Token Contract Address
+    /// @dev This function can only be called by the owner of the contract
     function setSuperToken(ISuperToken _superToken) external onlyOwner {
         superToken = _superToken;
     }
 
-    // Set rewards flowrate : (Number of tokens / 60) * 10^18
+    /// @notice Settles rewards flowrat
+    /// @notice Rewards flowrate : (Number of tokens / 60) * 10^18
+    /// @param _category Category of the NFT
+    /// @param _indexReward Index of the reward
+    /// @param _flowRate Flowrate of the stream reward
+    /// @dev This function can only be called by the owner of the contract
     function setRewards(
         IBedroomNft.Category _category,
         uint256 _indexReward,
@@ -95,7 +109,11 @@ contract Reward is Initializable, OwnableUpgradeable {
         rewardsByCategory[_category][_indexReward] = _flowRate;
     }
 
-    // Create a stream
+    /// @notice Opens or Updates a reward stream
+    /// @param _receiver Address of the receiver
+    /// @param _tokenId ID of the NFT
+    /// @param _rewardIndex Index of the reward flowrate
+    /// @dev This function can only be called by Dex Contract
     function createUpdateStream(
         address _receiver,
         uint256 _tokenId,
@@ -113,7 +131,7 @@ contract Reward is Initializable, OwnableUpgradeable {
         // Verifies that the recipient is the owner of the NFT
         require(nftOwnership.owner == _receiver, "Wrong receiver");
 
-        // Gets flow rate 
+        // Gets flow rate
         int96 flowrate = rewardsByCategory[nftOwnership.category][_rewardIndex];
 
         (, int96 outFlowRate, , ) = cfa.getFlow(
@@ -123,27 +141,17 @@ contract Reward is Initializable, OwnableUpgradeable {
         );
 
         if (outFlowRate == 0) {
-            cfaV1.createFlow(
-                _receiver,
-                superToken,
-                flowrate
-            );
+            cfaV1.createFlow(_receiver, superToken, flowrate);
         } else {
-            cfaV1.updateFlow(
-                _receiver,
-                superToken,
-                flowrate
-            );
+            cfaV1.updateFlow(_receiver, superToken, flowrate);
         }
 
-        emit OpenUpdateStream(
-            _receiver,
-            flowrate
-        );
-
+        emit OpenUpdateStream(_receiver, flowrate);
     }
 
-    // Close a stream
+    /// @notice Closes a reward stream
+    /// @param _receiver Address of the receiver
+    /// @dev This function can only be called by Dex Contract
     function closeStream(address _receiver) external onlyOwner {
         require(
             _receiver != address(this),
