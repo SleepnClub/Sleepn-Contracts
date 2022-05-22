@@ -19,6 +19,12 @@ GetSleepn Smartcontracts are deployed on Polygon Mainet.
 | Super Sleep Token Contract | [0x38270a994843BeB153e9c7D1cb35878D83E6ab86](https://polygonscan.com/address/0x38270a994843BeB153e9c7D1cb35878D83E6ab86)
 
 ## Technologies
+- Gnosis Safe : Cash management and contract management  
+
+- IPFS + Unstoppable Domains : NFTs storage <br>
+Example -> [Click On Me](https://getsleepn.crypto/1.png)<br>
+This requires a Web3.0 browser such as Brave, which supports IPFS and Unstoppable Domains.
+
 - Chainlink VRF V2 : Used in Bedroom and Upgrade NFTs contracts to generate random scores.
     ```solidity
     uint256 requestId = COORDINATOR.requestRandomWords(
@@ -54,12 +60,30 @@ GetSleepn Smartcontracts are deployed on Polygon Mainet.
 
     cfaV1.deleteFlow(address(this), _receiver, superToken);
     ```
+- Uniswap : Used for the liquidity pool of $SLEEP/USDC 
+    ```solidity
+    function createNewPool(
+        address _tokenB,
+        uint24 _fee,
+        uint160 _sqrtPriceX96
+    ) external onlyOwner {
+        address newPool = factory.createPool(address(this), _tokenB, _fee);
+        // Set new pool address
+        pool = IUniswapV3Pool(newPool);
+        // Init price of the pool
+        pool.initialize(_sqrtPriceX96);
+    }
 
-- Gnosis Safe : Cash management and contract management  
-
-- IPFS + Unstoppable Domains : NFTs storage <br>
-Example -> [Click On Me](https://getsleepn.crypto/1.png)<br>
-This requires a Web3.0 browser such as Brave, which supports IPFS and Unstoppable Domains.
+    function collectFee(int24 _tickLower, int24 _tickUpper) external onlyOwner {
+        pool.collect(
+            teamWallet,
+            _tickLower,
+            _tickUpper,
+            type(uint128).max,
+            type(uint128).max
+        );
+    }
+    ```
 
 ## License
 MIT
