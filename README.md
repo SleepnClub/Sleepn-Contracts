@@ -86,5 +86,5 @@ This requires a Web 3.0 browser such as Brave, which supports IPFS and Unstoppab
     ```
 
 ## License
-MIT
+Distributed under the MIT License.
 
