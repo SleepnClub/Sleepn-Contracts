@@ -76,7 +76,7 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
-        callbackGasLimit = 50000;
+        callbackGasLimit = 100000;
         requestConfirmations = 3;
         numWords = 1;
         tokenId = 0;
@@ -187,19 +187,13 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         internal
         override
     {
-        _mintingUpgradeNft(requestIdToTokenId[requestId], randomWords);
         emit ReturnedRandomness(randomWords);
-    }
+        
+        uint256 _tokenId = requestIdToTokenId[requestId];
 
-    /// @dev Mints a new Upgrade NFT
-    /// @param _tokenId Id of the NFT
-    /// @param _randomWords List of random words
-    function _mintingUpgradeNft(uint256 _tokenId, uint256[] memory _randomWords)
-        internal
-    {
         // Create new random upgrade
         tokenIdToUpgradeSpecifications[_tokenId].valueToAdd =
-            (_randomWords[0] %
+            (randomWords[0] %
                 tokenIdToUpgradeSpecifications[_tokenId].valueToAddMax) +
             1;
 
@@ -235,6 +229,7 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
             uri(_tokenId),
             tokenIdToUpgradeSpecifications[_tokenId]
         );
+        
     }
 
     /// @notice Returns the concatenation of the _baseURI and the token-specific uri if the latter is set
