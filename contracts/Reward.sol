@@ -162,4 +162,11 @@ contract Reward is Initializable, OwnableUpgradeable {
 
         emit CloseStream(_receiver);
     }
+
+    /// @notice Settles Bedroom NFT address
+    /// @param _bedroomNft Bedroom NFT Contract
+    /// @dev This function can only be called by the owner of the contract
+    function setBedroomNft(IBedroomNft _bedroomNft) external onlyOwner {
+        bedroomNft = _bedroomNft;
+    }
 }

@@ -3131,49 +3131,49 @@
             "label": "superToken",
             "offset": 0,
             "slot": "101",
-            "type": "t_contract(ISuperToken)6267",
+            "type": "t_contract(ISuperToken)3159",
             "contract": "Reward",
-            "src": "contracts/Reward.sol:18"
+            "src": "contracts/Reward.sol:21"
           },
           {
             "label": "host",
             "offset": 0,
             "slot": "102",
-            "type": "t_contract(ISuperfluid)6830",
+            "type": "t_contract(ISuperfluid)3722",
             "contract": "Reward",
-            "src": "contracts/Reward.sol:20"
+            "src": "contracts/Reward.sol:24"
           },
           {
             "label": "cfa",
             "offset": 0,
             "slot": "103",
-            "type": "t_contract(IConstantFlowAgreementV1)5287",
+            "type": "t_contract(IConstantFlowAgreementV1)2179",
             "contract": "Reward",
-            "src": "contracts/Reward.sol:21"
+            "src": "contracts/Reward.sol:27"
           },
           {
             "label": "cfaV1",
             "offset": 0,
             "slot": "104",
-            "type": "t_struct(InitData)4126_storage",
+            "type": "t_struct(InitData)1018_storage",
             "contract": "Reward",
-            "src": "contracts/Reward.sol:24"
+            "src": "contracts/Reward.sol:31"
           },
           {
             "label": "bedroomNft",
             "offset": 0,
             "slot": "106",
-            "type": "t_contract(IBedroomNft)9462",
+            "type": "t_contract(IBedroomNft)4857",
             "contract": "Reward",
-            "src": "contracts/Reward.sol:27"
+            "src": "contracts/Reward.sol:34"
           },
           {
             "label": "rewardsByCategory",
             "offset": 0,
             "slot": "107",
-            "type": "t_mapping(t_enum(Category)9300,t_mapping(t_uint256,t_int96))",
+            "type": "t_mapping(t_enum(Category)4689,t_mapping(t_uint256,t_int96))",
             "contract": "Reward",
-            "src": "contracts/Reward.sol:30"
+            "src": "contracts/Reward.sol:37"
           }
         ],
         "types": {
@@ -3193,23 +3193,23 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_contract(IBedroomNft)9462": {
+          "t_contract(IBedroomNft)4857": {
             "label": "contract IBedroomNft",
             "numberOfBytes": "20"
           },
-          "t_contract(IConstantFlowAgreementV1)5287": {
+          "t_contract(IConstantFlowAgreementV1)2179": {
             "label": "contract IConstantFlowAgreementV1",
             "numberOfBytes": "20"
           },
-          "t_contract(ISuperToken)6267": {
+          "t_contract(ISuperToken)3159": {
             "label": "contract ISuperToken",
             "numberOfBytes": "20"
           },
-          "t_contract(ISuperfluid)6830": {
+          "t_contract(ISuperfluid)3722": {
             "label": "contract ISuperfluid",
             "numberOfBytes": "20"
           },
-          "t_enum(Category)9300": {
+          "t_enum(Category)4689": {
             "label": "enum IBedroomNft.Category",
             "members": [
               "Studio",
@@ -3222,7 +3222,7 @@
             "label": "int96",
             "numberOfBytes": "12"
           },
-          "t_mapping(t_enum(Category)9300,t_mapping(t_uint256,t_int96))": {
+          "t_mapping(t_enum(Category)4689,t_mapping(t_uint256,t_int96))": {
             "label": "mapping(enum IBedroomNft.Category => mapping(uint256 => int96))",
             "numberOfBytes": "32"
           },
@@ -3230,18 +3230,18 @@
             "label": "mapping(uint256 => int96)",
             "numberOfBytes": "32"
           },
-          "t_struct(InitData)4126_storage": {
+          "t_struct(InitData)1018_storage": {
             "label": "struct CFAv1Library.InitData",
             "members": [
               {
                 "label": "host",
-                "type": "t_contract(ISuperfluid)6830",
+                "type": "t_contract(ISuperfluid)3722",
                 "offset": 0,
                 "slot": "0"
               },
               {
                 "label": "cfa",
-                "type": "t_contract(IConstantFlowAgreementV1)5287",
+                "type": "t_contract(IConstantFlowAgreementV1)2179",
                 "offset": 0,
                 "slot": "1"
               }
@@ -5346,6 +5346,184 @@
               }
             ],
             "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "e2fa9a310424d94b41655c9eeaea5a50e8e4c035394622047832eaa6acaf59d2": {
+      "address": "0x9C07E998Daa85e4B3ABee6b05dE371BaAd85B7d1",
+      "txHash": "0x04f1a89e51b9fe0adf6b2ced065edb49013aee7b7e5fb28aad3159e67eb4ee16",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "superToken",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_contract(ISuperToken)3159",
+            "contract": "Reward",
+            "src": "contracts/Reward.sol:21"
+          },
+          {
+            "label": "host",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_contract(ISuperfluid)3722",
+            "contract": "Reward",
+            "src": "contracts/Reward.sol:24"
+          },
+          {
+            "label": "cfa",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_contract(IConstantFlowAgreementV1)2179",
+            "contract": "Reward",
+            "src": "contracts/Reward.sol:27"
+          },
+          {
+            "label": "cfaV1",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_struct(InitData)1018_storage",
+            "contract": "Reward",
+            "src": "contracts/Reward.sol:31"
+          },
+          {
+            "label": "bedroomNft",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_contract(IBedroomNft)4857",
+            "contract": "Reward",
+            "src": "contracts/Reward.sol:34"
+          },
+          {
+            "label": "rewardsByCategory",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_mapping(t_enum(Category)4689,t_mapping(t_uint256,t_int96))",
+            "contract": "Reward",
+            "src": "contracts/Reward.sol:37"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IBedroomNft)4857": {
+            "label": "contract IBedroomNft",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IConstantFlowAgreementV1)2179": {
+            "label": "contract IConstantFlowAgreementV1",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISuperToken)3159": {
+            "label": "contract ISuperToken",
+            "numberOfBytes": "20"
+          },
+          "t_contract(ISuperfluid)3722": {
+            "label": "contract ISuperfluid",
+            "numberOfBytes": "20"
+          },
+          "t_enum(Category)4689": {
+            "label": "enum IBedroomNft.Category",
+            "members": [
+              "Studio",
+              "Deluxe",
+              "Luxury"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_int96": {
+            "label": "int96",
+            "numberOfBytes": "12"
+          },
+          "t_mapping(t_enum(Category)4689,t_mapping(t_uint256,t_int96))": {
+            "label": "mapping(enum IBedroomNft.Category => mapping(uint256 => int96))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_int96)": {
+            "label": "mapping(uint256 => int96)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(InitData)1018_storage": {
+            "label": "struct CFAv1Library.InitData",
+            "members": [
+              {
+                "label": "host",
+                "type": "t_contract(ISuperfluid)3722",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "cfa",
+                "type": "t_contract(IConstantFlowAgreementV1)2179",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
           },
           "t_uint256": {
             "label": "uint256",
