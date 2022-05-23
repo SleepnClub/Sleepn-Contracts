@@ -15,7 +15,7 @@ GetSleepn Smartcontracts are deployed on Polygon Mainet.
 | CONTRACTS | ADDRESSES |
 | ------ | ------ |
 | Bedroom NFT Contract | [0x9765209cD1CcC89Ed6B9A57c5e6407F53A7a6991](https://polygonscan.com/address/0x9765209cD1CcC89Ed6B9A57c5e6407F53A7a6991) 
-| Upgrade NFT Contract | [0x3537980f3CB0C24A4a3B2541AD525fCFE5f18160](https://polygonscan.com/address/0x3537980f3CB0C24A4a3B2541AD525fCFE5f18160)
+| Upgrade NFT Contract | [0xdb35b34A2A143036a64e6d2c57EB9743dAd3a9Ff](https://polygonscan.com/address/0xdb35b34A2A143036a64e6d2c57EB9743dAd3a9Ff)
 | Dex Contract | [0x3240E10ad3EBc6b66E8FaAA0E288123702B3A29f](https://polygonscan.com/address/0x3240E10ad3EBc6b66E8FaAA0E288123702B3A29f)
 | Reward Contract | [0xa87637C7E74B6f74be80EA0507C7AfDb204F950A](https://polygonscan.com/address/0xa87637C7E74B6f74be80EA0507C7AfDb204F950A)
 | Sleep Token Contract | [0x920907cbc06f10bcC141c4126eEd398492398793](https://polygonscan.com/address/0x920907cbc06f10bcC141c4126eEd398492398793)
