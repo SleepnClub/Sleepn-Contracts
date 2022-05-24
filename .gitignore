@@ -1,12 +1,13 @@
 node_modules
 .env
 
-/coverage
+coverage/
 ./coverage.json
 
 cache
 typechain
 scripts
+test
 .prettierrc
 .prettierignore
 .npmignore
@@ -22,5 +23,5 @@ tenderly.yaml
 tsconfig.json
 artifacts
 
-tsconfig.json
+
 
