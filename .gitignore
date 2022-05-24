@@ -1,11 +1,26 @@
 node_modules
 .env
 
-coverage
-coverage.json
-typechain*
+coverage/
+./coverage.json
 
-#Hardhat files
 cache
+typechain
+scripts
+.prettierrc
+.prettierignore
+.npmignore
+.solhintignore
+.eslintignore
+.eslintrc.js
+.solhint.json
+
+hardhat.config.ts
+package-lock.json
+package.json
+tenderly.yaml
+tsconfig.json
 artifacts
+
+
 

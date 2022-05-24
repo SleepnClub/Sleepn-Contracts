@@ -1,46 +1,93 @@
-# Advanced Sample Hardhat Project
+# Sleepn is a web3 game that pays you to sleep better
+![How Sleepn Works](https://user-images.githubusercontent.com/3343429/169715829-8df70002-36ad-4794-9161-a4874e59ceda.png)
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+# GetSleepn - Smartcontracts
+## Contracts Source Codes
+- Bedroom NFT Contract : contracts/BedroomNft.sol  
+- Upgrade NFT Contract : contracts/Upgrade.sol 
+- Decentralized Exchange Contract : contracts/Dex.sol
+- Stream Reward Contract : contracts/Reward.sol
+- Sleep Token Contract : contracts/SleepToken.sol
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+## Contracts Addresses
+GetSleepn Smartcontracts are deployed on Polygon Mainet.
 
-Try running some of the following tasks:
+| CONTRACTS | ADDRESSES |
+| ------ | ------ |
+| Bedroom NFT Contract | [0x9765209cD1CcC89Ed6B9A57c5e6407F53A7a6991](https://polygonscan.com/address/0x9765209cD1CcC89Ed6B9A57c5e6407F53A7a6991) 
+| Upgrade NFT Contract | [0xdb35b34A2A143036a64e6d2c57EB9743dAd3a9Ff](https://polygonscan.com/address/0xdb35b34A2A143036a64e6d2c57EB9743dAd3a9Ff)
+| Dex Contract | [0x3240E10ad3EBc6b66E8FaAA0E288123702B3A29f](https://polygonscan.com/address/0x3240E10ad3EBc6b66E8FaAA0E288123702B3A29f)
+| Reward Contract | [0xa87637C7E74B6f74be80EA0507C7AfDb204F950A](https://polygonscan.com/address/0xa87637C7E74B6f74be80EA0507C7AfDb204F950A)
+| Sleep Token Contract | [0x920907cbc06f10bcC141c4126eEd398492398793](https://polygonscan.com/address/0x920907cbc06f10bcC141c4126eEd398492398793)
+| Super Sleep Token Contract | [0x38270a994843BeB153e9c7D1cb35878D83E6ab86](https://polygonscan.com/address/0x38270a994843BeB153e9c7D1cb35878D83E6ab86)
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
+## Technologies
+- Gnosis Safe : Cash management + Contracts Ownership management 
 
-# Etherscan verification
+- IPFS + Unstoppable Domains : NFTs storage <br>
+Example -> [Click On Me](https://getsleepn.crypto/1.png)<br>
+This requires a Web 3.0 browser such as Brave, which supports IPFS and Unstoppable Domains.
 
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
+- Chainlink VRF V2 : Used in Bedroom and Upgrade NFTs contracts to generate random scores
+    ```solidity
+    uint256 requestId = COORDINATOR.requestRandomWords(
+        keyHash,
+        subscriptionId,
+        requestConfirmations,
+        callbackGasLimit,
+        numWords
+    );
 
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
+    function fulfillRandomWords(
+        uint256 _requestId,
+        uint256[] memory _randomWords
+    ) internal override {
+        _mintingBedroomNft(requestIdToTokenId[_requestId], _randomWords);
+        emit ReturnedRandomness(_randomWords);
+    }
+    ```
 
-```shell
-hardhat run --network ropsten scripts/deploy.ts
-```
+- Superfluid : Used to stream $SLEEP to GetSleepn users in Reward contract
+    ```solidity
+    (, int96 outFlowRate, , ) = cfa.getFlow(
+        superToken,
+        address(this),
+        _receiver
+    );
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
+    if (outFlowRate == 0) {
+        cfaV1.createFlow(_receiver, superToken, flowrate);
+    } else {
+        cfaV1.updateFlow(_receiver, superToken, flowrate);
+    }
 
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
+    cfaV1.deleteFlow(address(this), _receiver, superToken);
+    ```
+- Uniswap : Used for the liquidity pool of $SLEEP/USDC in Sleep Token contract
+    ```solidity
+    function createNewPool(
+        address _tokenB,
+        uint24 _fee,
+        uint160 _sqrtPriceX96
+    ) external onlyOwner {
+        address newPool = factory.createPool(address(this), _tokenB, _fee);
+        // Set new pool address
+        pool = IUniswapV3Pool(newPool);
+        // Init price of the pool
+        pool.initialize(_sqrtPriceX96);
+    }
 
-# Performance optimizations
+    function collectFee(int24 _tickLower, int24 _tickUpper) external onlyOwner {
+        pool.collect(
+            teamWallet,
+            _tickLower,
+            _tickUpper,
+            type(uint128).max,
+            type(uint128).max
+        );
+    }
+    ```
 
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+## License
+Distributed under the MIT License.
+
