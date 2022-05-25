@@ -37,6 +37,9 @@ contract Reward is Initializable, OwnableUpgradeable {
     mapping(IBedroomNft.Category => mapping(uint256 => int96))
         public rewardsByCategory;
 
+    /// @dev Sleep Token Contract
+    ISleepToken private sleepToken;
+
     /// @notice Open or Update Stream Event
     event OpenUpdateStream(address receiver, int96 flowRate);
 
@@ -168,5 +171,34 @@ contract Reward is Initializable, OwnableUpgradeable {
     /// @dev This function can only be called by the owner of the contract
     function setBedroomNft(IBedroomNft _bedroomNft) external onlyOwner {
         bedroomNft = _bedroomNft;
+    }
+
+    /// @notice Upgrades ERC20 to SuperToken
+    /// @param _amount Number of tokens to be upgraded (in 18 decimals)
+    /// @dev This function can only be called by the owner of the contract
+    function wrapTokens(uint256 _amount) external onlyOwner {
+        sleepToken.approve(address(superToken), _amount);
+        superToken.upgrade(_amount);
+    }
+
+    /// @notice Downgrades SuperToken to ERC20
+    /// @param _amount Number of tokens to be downgraded (in 18 decimals)
+    /// @dev This function can only be called by the owner of the contract
+    function unwrapTokens(uint256 _amount) external onlyOwner {
+        superToken.downgrade(_amount);
+    }
+
+    /// @notice Returns balance of contract
+    /// @return _balance Balance of contract
+    /// @dev This function can only be called by the owner of the contract
+    function returnBalance() external view onlyOwner returns (uint256) {
+        return superToken.balanceOf(address(this));
+    }
+
+    /// @notice Settles Sleep Token contract address 
+    /// @param _sleepToken Address of the Sleep Token contract
+    /// @dev This function can only be called by the owner of the contract
+    function setSleepToken(ISleepToken _sleepToken) external onlyOwner {
+        sleepToken = _sleepToken;
     }
 }
