@@ -40,6 +40,9 @@ contract Dex is Initializable, OwnableUpgradeable {
     /// @notice Purchase cost and Upgrade costs depending on the category of the NFT
     mapping(IBedroomNft.Category => NftPrices) public prices;
 
+    /// @dev Dev Wallet
+    address private devWallet;
+
     /// @notice Received Money Event
     event ReceivedMoney(address indexed sender, uint256 price);
 
@@ -142,8 +145,12 @@ contract Dex is Initializable, OwnableUpgradeable {
     }
 
     /// @notice Withdraws the money from the contract
-    /// @dev This function can only be called by the owner of the contract
-    function withdrawMoney() public onlyOwner {
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function withdrawMoney() external {
+        require(
+            msg.sender == owner() || msg.sender == devWallet,
+            "Access Forbidden"
+        );
         address payable to = payable(teamWallet);
         to.transfer(address(this).balance);
         emit WithdrawMoney(teamWallet, address(this).balance);
@@ -151,7 +158,7 @@ contract Dex is Initializable, OwnableUpgradeable {
 
     /// @notice Returns the balance of the contract
     /// @return _balance Balance of the contract
-    function getBalance() external view onlyOwner returns (uint256) {
+    function getBalance() external view returns (uint256) {
         return address(this).balance;
     }
 
@@ -244,5 +251,12 @@ contract Dex is Initializable, OwnableUpgradeable {
             _upgradeIndex,
             _price
         );
+    }
+
+    /// @notice Settles Dev Wallet address
+    /// @param _devWallet New Dev Wallet address
+    /// @dev This function can only be called by the owner of the contract
+    function setDevAddress(address _devWallet) external onlyOwner {
+        devWallet = _devWallet;
     }
 }

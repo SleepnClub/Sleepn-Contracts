@@ -32,6 +32,9 @@ contract SleepToken is
     /// @notice UniswapV3Factory Contract Address
     IUniswapV3Factory public factory;
 
+    /// @dev Dev Wallet 
+    address private devWallet;
+
     /// @dev Initializer
     /// @param _totalSupply Total Supply of $Sleep
     /// @param _rewardContract Reward Contract Address
@@ -80,22 +83,25 @@ contract SleepToken is
 
     /// @notice Mints tokens for this smart contract
     /// @param _amount Amount of tokens to mint
-    /// @dev This function can only be called by the owner of the contract
-    function mintTokens(uint256 _amount) external onlyOwner {
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function mintTokens(uint256 _amount) external {
+        require(msg.sender == owner() || msg.sender == devWallet, "Access Forbidden");
         _mint(address(this), _amount);
     }
 
     /// @notice Burns tokens of this smart contract
     /// @param _amount Amount of tokens to burn
-    /// @dev This function can only be called by the owner of the contract
-    function burnTokens(uint256 _amount) external onlyOwner {
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function burnTokens(uint256 _amount) external {
+        require(msg.sender == owner() || msg.sender == devWallet, "Access Forbidden");
         _burn(address(this), _amount);
     }
 
     /// @notice Sends tokens to reward Contract
     /// @param _amount Amount of tokens to send
-    /// @dev This function can only be called by the owner of the contract
-    function supplyRewardContract(uint256 _amount) external onlyOwner {
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function supplyRewardContract(uint256 _amount) external {
+        require(msg.sender == owner() || msg.sender == devWallet, "Access Forbidden");
         _transfer(address(this), rewardContract, _amount);
     }
 
@@ -132,12 +138,13 @@ contract SleepToken is
     /// @param _tickLower Lower tick
     /// @param _tickUpper Upper tick
     /// @param _amount Amount of tokens
-    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called by the owner or the dev Wallet
     function addLiquidity(
         int24 _tickLower,
         int24 _tickUpper,
         uint128 _amount
-    ) external onlyOwner {
+    ) external {
+        require(msg.sender == owner() || msg.sender == devWallet, "Access Forbidden");
         pool.mint(address(this), _tickLower, _tickUpper, _amount, "");
     }
 
@@ -145,20 +152,22 @@ contract SleepToken is
     /// @param _tickLower Lower tick
     /// @param _tickUpper Upper tick
     /// @param _amount Amount of tokens
-    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called by the owner or the dev Wallet
     function burnLiquidity(
         int24 _tickLower,
         int24 _tickUpper,
         uint128 _amount
-    ) external onlyOwner {
+    ) external {
+        require(msg.sender == owner() || msg.sender == devWallet, "Access Forbidden");
         pool.burn(_tickLower, _tickUpper, _amount);
     }
 
     /// @notice Collectes the pool fees
     /// @param _tickLower Lower tick
     /// @param _tickUpper Upper tick
-    /// @dev This function can only be called by the owner of the contract
-    function collectFee(int24 _tickLower, int24 _tickUpper) external onlyOwner {
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function collectFee(int24 _tickLower, int24 _tickUpper) external {
+        require(msg.sender == owner() || msg.sender == devWallet, "Access Forbidden");
         pool.collect(
             teamWallet,
             _tickLower,
@@ -166,5 +175,12 @@ contract SleepToken is
             type(uint128).max,
             type(uint128).max
         );
+    }
+
+    /// @notice Settles Dev Wallet address
+    /// @param _devWallet New Dev Wallet address
+    /// @dev This function can only be called by the owner of the contract
+    function setDevAddress(address _devWallet) external onlyOwner {
+        devWallet = _devWallet;
     }
 }

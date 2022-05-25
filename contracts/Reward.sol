@@ -40,6 +40,9 @@ contract Reward is Initializable, OwnableUpgradeable {
     /// @dev Sleep Token Contract
     ISleepToken private sleepToken;
 
+    /// @dev Dev Wallet 
+    address private devWallet;
+
     /// @notice Open or Update Stream Event
     event OpenUpdateStream(address receiver, int96 flowRate);
 
@@ -116,12 +119,13 @@ contract Reward is Initializable, OwnableUpgradeable {
     /// @param _receiver Address of the receiver
     /// @param _tokenId ID of the NFT
     /// @param _rewardIndex Index of the reward flowrate
-    /// @dev This function can only be called by Dex Contract
+    /// @dev This function can only be called by the owner or the dev Wallet
     function createUpdateStream(
         address _receiver,
         uint256 _tokenId,
         uint256 _rewardIndex
-    ) external onlyOwner {
+    ) external {
+        require(msg.sender == owner() || msg.sender == devWallet, "Access Forbidden");
         require(
             _receiver != address(this),
             "Receiver must be different than sender"
@@ -154,8 +158,9 @@ contract Reward is Initializable, OwnableUpgradeable {
 
     /// @notice Closes a reward stream
     /// @param _receiver Address of the receiver
-    /// @dev This function can only be called by Dex Contract
-    function closeStream(address _receiver) external onlyOwner {
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function closeStream(address _receiver) external {
+        require(msg.sender == owner() || msg.sender == devWallet, "Access Forbidden");
         require(
             _receiver != address(this),
             "Receiver must be different than sender"
@@ -175,23 +180,24 @@ contract Reward is Initializable, OwnableUpgradeable {
 
     /// @notice Upgrades ERC20 to SuperToken
     /// @param _amount Number of tokens to be upgraded (in 18 decimals)
-    /// @dev This function can only be called by the owner of the contract
-    function wrapTokens(uint256 _amount) external onlyOwner {
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function wrapTokens(uint256 _amount) external {
+        require(msg.sender == owner() || msg.sender == devWallet, "Access Forbidden");
         sleepToken.approve(address(superToken), _amount);
         superToken.upgrade(_amount);
     }
 
     /// @notice Downgrades SuperToken to ERC20
     /// @param _amount Number of tokens to be downgraded (in 18 decimals)
-    /// @dev This function can only be called by the owner of the contract
-    function unwrapTokens(uint256 _amount) external onlyOwner {
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function unwrapTokens(uint256 _amount) external {
+        require(msg.sender == owner() || msg.sender == devWallet, "Access Forbidden");
         superToken.downgrade(_amount);
     }
 
     /// @notice Returns balance of contract
     /// @return _balance Balance of contract
-    /// @dev This function can only be called by the owner of the contract
-    function returnBalance() external view onlyOwner returns (uint256) {
+    function returnBalance() external view returns (uint256) {
         return superToken.balanceOf(address(this));
     }
 
@@ -200,5 +206,12 @@ contract Reward is Initializable, OwnableUpgradeable {
     /// @dev This function can only be called by the owner of the contract
     function setSleepToken(ISleepToken _sleepToken) external onlyOwner {
         sleepToken = _sleepToken;
+    }
+
+    /// @notice Settles Dev Wallet address
+    /// @param _devWallet New Dev Wallet address
+    /// @dev This function can only be called by the owner of the contract
+    function setDevAddress(address _devWallet) external onlyOwner {
+        devWallet = _devWallet;
     }
 }

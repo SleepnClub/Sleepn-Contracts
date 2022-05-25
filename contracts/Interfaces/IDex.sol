@@ -85,7 +85,7 @@ interface IDex {
     ) external;
 
     /// @notice Withdraws the money from the contract
-    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called by the owner or the dev Wallet
     function withdrawMoney() external;
 
     /// @notice Returns the balance of the contract
@@ -113,4 +113,9 @@ interface IDex {
         uint256 _upgradeIndex,
         uint256 _price
     ) external;
+
+    /// @notice Settles Dev Wallet address
+    /// @param _devWallet New Dev Wallet address
+    /// @dev This function can only be called by the owner of the contract
+    function setDevAddress(address _devWallet) external;
 }

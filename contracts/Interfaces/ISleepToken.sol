@@ -38,17 +38,17 @@ interface ISleepToken is IERC20Upgradeable {
 
     /// @notice Mints tokens for this smart contract
     /// @param _amount Amount of tokens to mint
-    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called by the owner or the dev Wallet
     function mintTokens(uint256 _amount) external;
 
     /// @notice Burns tokens of this smart contract
     /// @param _amount Amount of tokens to burn
-    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called by the owner or the dev Wallet
     function burnTokens(uint256 _amount) external;
 
     /// @notice Sends tokens to reward Contract
     /// @param _amount Amount of tokens to send
-    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called by the owner or the dev Wallet
     function supplyRewardContract(uint256 _amount) external;
 
     /// @notice Creates a new Pool and settles the initial price for the pool
@@ -66,7 +66,7 @@ interface ISleepToken is IERC20Upgradeable {
     /// @param _tickLower Lower tick
     /// @param _tickUpper Upper tick
     /// @param _amount Amount of tokens
-    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called by the owner or the dev Wallet
     function addLiquidity(
         int24 _tickLower,
         int24 _tickUpper,
@@ -77,7 +77,7 @@ interface ISleepToken is IERC20Upgradeable {
     /// @param _tickLower Lower tick
     /// @param _tickUpper Upper tick
     /// @param _amount Amount of tokens
-    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called by the owner or the dev Wallet
     function burnLiquidity(
         int24 _tickLower,
         int24 _tickUpper,
@@ -87,6 +87,11 @@ interface ISleepToken is IERC20Upgradeable {
     /// @notice Collectes the pool fees
     /// @param _tickLower Lower tick
     /// @param _tickUpper Upper tick
-    /// @dev This function can only be called by the owner of the contract
+    /// @dev This function can only be called by the owner or the dev Wallet
     function collectFee(int24 _tickLower, int24 _tickUpper) external;
+
+    /// @notice Settles Dev Wallet address
+    /// @param _devWallet New Dev Wallet address
+    /// @dev This function can only be called by the owner of the contract
+    function setDevAddress(address _devWallet) external;
 }
