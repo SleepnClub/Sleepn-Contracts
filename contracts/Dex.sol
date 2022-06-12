@@ -3,6 +3,7 @@ pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./Interfaces/ISleepToken.sol";
 import "./Interfaces/IBedroomNft.sol";
@@ -42,6 +43,9 @@ contract Dex is Initializable, OwnableUpgradeable {
 
     /// @dev Dev Wallet
     address private devWallet;
+
+    /// @notice Payment Token
+    IERC20 public paymentToken;
 
     /// @notice Received Money Event
     event ReceivedMoney(address indexed sender, uint256 price);
@@ -151,15 +155,15 @@ contract Dex is Initializable, OwnableUpgradeable {
             msg.sender == owner() || msg.sender == devWallet,
             "Access Forbidden"
         );
-        address payable to = payable(teamWallet);
-        to.transfer(address(this).balance);
-        emit WithdrawMoney(teamWallet, address(this).balance);
+        uint256 balance = paymentToken.balanceOf(address(this));
+        paymentToken.transfer(teamWallet, balance);
+        emit WithdrawMoney(teamWallet, balance);
     }
 
     /// @notice Returns the balance of the contract
     /// @return _balance Balance of the contract
     function getBalance() external view returns (uint256) {
-        return address(this).balance;
+        return paymentToken.balanceOf(address(this));
     }
 
     /// @notice Launches the mint procedure of a Bedroom NFT
@@ -167,17 +171,28 @@ contract Dex is Initializable, OwnableUpgradeable {
     /// @param _designId Design Id of the NFT
     function buyNft(IBedroomNft.Category _category, uint256 _designId)
         public
-        payable
     {
-        require(msg.value == prices[_category].purchaseCost * 1e18, "Wrong tx");
+        // Price of the Bedroom NFT
+        uint256 price = prices[_category].purchaseCost;
+
+        // Check Balance of sender
+        require(paymentToken.balanceOf(msg.sender) >= price * 1e17, "Not enough funds");
+
+        // Check Allowance - tx to approve
+        require(paymentToken.allowance(msg.sender, address(this)) >= price * 1e17, "Check allowance");
+
+        // Token Transfer
+        paymentToken.transferFrom(msg.sender, address(this), price * 1e17);
+
+        // NFT Minting
         bedroomNftInstance.mintingBedroomNft(
             _designId,
-            msg.value,
+            price,
             _category,
             msg.sender
         );
         emit BuyNft(msg.sender, _category, _designId);
-        emit ReceivedMoney(msg.sender, msg.value);
+        emit ReceivedMoney(msg.sender, price);
     }
 
     /// @notice Launches the mint procedure of an Upgrade NFT
@@ -186,13 +201,11 @@ contract Dex is Initializable, OwnableUpgradeable {
     /// @param _newDesignId Design Id of the NFT
     /// @param _upgradeDesignId Category of the desired Bedroom NFT
     /// @param _upgradeIndex Index of the upgrade
-    /// @param _price Price of the NFT
     function upgradeNft(
         uint256 _tokenId,
         uint256 _newDesignId,
         uint256 _upgradeDesignId,
-        uint256 _upgradeIndex,
-        uint256 _price
+        uint256 _upgradeIndex
     ) external {
         // Get NFT informations
         IBedroomNft.NftOwnership memory nftOwnership = bedroomNftInstance
@@ -211,33 +224,24 @@ contract Dex is Initializable, OwnableUpgradeable {
         // Sender is owner
         require(msg.sender == nftOwnership.owner, "Wrong sender");
 
-        // Good amount of tokens
-        require(_price == price, "Wrong tx");
-
         // Check Balance of sender
-        uint256 initialBalance = sleepTokenInstance.balanceOf(msg.sender);
-        require(initialBalance >= _price, "Not enough funds");
+        require(sleepTokenInstance.balanceOf(msg.sender) >= price * 1e18, "Not enough funds");
 
         // Tx to approve before
         require(
-            sleepTokenInstance.allowance(msg.sender, address(this)) >= _price,
+            sleepTokenInstance.allowance(msg.sender, address(this)) >= price * 1e18,
             "Check allowance"
         );
 
         // Burns tokens
-        sleepTokenInstance.burnFrom(msg.sender, _price);
-
-        // Checks that the tokens were burned
-        require(
-            sleepTokenInstance.balanceOf(msg.sender) + _price == initialBalance,
-            "An error occurred"
-        );
+        sleepTokenInstance.burnFrom(msg.sender, price * 1e18);
 
         // Minting of the upgrade token
         upgradeNftInstance.mintingUpgradeNft(
+            _tokenId,
             _newDesignId,
             _upgradeDesignId,
-            _price,
+            price,
             index,
             value,
             msg.sender
@@ -249,7 +253,7 @@ contract Dex is Initializable, OwnableUpgradeable {
             _newDesignId,
             _upgradeDesignId,
             _upgradeIndex,
-            _price
+            price
         );
     }
 
@@ -259,4 +263,34 @@ contract Dex is Initializable, OwnableUpgradeable {
     function setDevAddress(address _devWallet) external onlyOwner {
         devWallet = _devWallet;
     }
+
+    /// @notice Settles Payment Token contract address
+    /// @param _tokenAddress New Payment Token contract address
+    /// @dev This function can only be called by the owner of the contract
+    function setPaymentToken(IERC20 _tokenAddress) external onlyOwner { 
+        paymentToken = _tokenAddress;
+    }
+
+    /// @notice Airdrops some Bedroom NFTs
+    /// @param _addresses Addresses of the receivers 
+    /// @param _category Category of the Bedroom NFTs
+    /// @param _designId Design of the Bedroom NFTs
+    /// @param _price Price of the NFTs
+    /// @dev This function can only be called by the owner of the contract
+    function airdropBedroomNFT(
+        address[] memory _addresses, 
+        IBedroomNft.Category _category,
+        uint256 _designId, 
+        uint256 _price
+    ) external onlyOwner {
+        for(uint i=0; i<_addresses.length; i++) {
+            bedroomNftInstance.mintingBedroomNft(
+                _designId,
+                _price,
+                _category,
+                _addresses[i]
+            );
+        }
+    }
+
 }

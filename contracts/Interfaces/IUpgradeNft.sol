@@ -11,6 +11,7 @@ import "./IBedroomNft.sol";
 interface IUpgradeNft is IERC1155Upgradeable {
     /// @notice Informations of an Upgrade NFT
     struct UpgradeSpecifications {
+        uint256 bedroomNftId;
         uint256 attributeIndex;
         uint256 valueToAdd;
         uint256 valueToAddMax;
@@ -59,13 +60,16 @@ interface IUpgradeNft is IERC1155Upgradeable {
     ) external;
 
     /// @notice Mints a new upgrade NFT
+    /// @param _bedroomNftId Id of the Bedroom NFT
     /// @param _newDesignId Id of the new NFT design
     /// @param _upgradeDesignId Id of the new upgrade design
     /// @param _price Price of the upgrade
     /// @param _indexAttribute Index of upgrade attribute
     /// @param _valueToAddMax Value Max of the attribute
     /// @param _owner Owner of the NFT
+    /// @dev This function can only be called by Dex Contract
     function mintingUpgradeNft(
+        uint256 _bedroomNftId,
         uint256 _newDesignId,
         uint256 _upgradeDesignId,
         uint256 _price,

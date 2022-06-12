@@ -32,6 +32,7 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
 
     /// @notice Upgrade Specifications
     struct UpgradeSpecifications {
+        uint256 bedroomNftId;
         uint256 attributeIndex;
         uint256 valueToAdd;
         uint256 valueToAddMax;
@@ -131,6 +132,7 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     }
 
     /// @notice Launches the procedure to create an NFT
+    /// @param _bedroomNftId Id of the Bedroom NFT
     /// @param _newDesignId New Design Id of the Bedroom NFT
     /// @param _upgradeDesignId Design Id of the Upgrade NFT
     /// @param _price Price of the Upgrade NFT
@@ -139,6 +141,7 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     /// @param _owner Owner of the NFT
     /// @dev This function can only be called by Dex Contract
     function mintingUpgradeNft(
+        uint256 _bedroomNftId,
         uint256 _newDesignId,
         uint256 _upgradeDesignId,
         uint256 _price,
@@ -160,6 +163,7 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         requestIdToTokenId[requestId] = tokenId;
 
         tokenIdToUpgradeSpecifications[tokenId] = UpgradeSpecifications(
+            _bedroomNftId,
             _indexAttribute,
             0,
             _valueToAddMax,
@@ -198,7 +202,7 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
             1;
 
         // Minting of the new Bedroom NFT
-        _mint(tokenIdToUpgradeSpecifications[tokenId].owner, _tokenId, 1, "");
+        _mint(tokenIdToUpgradeSpecifications[_tokenId].owner, _tokenId, 1, "");
 
         // Set Token URI
         string memory DesignName = string(
@@ -217,7 +221,7 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
             "BedroomNftInstance not initialized"
         );
         bedroomNftInstance.upgradeBedroomNft(
-            _tokenId,
+            tokenIdToUpgradeSpecifications[_tokenId].bedroomNftId,
             tokenIdToUpgradeSpecifications[_tokenId].attributeIndex,
             tokenIdToUpgradeSpecifications[_tokenId].valueToAdd,
             tokenIdToUpgradeSpecifications[_tokenId].newDesignId,
