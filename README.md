@@ -24,7 +24,7 @@ GetSleepn Smartcontracts are deployed on Polygon Mainet.
 ## Technologies
 - Gnosis Safe : Cash management + Contracts Ownership management 
 
-- IPFS + Unstoppable Domains : NFTs storage <br>
+- IPFS : NFTs storage <br>
 
 - Chainlink VRF V2 : Used in Bedroom and Upgrade NFTs contracts to generate random scores
     ```solidity
