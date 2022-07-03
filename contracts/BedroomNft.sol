@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.15;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -9,20 +9,20 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 
-import "./Interfaces/IUpgradeNft.sol";
+import "../../Interfaces/IUpgradeNft.sol";
 
 /// @title Bedroom NFT Contract
-/// @author Alexis Balayre
-/// @notice Bedroom NFT is the main NFT of GetSleepn app
+/// @author Sleepn
+/// @notice Bedroom NFT is the main NFT of Sleepn app
 contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
-    /// @notice Dex Contract address
-    address public dexAddress;
+    /// @dev Dex Contract address
+    address private dexAddress;
 
-    /// @notice Upgrade NFT Contract address
-    IUpgradeNft public upgradeNftInstance;
+    /// @dev Upgrade NFT Contract address
+    IUpgradeNft private upgradeNftInstance;
 
-    /// @notice Chainlink VRF Variables
-    VRFCoordinatorV2Interface public immutable COORDINATOR;
+    /// @dev Chainlink VRF Variables
+    VRFCoordinatorV2Interface private immutable COORDINATOR;
     uint32 private numWords;
     uint32 private callbackGasLimit;
     uint16 private requestConfirmations;
@@ -32,57 +32,35 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     /// @notice Scores of a Bedroom NFT
     struct NftSpecifications {
         uint256 lightIsolationScore; // Index 0
-        uint256 bedroomThermalIsolationScore; // Index 1
+        uint256 thermalIsolationScore; // Index 1
         uint256 soundIsolationScore; // Index 2
-        uint256 temperatureScore; // Index 3
-        uint256 humidityScore; // Index 4
-        uint256 sleepAidMachinesScore; // Index 5
-        uint256 circadianRhythmRegulation; // Index 6
-        uint256 sizeScore; // Index 7
-        uint256 heightScore; // Index 8
-        uint256 bedBaseScore; // Index 9
-        uint256 mattressTechnologyScore; // Index 10
-        uint256 mattressThicknessScore; // Index 11
-        uint256 mattressDeformationScore; // Index 12
-        uint256 thermalIsolationScore; // Index 13
-        uint256 hygrometricRegulationScore; // Index 14
-        uint256 comforterComfortabilityScore; // Index 15
-        uint256 pillowComfortabilityScore; // Index 16
-    }
-
-    /// @notice Enumeration of the different categories of a Bedroom NFT
-    enum Category {
-        Studio,
-        Deluxe,
-        Luxury
-    }
-
-    /// @notice Administration informations of a Bedroom NFT
-    struct NftOwnership {
+        uint256 humidityScore; // Index 3
+        uint256 temperatureScore; // Index 4
+        uint256 ventilationScore; // Index 5
+        uint256 surfaceScore; // Index 6
+        uint256 furnitureScore; // Index 7
+        uint256 sleepAidMachinesScore; // Index 8
+        uint256 bedScore; // Index 9
         address owner;
-        uint256 price;
         uint256 designId;
         uint256 level;
-        Category category;
     }
 
-    /// @notice File format of NFT design files
-    string public fileFormat;
+    /// @dev File format of NFT design files
+    string private fileFormat;
 
     /// @notice Number of NFT
     uint256 public tokenId;
 
-    /// @notice Maps Chainlink VRF Random Number Request Id to NFT Id
+    /// @dev Maps Chainlink VRF Random Number Request Id to NFT Id
     mapping(uint256 => uint256) private requestIdToTokenId;
 
-    /// @notice Maps NFT Scores to NFT Id
+    /// @dev Maps NFT Scores to NFT Id
     mapping(uint256 => NftSpecifications) private tokenIdToNftSpecifications;
-
-    /// @notice Maps NFT Informations to NFT Id
-    mapping(uint256 => NftOwnership) private tokenIdToNftOwnership;
 
     /// @notice Emits an event when a Bedroom NFT is minted
     event BedroomNftMinting(
+        address indexed owner,
         uint256 tokenId,
         string tokenURI,
         NftSpecifications specifications
@@ -90,6 +68,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
 
     /// @notice Emits an event when a Bedroom NFT is upgraded
     event BedroomNftUpgrading(
+        address indexed owner,
         uint256 tokenId,
         string newTokenURI,
         NftSpecifications specifications
@@ -110,9 +89,9 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
         subscriptionId = _subscriptionId;
         keyHash = _keyHash;
-        callbackGasLimit = 500000;
-        requestConfirmations = 6;
-        numWords = 17;
+        callbackGasLimit = 400000;
+        requestConfirmations = 5;
+        numWords = 10;
         tokenId = 0;
     }
 
@@ -126,17 +105,8 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     {
         dexAddress = _dexAddress;
         upgradeNftInstance = _upgradeNftAddress;
-    }
-
-    /// @notice Returns the informations of a NFT
-    /// @param _tokenId The id of the NFT
-    /// @return _infos Informations about the NFT
-    function getNftOwnership(uint256 _tokenId)
-        external
-        view
-        returns (NftOwnership memory)
-    {
-        return tokenIdToNftOwnership[_tokenId];
+        assert(dexAddress != address(0));
+        assert(address(upgradeNftInstance) != address(0));
     }
 
     /// @notice Returns the scores of a NFT
@@ -179,7 +149,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     /// @param _tokenId Id of the NFT
     /// @param _indexAttribute Index of the attribute
     /// @param _valueToAdd Value to add to the score
-    function updateBedroom(
+    function updateScoresAdd(
         uint256 _tokenId,
         uint256 _indexAttribute,
         uint256 _valueToAdd
@@ -190,86 +160,96 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         }
         if (_indexAttribute == 1) {
             tokenIdToNftSpecifications[_tokenId]
-                .bedroomThermalIsolationScore += _valueToAdd;
+                .thermalIsolationScore += _valueToAdd;
         }
         if (_indexAttribute == 2) {
             tokenIdToNftSpecifications[_tokenId]
                 .soundIsolationScore += _valueToAdd;
         }
         if (_indexAttribute == 3) {
+            tokenIdToNftSpecifications[_tokenId].humidityScore += _valueToAdd;
+        }
+        if (_indexAttribute == 4) {
             tokenIdToNftSpecifications[_tokenId]
                 .temperatureScore += _valueToAdd;
         }
+        if (_indexAttribute == 5) {
+            tokenIdToNftSpecifications[_tokenId]
+                .ventilationScore += _valueToAdd;
+        }
+        if (_indexAttribute == 6) {
+            tokenIdToNftSpecifications[_tokenId].surfaceScore += _valueToAdd;
+        }
+        if (_indexAttribute == 7) {
+            tokenIdToNftSpecifications[_tokenId].furnitureScore += _valueToAdd;
+        }
+        if (_indexAttribute == 8) {
+            tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore += _valueToAdd;
+        }
+        if (_indexAttribute == 9) {
+            tokenIdToNftSpecifications[_tokenId]
+                .bedScore += _valueToAdd;
+        }
+    }
+
+    /// @dev Updates the scores of a NFT
+    /// @param _tokenId Id of the NFT
+    /// @param _indexAttribute Index of the attribute
+    /// @param _valueToRemove Value to remove to the score
+    function updateScoresRemove(
+        uint256 _tokenId,
+        uint256 _indexAttribute,
+        uint256 _valueToRemove
+    ) internal {
+        if (_indexAttribute == 0) {
+            tokenIdToNftSpecifications[_tokenId]
+                .lightIsolationScore -= _valueToRemove;
+        }
+        if (_indexAttribute == 1) {
+            tokenIdToNftSpecifications[_tokenId]
+                .thermalIsolationScore -= _valueToRemove;
+        }
+        if (_indexAttribute == 2) {
+            tokenIdToNftSpecifications[_tokenId]
+                .soundIsolationScore -= _valueToRemove;
+        }
+        if (_indexAttribute == 3) {
+            tokenIdToNftSpecifications[_tokenId].humidityScore -= _valueToRemove;
+        }
         if (_indexAttribute == 4) {
-            tokenIdToNftSpecifications[_tokenId].humidityScore += _valueToAdd;
+            tokenIdToNftSpecifications[_tokenId]
+                .temperatureScore -= _valueToRemove;
         }
         if (_indexAttribute == 5) {
             tokenIdToNftSpecifications[_tokenId]
-                .sleepAidMachinesScore += _valueToAdd;
+                .ventilationScore -= _valueToRemove;
         }
         if (_indexAttribute == 6) {
-            tokenIdToNftSpecifications[_tokenId]
-                .circadianRhythmRegulation += _valueToAdd;
+            tokenIdToNftSpecifications[_tokenId].surfaceScore -= _valueToRemove;
         }
         if (_indexAttribute == 7) {
-            tokenIdToNftSpecifications[_tokenId].sizeScore += _valueToAdd;
+            tokenIdToNftSpecifications[_tokenId].furnitureScore -= _valueToRemove;
         }
         if (_indexAttribute == 8) {
-            tokenIdToNftSpecifications[_tokenId].heightScore += _valueToAdd;
+            tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore -= _valueToRemove;
         }
         if (_indexAttribute == 9) {
-            tokenIdToNftSpecifications[_tokenId].bedBaseScore += _valueToAdd;
-        }
-        if (_indexAttribute == 10) {
             tokenIdToNftSpecifications[_tokenId]
-                .mattressTechnologyScore += _valueToAdd;
-        }
-        if (_indexAttribute == 11) {
-            tokenIdToNftSpecifications[_tokenId]
-                .mattressThicknessScore += _valueToAdd;
-        }
-        if (_indexAttribute == 12) {
-            tokenIdToNftSpecifications[_tokenId]
-                .mattressDeformationScore += _valueToAdd;
-        }
-        if (_indexAttribute == 13) {
-            tokenIdToNftSpecifications[_tokenId]
-                .thermalIsolationScore += _valueToAdd;
-        }
-        if (_indexAttribute == 14) {
-            tokenIdToNftSpecifications[_tokenId]
-                .hygrometricRegulationScore += _valueToAdd;
-        }
-        if (_indexAttribute == 15) {
-            tokenIdToNftSpecifications[_tokenId]
-                .comforterComfortabilityScore += _valueToAdd;
-        }
-        if (_indexAttribute == 16) {
-            tokenIdToNftSpecifications[_tokenId]
-                .pillowComfortabilityScore += _valueToAdd;
-        }
-        if (_indexAttribute == 17) {
-            tokenIdToNftOwnership[_tokenId].category = Category.Deluxe;
-        }
-        if (_indexAttribute == 18) {
-            tokenIdToNftOwnership[_tokenId].category = Category.Luxury;
+                .bedScore -= _valueToRemove;
         }
     }
 
     /// @notice Launches the procedure to create an NFT
     /// @param _designId Design Id the NFT
-    /// @param _price Price of the NFT
-    /// @param _category Category of the NFT
     /// @param _owner Owner of the NFT
     /// @dev This function can only be called by Dex Contract
     function mintingBedroomNft(
         uint256 _designId,
-        uint256 _price,
-        Category _category,
         address _owner
     ) external {
         require(dexAddress != address(0), "Dex address is not configured");
-        require(msg.sender == dexAddress, "Access forbidden");
+        require(msg.sender == owner() || msg.sender == dexAddress, "Access forbidden");
+        
 
         uint256 requestId = COORDINATOR.requestRandomWords(
             keyHash,
@@ -281,12 +261,20 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
 
         requestIdToTokenId[requestId] = tokenId;
 
-        tokenIdToNftOwnership[tokenId] = NftOwnership(
-            _owner,
-            _price,
-            _designId,
+        tokenIdToNftSpecifications[tokenId] = NftSpecifications(
             0,
-            _category
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            _owner,
+            _designId,
+            1
         );
 
         // Index of next NFT
@@ -303,7 +291,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
                     "Token #",
                     Strings.toString(_tokenId),
                     " Level ",
-                    Strings.toString(tokenIdToNftOwnership[_tokenId].level)
+                    Strings.toString(tokenIdToNftSpecifications[_tokenId].level)
                 )
             );
     }
@@ -318,39 +306,58 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         uint256 _tokenId = requestIdToTokenId[requestId];
 
         // Create new Bedroom
-        tokenIdToNftSpecifications[_tokenId] = NftSpecifications(
-            (randomWords[0] % 100) + 1,
-            (randomWords[1] % 100) + 1,
-            (randomWords[2] % 100) + 1,
-            (randomWords[3] % 100) + 1,
-            (randomWords[4] % 100) + 1,
-            (randomWords[5] % 100) + 1,
-            (randomWords[6] % 100) + 1,
-            (randomWords[7] % 100) + 1,
-            (randomWords[8] % 100) + 1,
-            (randomWords[9] % 100) + 1,
-            (randomWords[10] % 100) + 1,
-            (randomWords[11] % 100) + 1,
-            (randomWords[12] % 100) + 1,
-            (randomWords[13] % 100) + 1,
-            (randomWords[14] % 100) + 1,
-            (randomWords[15] % 100) + 1,
-            (randomWords[16] % 100) + 1
-        );
+        uint256 sum;
+        uint256 score;
+        score = (randomWords[0] % 100) + 1;
+        tokenIdToNftSpecifications[_tokenId].lightIsolationScore = score; 
+        sum+=score;
+        score = (randomWords[1] % 100) + 1;
+        tokenIdToNftSpecifications[_tokenId].thermalIsolationScore = score; 
+        sum+=score;
+        score = (randomWords[2] % 100) + 1;
+        tokenIdToNftSpecifications[_tokenId].soundIsolationScore = score; 
+        sum+=score;
+        score = (randomWords[3] % 100) + 1;
+        tokenIdToNftSpecifications[_tokenId].humidityScore = score; 
+        sum+=score;
+        score = (randomWords[4] % 100) + 1;
+        tokenIdToNftSpecifications[_tokenId].temperatureScore = score;
+        sum+=score;
+        score = (randomWords[5] % 100) + 1;
+        tokenIdToNftSpecifications[_tokenId].ventilationScore = score; 
+        sum+=score;
+        score = (randomWords[6] % 100) + 1;
+        tokenIdToNftSpecifications[_tokenId].surfaceScore = score; 
+        sum+=score;
+        score = (randomWords[7] % 100) + 1;
+        tokenIdToNftSpecifications[_tokenId].furnitureScore = score; 
+        sum+=score;
+        score = (randomWords[8] % 100) + 1;
+        tokenIdToNftSpecifications[_tokenId].sleepAidMachinesScore = score;
+        sum+=score;
+        score = (randomWords[9] % 100) + 1;
+        tokenIdToNftSpecifications[_tokenId].bedScore = score; 
+        sum+=score;
 
         // Minting of the new Bedroom NFT
-        _mint(tokenIdToNftOwnership[_tokenId].owner, _tokenId, 1, "");
+        _mint(
+            tokenIdToNftSpecifications[_tokenId].owner, 
+            _tokenId, 
+            sum, 
+            ""
+        );
 
         // Set Token URI
         string memory DesignName = string(
             abi.encodePacked(
-                Strings.toString(tokenIdToNftOwnership[_tokenId].designId),
+                Strings.toString(tokenIdToNftSpecifications[_tokenId].designId),
                 fileFormat
             )
         );
         _setURI(_tokenId, DesignName);
 
         emit BedroomNftMinting(
+            tokenIdToNftSpecifications[_tokenId].owner,
             _tokenId,
             uri(_tokenId),
             tokenIdToNftSpecifications[_tokenId]
@@ -360,31 +367,69 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
     /// @notice Launches the procedure to update an NFT
     /// @param _tokenId Id of the NFT
     /// @param _attributeIndex Index of the attribute to upgrade
-    /// @param _valueToAdd Value to add to the attribute score
+    /// @param _value Value to add to the attribute score
     /// @param _newDesignId New design Id of the NFT
     /// @param _amount Price of the upgrade
+    /// @param _level Level to add to the Nft
+    /// @param _action Action to do
     /// @dev This function can only be called by Dex Contract
-    function upgradeBedroomNft(
+    function updateBedroomNft(
         uint256 _tokenId,
         uint256 _attributeIndex,
-        uint256 _valueToAdd,
+        uint256 _value,
         uint256 _newDesignId,
-        uint256 _amount
+        uint256 _amount, 
+        uint256 _level,
+        uint256 _action
     ) external {
-        require(
-            address(upgradeNftInstance) != address(0),
-            "UpgradeNft address is not configured"
-        );
+        assert(address(upgradeNftInstance) != address(0));
         require(msg.sender == address(upgradeNftInstance), "Access forbidden");
 
-        // Update Bedroom
-        updateBedroom(_tokenId, _attributeIndex, _valueToAdd);
-
-        // Set Token Level
-        tokenIdToNftOwnership[_tokenId].level++;
-
-        // Set Token price
-        tokenIdToNftOwnership[_tokenId].price += _amount;
+        if (_action == 1) {
+            updateScoresAdd(
+                _tokenId,
+                _attributeIndex,
+                _value
+            );
+            _mint(
+                tokenIdToNftSpecifications[_tokenId].owner, 
+                _tokenId, 
+                _amount,
+                ""
+            );
+            // Set Token Level
+            tokenIdToNftSpecifications[_tokenId].level += _level;
+        } else if (_action == 2) {
+            updateScoresRemove(
+                _tokenId,
+                _attributeIndex,
+                _value
+            );
+            _burn(
+                tokenIdToNftSpecifications[_tokenId].owner, 
+                _tokenId, 
+                _amount
+            );
+            // Set Token Level
+            tokenIdToNftSpecifications[_tokenId].level -= _level;
+        } else if (_action == 3) {
+            // Set Token Level
+            tokenIdToNftSpecifications[_tokenId].level += _level;
+            _mint(
+                tokenIdToNftSpecifications[_tokenId].owner, 
+                _tokenId, 
+                _amount,
+                ""
+            );
+        } else if (_action == 4) {
+            // Set Token Level
+            tokenIdToNftSpecifications[_tokenId].level -= _level;
+            _burn(
+                tokenIdToNftSpecifications[_tokenId].owner, 
+                _tokenId, 
+                _amount
+            );
+        } 
 
         // Set Token URI
         string memory DesignName = string(
@@ -393,6 +438,7 @@ contract BedroomNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         _setURI(_tokenId, DesignName);
 
         emit BedroomNftUpgrading(
+            tokenIdToNftSpecifications[_tokenId].owner,
             _tokenId,
             uri(_tokenId),
             tokenIdToNftSpecifications[_tokenId]
