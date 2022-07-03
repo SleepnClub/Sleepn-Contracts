@@ -9,7 +9,7 @@ import "../Interfaces/ISleepToken.sol";
 import "../Interfaces/IBedroomNft.sol";
 import "../Interfaces/IUpgradeNft.sol";
 
-/// @title GetSleepn Decentralized Exchange Contract
+/// @title Sleepn Decentralized Exchange Contract
 /// @author Sleepn
 /// @notice This contract can be use to mint and upgrade a Bedroom NFT
 contract Dex is Initializable, OwnableUpgradeable {
