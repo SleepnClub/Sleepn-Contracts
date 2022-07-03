@@ -1,98 +1,92 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.15;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
-import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
-
-import "./Interfaces/ISleepToken.sol";
-import "./Interfaces/IBedroomNft.sol";
+import "../../Interfaces/ISleepToken.sol";
+import "../../Interfaces/IBedroomNft.sol";
 
 /// @title Upgrade Nft Contract
-/// @author Alexis Balayre
+/// @author Sleepn
 /// @notice An update NFT is used to upgrade a Bedroom NFT
-contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
-    /// @notice Dex Contract address
-    address public dexAddress;
+contract UpgradeNft is ERC1155, Ownable, ERC1155URIStorage {
+    /// @dev Dex Contract address
+    address private dexAddress;
 
-    /// @notice Bedroom NFT Contract address
-    IBedroomNft public bedroomNftInstance;
+    /// @dev Dev Wallet
+    address private devWallet;
 
-    /// @notice Chainlink VRF Variables
-    VRFCoordinatorV2Interface public immutable COORDINATOR;
-    uint32 private numWords;
-    uint32 private callbackGasLimit;
-    uint16 private requestConfirmations;
-    uint64 private subscriptionId;
-    bytes32 private keyHash;
+    /// @dev Bedroom NFT Contract address
+    IBedroomNft private bedroomNftInstance;
 
     /// @notice Upgrade Specifications
     struct UpgradeSpecifications {
+        address owner;
         uint256 bedroomNftId;
         uint256 attributeIndex;
-        uint256 valueToAdd;
-        uint256 valueToAddMax;
-        address owner;
-        uint256 price;
-        uint256 newDesignId;
-        uint256 upgradeDesignId;
+        uint256 attributeValue;
+        uint256 levelToAdd;
+        uint256 levelMin;
+        bool isUsed;
     }
 
-    /// @notice File format
-    string public fileFormat;
+    /// @dev File format
+    string private fileFormat;
 
     /// @notice Number of NFT
     uint256 public tokenId;
 
-    /// @notice Maps an NFT ID to a Chainlink VRF Request ID
-    mapping(uint256 => uint256) private requestIdToTokenId;
-
-    /// @notice Maps the Upgrade NFT specifications to an NFT ID
+    /// @dev Maps the Upgrade NFT specifications to an NFT ID
     mapping(uint256 => UpgradeSpecifications)
         private tokenIdToUpgradeSpecifications;
 
     /// @notice Upgrade NFT Minting Event
     event UpgradeNftMinting(
+        address indexed owner,
         uint256 tokenId,
         string tokenURI,
         UpgradeSpecifications specifications
     );
 
-    /// @notice Returned Random Numbers Event
-    event ReturnedRandomness(uint256[] randomWords);
+    /// @notice Upgrade Nft linked
+    event UpgradeNftLinked(
+        address indexed owner,
+        uint256 upgradeNftId,
+        uint256 bedroomNftId
+    );
+
+    /// @notice Upgrade Nft unlinked
+    event UpgradeNftUnlinked(
+        address indexed owner,
+        uint256 upgradeNftId,
+        uint256 bedroomNftId
+    );
 
     /// @dev Constructor
-    /// @param _subscriptionId Chainlink VRF Id Subscription
-    /// @param _vrfCoordinator Address of the Coordinator Contract
-    /// @param _keyHash Chainlink VRF key hash
     constructor(
-        uint64 _subscriptionId,
-        address _vrfCoordinator,
-        bytes32 _keyHash
-    ) ERC1155("") VRFConsumerBaseV2(_vrfCoordinator) {
-        COORDINATOR = VRFCoordinatorV2Interface(_vrfCoordinator);
-        subscriptionId = _subscriptionId;
-        keyHash = _keyHash;
-        callbackGasLimit = 100000;
-        requestConfirmations = 3;
-        numWords = 1;
+    ) ERC1155("") {
         tokenId = 0;
+        fileFormat = ".json";
     }
 
     /// @notice Settles contracts addresses
     /// @param _dexAddress Address of the Dex contract
+    /// @param _devWallet Address of the Dev Wallet
     /// @param _bedroomNft Address of the Bedroom NFT contract
     /// @dev This function can only be called by the owner of the contract
-    function setContracts(address _dexAddress, IBedroomNft _bedroomNft)
+    function setContracts(address _dexAddress, address _devWallet, IBedroomNft _bedroomNft)
         external
         onlyOwner
     {
         dexAddress = _dexAddress;
+        devWallet = _devWallet;
         bedroomNftInstance = _bedroomNft;
+        assert(dexAddress != address(0));
+        assert(devWallet != address(0));
+        assert(address(bedroomNftInstance) != address(0));
     }
 
     /// @notice Returns informations about a NFT
@@ -106,24 +100,6 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         return tokenIdToUpgradeSpecifications[_tokenId];
     }
 
-    /// @notice Updates chainlink variables
-    /// @param _callbackGasLimit Callback Gas Limit
-    /// @param _subscriptionId Chainlink subscription Id
-    /// @param _keyHash Chainlink Key Hash
-    /// @param _requestConfirmations Number of request confirmations
-    /// @dev This function can only be called by the owner of the contract
-    function updateChainlink(
-        uint32 _callbackGasLimit,
-        uint64 _subscriptionId,
-        bytes32 _keyHash,
-        uint16 _requestConfirmations
-    ) external onlyOwner {
-        subscriptionId = _subscriptionId;
-        keyHash = _keyHash;
-        callbackGasLimit = _callbackGasLimit;
-        requestConfirmations = _requestConfirmations;
-    }
-
     /// @notice Settles File format
     /// @param _format New file format
     /// @dev This function can only be called by the owner of the contract
@@ -131,108 +107,243 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         fileFormat = _format;
     }
 
-    /// @notice Launches the procedure to create an NFT
+    /// @notice Links an upgrade Nft to a bedroom Nft
+    /// @param _upgradeNftId Id of the Upgrade NFT
     /// @param _bedroomNftId Id of the Bedroom NFT
     /// @param _newDesignId New Design Id of the Bedroom NFT
-    /// @param _upgradeDesignId Design Id of the Upgrade NFT
-    /// @param _price Price of the Upgrade NFT
-    /// @param _indexAttribute Index of the Bedroom NFT attribute to upgrade
-    /// @param _valueToAddMax Value Max to add to the score of desired Bedroom NFT attribute
     /// @param _owner Owner of the NFT
-    /// @dev This function can only be called by Dex Contract
-    function mintingUpgradeNft(
+    /// @dev This function can only be called by Dex Contract or Owner
+    function linkUpgradeNft(
+        uint256 _upgradeNftId,
         uint256 _bedroomNftId,
         uint256 _newDesignId,
-        uint256 _upgradeDesignId,
-        uint256 _price,
-        uint256 _indexAttribute,
-        uint256 _valueToAddMax,
         address _owner
     ) external {
-        require(dexAddress != address(0), "dex address is not configured");
-        require(msg.sender == dexAddress, "Access forbidden");
+        assert(address(bedroomNftInstance) != address(0));
+        require(msg.sender == owner() || msg.sender == dexAddress, "Access forbidden");
 
-        uint256 requestId = COORDINATOR.requestRandomWords(
-            keyHash,
-            subscriptionId,
-            requestConfirmations,
-            callbackGasLimit,
-            numWords
-        );
+        // Get Bedroom NFT informations
+        IBedroomNft.NftSpecifications memory nftSpecifications = bedroomNftInstance
+            .getNftSpecifications(_bedroomNftId);
 
-        requestIdToTokenId[requestId] = tokenId;
+        require(tokenIdToUpgradeSpecifications[_upgradeNftId].owner == _owner && nftSpecifications.owner == _owner, "Wrong owner");
+        require(tokenIdToUpgradeSpecifications[_upgradeNftId].isUsed == false, "Nft already linked");
+        require(tokenIdToUpgradeSpecifications[_upgradeNftId].levelMin <= nftSpecifications.level, "Level too low"); 
 
-        tokenIdToUpgradeSpecifications[tokenId] = UpgradeSpecifications(
-            _bedroomNftId,
-            _indexAttribute,
-            0,
-            _valueToAddMax,
-            _owner,
-            _price,
-            _newDesignId,
-            _upgradeDesignId
-        );
+        if (tokenIdToUpgradeSpecifications[_upgradeNftId].attributeValue > 0) {
+            bedroomNftInstance.updateBedroomNft(
+                _bedroomNftId,
+                tokenIdToUpgradeSpecifications[_upgradeNftId].attributeIndex,
+                tokenIdToUpgradeSpecifications[_upgradeNftId].attributeValue,
+                _newDesignId,
+                balanceOf(_owner, _upgradeNftId),
+                tokenIdToUpgradeSpecifications[_upgradeNftId].levelToAdd,
+                1
+            );
+        } else {
+            bedroomNftInstance.updateBedroomNft(
+                _bedroomNftId,
+                0,
+                0,
+                _newDesignId,
+                balanceOf(_owner, _upgradeNftId),
+                tokenIdToUpgradeSpecifications[_upgradeNftId].levelToAdd,
+                3
+            );
+        }
 
-        // Index of next NFT
-        tokenId++;
+        tokenIdToUpgradeSpecifications[_upgradeNftId].owner = _owner;
+        tokenIdToUpgradeSpecifications[_upgradeNftId].bedroomNftId = _bedroomNftId;
+        tokenIdToUpgradeSpecifications[_upgradeNftId].isUsed = true;
+
+        emit UpgradeNftLinked(_owner, _upgradeNftId, _bedroomNftId);
     }
 
-    /// Gets the name of a NFT
+    /// @notice Unlinks an upgrade Nft to a bedroom Nft
+    /// @param _upgradeNftId Id of the Upgrade NFT
+    /// @param _owner Owner of the NFT
+    /// @param _newDesignId New Design Id of the Bedroom NFT
+    /// @dev This function can only be called by Dex Contract
+    function unlinkUpgradeNft(
+        uint256 _upgradeNftId,
+        address _owner,
+        uint256 _newDesignId
+    ) external {
+        assert(address(bedroomNftInstance) != address(0));
+        assert(address(dexAddress) != address(0));
+        require(msg.sender == owner() || msg.sender == dexAddress, "Access forbidden");
+
+        // Get Bedroom NFT informations
+        uint256 id = tokenIdToUpgradeSpecifications[_upgradeNftId].bedroomNftId;
+        IBedroomNft.NftSpecifications memory nftSpecifications = bedroomNftInstance
+            .getNftSpecifications(id);
+
+        require(tokenIdToUpgradeSpecifications[_upgradeNftId].isUsed == true, "Nft not linked");
+        require(_owner == tokenIdToUpgradeSpecifications[_upgradeNftId].owner && nftSpecifications.owner == _owner, "Wrong owner");
+
+        if (tokenIdToUpgradeSpecifications[_upgradeNftId].attributeValue > 0) {
+            bedroomNftInstance.updateBedroomNft(
+                id,
+                tokenIdToUpgradeSpecifications[_upgradeNftId].attributeIndex,
+                tokenIdToUpgradeSpecifications[_upgradeNftId].attributeValue,
+                _newDesignId,
+                balanceOf(_owner, _upgradeNftId),
+                tokenIdToUpgradeSpecifications[_upgradeNftId].levelToAdd,
+                2
+            );
+        } else {
+            bedroomNftInstance.updateBedroomNft(
+                id,
+                0,
+                0,
+                _newDesignId,
+                balanceOf(_owner, _upgradeNftId),
+                tokenIdToUpgradeSpecifications[_upgradeNftId].levelToAdd,
+                4
+            );
+        }
+        emit UpgradeNftUnlinked(
+            tokenIdToUpgradeSpecifications[_upgradeNftId].owner, 
+            _upgradeNftId, 
+            tokenIdToUpgradeSpecifications[_upgradeNftId].bedroomNftId
+        );
+        tokenIdToUpgradeSpecifications[_upgradeNftId].isUsed = false;
+        tokenIdToUpgradeSpecifications[_upgradeNftId].bedroomNftId = 0;
+    } 
+
+    /// @notice Gets the name of a NFT
     /// @param _tokenId Id of the NFT
     /// @return _name Name of the NFT
     function getName(uint256 _tokenId) external pure returns (string memory) {
         return string(abi.encodePacked("Token #", Strings.toString(_tokenId)));
     }
 
-    /// @dev Callback function with the requested random numbers
-    /// @param requestId Chainlink VRF Random Number Request Id
-    /// @param randomWords List of random words
-    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords)
-        internal
-        override
+    /// @notice Mints an Upgrade Nft
+    /// @param _account Upgrade Nft Owner
+    /// @param _amount Amount of tokens to add to the Upgrade Nft
+    /// @param _attribute Score involved (optionnal)
+    /// @param _value Value to add to the score (optionnal)
+    /// @param _levelToAdd Level to add to the Bedroom Nft
+    /// @param _designId Upgrade Nft URI 
+    /// @param _levelMin Bedroom Nft Level min required
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function mint(
+        address _account, 
+        uint256 _amount,
+        uint256 _attribute, 
+        uint256 _value,
+        uint256 _levelToAdd,
+        uint256 _designId,
+        uint256 _levelMin
+    )
+        external
     {
-        emit ReturnedRandomness(randomWords);
-        
-        uint256 _tokenId = requestIdToTokenId[requestId];
+        require(
+            msg.sender == owner() || msg.sender == devWallet,
+            "Access Forbidden"
+        );
 
-        // Create new random upgrade
-        tokenIdToUpgradeSpecifications[_tokenId].valueToAdd =
-            (randomWords[0] %
-                tokenIdToUpgradeSpecifications[_tokenId].valueToAddMax) +
-            1;
+        tokenIdToUpgradeSpecifications[tokenId] = UpgradeSpecifications(
+            _account,
+            0,
+            _attribute,
+            _value,
+            _levelToAdd,
+            _levelMin,
+            false
+        );
 
-        // Minting of the new Bedroom NFT
-        _mint(tokenIdToUpgradeSpecifications[_tokenId].owner, _tokenId, 1, "");
+        _mint(_account, tokenId, _amount, "");
 
-        // Set Token URI
         string memory DesignName = string(
             abi.encodePacked(
                 Strings.toString(
-                    tokenIdToUpgradeSpecifications[_tokenId].upgradeDesignId
+                    _designId
                 ),
                 fileFormat
             )
         );
-        _setURI(_tokenId, DesignName);
 
-        // Upgrading of BedroomNft
-        require(
-            address(bedroomNftInstance) != address(0),
-            "BedroomNftInstance not initialized"
-        );
-        bedroomNftInstance.upgradeBedroomNft(
-            tokenIdToUpgradeSpecifications[_tokenId].bedroomNftId,
-            tokenIdToUpgradeSpecifications[_tokenId].attributeIndex,
-            tokenIdToUpgradeSpecifications[_tokenId].valueToAdd,
-            tokenIdToUpgradeSpecifications[_tokenId].newDesignId,
-            tokenIdToUpgradeSpecifications[_tokenId].price
-        );
+        _setURI(tokenId, DesignName);
 
         emit UpgradeNftMinting(
-            _tokenId,
-            uri(_tokenId),
-            tokenIdToUpgradeSpecifications[_tokenId]
+            _account,
+            tokenId,
+            uri(tokenId),
+            tokenIdToUpgradeSpecifications[tokenId]
         );
+
+        tokenId++;
+    }
+
+    /// @notice Mints Upgrade Nfts per batch
+    /// @param _amounts Amount of tokens to add to the Upgrade Nft
+    /// @param _attributes Score involved (optionnal)
+    /// @param _values Value to add to the score (optionnal)
+    /// @param _levels Level to add to the Bedroom Nft
+    /// @param _designIds Upgrade Nft URI 
+    /// @param _levelsMin Bedroom Nft Level min required
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function mintBatch(
+        uint256[] memory _amounts, 
+        uint256[] memory _attributes, 
+        uint256[] memory _values,
+        uint256[] memory _levels,
+        uint256[] memory _designIds,
+        uint256[] memory _levelsMin
+    )
+        external
+    {   
+        require(
+            msg.sender == owner() || msg.sender == devWallet,
+            "Access Forbidden"
+        );
+        require(_amounts.length == _attributes.length, "ERC1155: amounts and attributes length mismatch");
+        require(_attributes.length == _values.length, "ERC1155: attributes and values length mismatch");
+
+        for(uint256 i = 0; i < _amounts.length; i++) {
+            uint256 amount = _amounts[i];
+            uint256 attribute = _attributes[i];
+            uint256 value = _values[i];
+            uint256 designId = _designIds[i];
+            uint256 level = _levels[i];
+            uint256 levelMin = _levelsMin[i];
+
+            // Specifications
+            tokenIdToUpgradeSpecifications[tokenId] = UpgradeSpecifications(
+                dexAddress,
+                0,
+                attribute,
+                value,
+                level,
+                levelMin,
+                false
+            );
+
+            // Mints a Nft
+            _mint(dexAddress, tokenId, amount, "");
+
+            // Settles Metadata
+            string memory DesignName = string(
+                abi.encodePacked(
+                    Strings.toString(
+                        designId
+                    ),
+                    fileFormat
+                )
+            );
+            _setURI(tokenId, DesignName);
+
+            emit UpgradeNftMinting(
+                dexAddress,
+                tokenId,
+                uri(tokenId),
+                tokenIdToUpgradeSpecifications[tokenId]
+            );
+
+            // Increases Id 
+            tokenId++;
+        }
         
     }
 
@@ -258,10 +369,19 @@ contract UpgradeNft is VRFConsumerBaseV2, ERC1155, Ownable, ERC1155URIStorage {
         _setURI(_tokenId, _tokenURI);
     }
 
-    /// Settles baseURI as the _baseURI for all tokens
+    /// @notice Settles baseURI as the _baseURI for all tokens
     /// @param _baseURI Base URI of NFTs
     /// @dev This function can only be called by the owner of the contract
     function setBaseURI(string memory _baseURI) external onlyOwner {
         _setBaseURI(_baseURI);
+    }
+
+    /// @notice Transfers an Upgrade Nft
+    /// @param _tokenId Id of the NFT
+    /// @param _newOwner Receiver address 
+    function transferUpgradeNft(uint256 _tokenId, address _newOwner) external {
+        require(tokenIdToUpgradeSpecifications[_tokenId].owner == msg.sender, "Access Forbidden");
+        tokenIdToUpgradeSpecifications[_tokenId].owner = _newOwner;
+        _safeTransferFrom(msg.sender, _newOwner, _tokenId, balanceOf(msg.sender, _tokenId), "");
     }
 }
