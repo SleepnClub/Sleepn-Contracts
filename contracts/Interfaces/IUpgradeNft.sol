@@ -1,85 +1,89 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.13;
+pragma solidity 0.8.15;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 
 import "./IBedroomNft.sol";
 
 /// @title Interface of the Upgrade Nft Contract
-/// @author Alexis Balayre
+/// @author Sleepn
 /// @notice An update NFT is used to upgrade a Bedroom NFT
 interface IUpgradeNft is IERC1155Upgradeable {
-    /// @notice Informations of an Upgrade NFT
+    /// @notice Upgrade Specifications
     struct UpgradeSpecifications {
+        address owner;
         uint256 bedroomNftId;
         uint256 attributeIndex;
-        uint256 valueToAdd;
-        uint256 valueToAddMax;
-        address owner;
-        uint256 price;
-        uint256 newDesignId;
-        uint256 upgradeDesignId;
+        uint256 attributeValue;
+        uint256 levelToAdd;
+        uint256 levelMin;
+        bool isUsed;
     }
 
     /// @notice Upgrade NFT Minting Event
     event UpgradeNftMinting(
+        address indexed owner,
         uint256 tokenId,
         string tokenURI,
         UpgradeSpecifications specifications
     );
 
-    /// @notice Returned Random Numbers Event
-    event ReturnedRandomness(uint256[] randomWords);
+    /// @notice Upgrade Nft linked
+    event UpgradeNftLinked(
+        address indexed owner,
+        uint256 upgradeNftId,
+        uint256 bedroomNftId
+    );
 
-    /// @notice Settles the address of contracts
+    /// @notice Upgrade Nft unlinked
+    event UpgradeNftUnlinked(
+        address indexed owner,
+        uint256 upgradeNftId,
+        uint256 bedroomNftId
+    );
+
+    /// @notice Settles contracts addresses
     /// @param _dexAddress Address of the Dex contract
-    /// @param _bedroomNft Address of the Bedroom NFT Contract
+    /// @param _devWallet Address of the Dev Wallet
+    /// @param _bedroomNft Address of the Bedroom NFT contract
     /// @dev This function can only be called by the owner of the contract
-    function setContracts(address _dexAddress, IBedroomNft _bedroomNft)
+    function setContracts(address _dexAddress, address _devWallet, IBedroomNft _bedroomNft)
         external;
 
-    /// @notice Returns some informations about a NFT
-    /// @param _tokenId Id of the NFT
-    /// @return _infos Informations of the NFT
+    /// @notice Returns informations about a NFT
+    /// @param _tokenId The id of the NFT
+    /// @return _nftSpecifications Informations about the NFT
     function getUpgradeNftSpecifications(uint256 _tokenId)
         external
         view
-        returns (UpgradeSpecifications memory _infos);
+        returns (UpgradeSpecifications memory _nftSpecifications);
 
-    /// @notice Updates chainlink variables
-    /// @param _callbackGasLimit Callback Gas Limit
-    /// @param _subscriptionId Chainlink subscription Id
-    /// @param _keyHash Chainlink Key Hash
-    /// @param _requestConfirmations Number of request confirmations
-    /// @dev This function can only be called by the owner of the contract
-    function updateChainlink(
-        uint32 _callbackGasLimit,
-        uint64 _subscriptionId,
-        bytes32 _keyHash,
-        uint16 _requestConfirmations
-    ) external;
-
-    /// @notice Mints a new upgrade NFT
+     /// @notice Links an upgrade Nft to a bedroom Nft
+    /// @param _upgradeNftId Id of the Upgrade NFT
     /// @param _bedroomNftId Id of the Bedroom NFT
-    /// @param _newDesignId Id of the new NFT design
-    /// @param _upgradeDesignId Id of the new upgrade design
-    /// @param _price Price of the upgrade
-    /// @param _indexAttribute Index of upgrade attribute
-    /// @param _valueToAddMax Value Max of the attribute
+    /// @param _newDesignId New Design Id of the Bedroom NFT
     /// @param _owner Owner of the NFT
-    /// @dev This function can only be called by Dex Contract
-    function mintingUpgradeNft(
+    /// @dev This function can only be called by Dex Contract or Owner
+    function linkUpgradeNft(
+        uint256 _upgradeNftId,
         uint256 _bedroomNftId,
         uint256 _newDesignId,
-        uint256 _upgradeDesignId,
-        uint256 _price,
-        uint256 _indexAttribute,
-        uint256 _valueToAddMax,
         address _owner
     ) external;
 
-    /// @notice Settles the file format of the NFT Design
-    /// @param _format Format of the design file
+    /// @notice Unlinks an upgrade Nft to a bedroom Nft
+    /// @param _upgradeNftId Id of the Upgrade NFT
+    /// @param _owner Owner of the NFT
+    /// @param _newDesignId New Design Id of the Bedroom NFT
+    /// @dev This function can only be called by Dex Contract
+    function unlinkUpgradeNft(
+        uint256 _upgradeNftId,
+        address _owner,
+        uint256 _newDesignId
+    ) external;
+
+    /// @notice Settles File format
+    /// @param _format New file format
     /// @dev This function can only be called by the owner of the contract
     function setFileFormat(string memory _format) external;
 
@@ -94,4 +98,47 @@ interface IUpgradeNft is IERC1155Upgradeable {
     /// @notice Settles Base URL
     /// @dev This function can only be called by the owner of the contract
     function setBaseURI(string memory _baseURI) external;
+
+    /// @notice Mints an Upgrade Nft
+    /// @param _account Upgrade Nft Owner
+    /// @param _amount Amount of tokens to add to the Upgrade Nft
+    /// @param _attribute Score involved (optionnal)
+    /// @param _value Value to add to the score (optionnal)
+    /// @param _levelToAdd Level to add to the Bedroom Nft
+    /// @param _designId Upgrade Nft URI 
+    /// @param _levelMin Bedroom Nft Level min required
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function mint(
+        address _account, 
+        uint256 _amount,
+        uint256 _attribute, 
+        uint256 _value,
+        uint256 _levelToAdd,
+        uint256 _designId,
+        uint256 _levelMin
+    )
+        external;
+
+    /// @notice Mints Upgrade Nfts per batch
+    /// @param _amounts Amount of tokens to add to the Upgrade Nft
+    /// @param _attributes Score involved (optionnal)
+    /// @param _values Value to add to the score (optionnal)
+    /// @param _levels Level to add to the Bedroom Nft
+    /// @param _designIds Upgrade Nft URI 
+    /// @param _levelsMin Bedroom Nft Level min required
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function mintBatch(
+        uint256[] memory _amounts, 
+        uint256[] memory _attributes, 
+        uint256[] memory _values,
+        uint256[] memory _levels,
+        uint256[] memory _designIds,
+        uint256[] memory _levelsMin
+    )
+        external;
+    
+    /// @notice Transfers an Upgrade Nft
+    /// @param _tokenId Id of the NFT
+    /// @param _newOwner Receiver address 
+    function transferUpgradeNft(uint256 _tokenId, address _newOwner) external;
 }
