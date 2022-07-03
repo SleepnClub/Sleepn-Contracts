@@ -3,23 +3,26 @@
 
 # GetSleepn - Smartcontracts
 ## Contracts Source Codes
-- Bedroom NFT Contract : contracts/BedroomNft.sol  
-- Upgrade NFT Contract : contracts/Upgrade.sol 
-- Decentralized Exchange Contract : contracts/Dex.sol
-- Stream Reward Contract : contracts/Reward.sol
-- Sleep Token Contract : contracts/SleepToken.sol
+- Bedroom NFT Contract : contracts/Contracts/Nfts/BedroomNft.sol  
+- Upgrade NFT Contract : contracts/Contracts/Nfts/Upgrade.sol 
+- Decentralized Exchange Contract : contracts/Contracts/Dex.sol
+- Stream Reward Contract : contracts/Contracts/Reward.sol
+- $Sleep Contract : contracts/Contracts/Tokens/$Sleep.sol
+- $Health Contract : contracts/Contracts/Tokens/$Health.sol
+
 
 ## Contracts Addresses
 GetSleepn Smartcontracts are deployed on Polygon Mainet.
 
 | CONTRACTS | ADDRESSES |
 | ------ | ------ |
-| Bedroom NFT Contract | [0x9765209cD1CcC89Ed6B9A57c5e6407F53A7a6991](https://polygonscan.com/address/0x9765209cD1CcC89Ed6B9A57c5e6407F53A7a6991) 
-| Upgrade NFT Contract | [0xe6EFeb9F1CaE75bA2bd671B34c2c310b8547d6Fd](https://polygonscan.com/address/0xe6EFeb9F1CaE75bA2bd671B34c2c310b8547d6Fd)
-| Dex Contract | [0x3240E10ad3EBc6b66E8FaAA0E288123702B3A29f](https://polygonscan.com/address/0x3240E10ad3EBc6b66E8FaAA0E288123702B3A29f)
-| Reward Contract | [0xa87637C7E74B6f74be80EA0507C7AfDb204F950A](https://polygonscan.com/address/0xa87637C7E74B6f74be80EA0507C7AfDb204F950A)
-| Sleep Token Contract | [0x920907cbc06f10bcC141c4126eEd398492398793](https://polygonscan.com/address/0x920907cbc06f10bcC141c4126eEd398492398793)
-| Super Sleep Token Contract | [0x38270a994843BeB153e9c7D1cb35878D83E6ab86](https://polygonscan.com/address/0x38270a994843BeB153e9c7D1cb35878D83E6ab86)
+| Bedroom NFT Contract | [0xDfC0E2eD1030E76b0489C9fcF0586b8dE0773f0F](https://polygonscan.com/address/0xDfC0E2eD1030E76b0489C9fcF0586b8dE0773f0F) 
+| Upgrade NFT Contract | [0x2c23066E6b1E082664EBfd7784EaB79C8B744edF](https://polygonscan.com/address/0x2c23066E6b1E082664EBfd7784EaB79C8B744edF)
+| Dex Contract | [0x84231d557b8f41aaC90Be9e4DD982D1085815283](https://polygonscan.com/address/0x84231d557b8f41aaC90Be9e4DD982D1085815283)
+| Reward Contract | [0xB1e08b3f0b79F7ac31D6F0bA2d8B38626E7f771e](https://polygonscan.com/address/0xB1e08b3f0b79F7ac31D6F0bA2d8B38626E7f771e)
+| $Sleep Contract | [0xD174dFE2C68802B6f6821152899BA061aA24C596](https://polygonscan.com/address/0xD174dFE2C68802B6f6821152899BA061aA24C596)
+| $Health Contract | [0xd18a5fa2e49411Deacdd17E21808cBBf2B2e7392](https://polygonscan.com/address/0xd18a5fa2e49411Deacdd17E21808cBBf2B2e7392)
+| Super $Sleep Contract | [0xeFf5435D6503d1bFE400B23E29DddC0c750dB4E5](https://polygonscan.com/address/0xeFf5435D6503d1bFE400B23E29DddC0c750dB4E5)
 
 ## Technologies
 - Gnosis Safe : Cash management + Contracts Ownership management 
