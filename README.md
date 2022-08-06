@@ -16,13 +16,12 @@ GetSleepn Smartcontracts are deployed on Polygon Mainet.
 
 | CONTRACTS | ADDRESSES |
 | ------ | ------ |
-| Bedroom NFT Contract | [0xDfC0E2eD1030E76b0489C9fcF0586b8dE0773f0F](https://polygonscan.com/address/0xDfC0E2eD1030E76b0489C9fcF0586b8dE0773f0F) 
-| Upgrade NFT Contract | [0x2c23066E6b1E082664EBfd7784EaB79C8B744edF](https://polygonscan.com/address/0x2c23066E6b1E082664EBfd7784EaB79C8B744edF)
-| Dex Contract | [0x84231d557b8f41aaC90Be9e4DD982D1085815283](https://polygonscan.com/address/0x84231d557b8f41aaC90Be9e4DD982D1085815283)
-| Reward Contract | [0xB1e08b3f0b79F7ac31D6F0bA2d8B38626E7f771e](https://polygonscan.com/address/0xB1e08b3f0b79F7ac31D6F0bA2d8B38626E7f771e)
-| $Sleep Contract | [0xD174dFE2C68802B6f6821152899BA061aA24C596](https://polygonscan.com/address/0xD174dFE2C68802B6f6821152899BA061aA24C596)
-| $Health Contract | [0xd18a5fa2e49411Deacdd17E21808cBBf2B2e7392](https://polygonscan.com/address/0xd18a5fa2e49411Deacdd17E21808cBBf2B2e7392)
-| Super $Sleep Contract | [0xeFf5435D6503d1bFE400B23E29DddC0c750dB4E5](https://polygonscan.com/address/0xeFf5435D6503d1bFE400B23E29DddC0c750dB4E5)
+| Bedroom NFT Contract | [0x4f55460FB038b27f9159D460c8Bc0ddB8aE1a760](https://polygonscan.com/address/0x4f55460FB038b27f9159D460c8Bc0ddB8aE1a760) 
+| Upgrade NFT Contract | [0x69bB50BF41E249b7F11afEcC9A52B011494cFEA5](https://polygonscan.com/address/0x69bB50BF41E249b7F11afEcC9A52B011494cFEA5)
+| Dex Contract | [0x8cD9C75c775C884128fF4Aa1508f6BfD1A0A1aAe](https://polygonscan.com/address/0x8cD9C75c775C884128fF4Aa1508f6BfD1A0A1aAe)
+| Sheepy Contract | [0x1055179fd59b7F81Fa3D46286735CAB6897bF304](https://polygonscan.com/address/0x1055179fd59b7F81Fa3D46286735CAB6897bF304)
+| $Sleep Contract | [0xb2C50393f487F734ee6902373A9dC3b898d2F243](https://polygonscan.com/address/0xb2C50393f487F734ee6902373A9dC3b898d2F243)
+| $Health Contract | [0x9C0b42b450c855B7258dCeafa15fA4f5D25f21e6](https://polygonscan.com/address/0x9C0b42b450c855B7258dCeafa15fA4f5D25f21e6)
 
 ## Technologies
 - Gnosis Safe : Cash management + Contracts Ownership management 
