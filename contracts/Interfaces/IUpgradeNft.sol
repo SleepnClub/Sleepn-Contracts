@@ -1,31 +1,33 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 import "./IBedroomNft.sol";
 
 /// @title Interface of the Upgrade Nft Contract
 /// @author Sleepn
 /// @notice An update NFT is used to upgrade a Bedroom NFT
-interface IUpgradeNft is IERC1155Upgradeable {
+interface IUpgradeNft is IERC1155 {
     /// @notice Upgrade Specifications
     struct UpgradeSpecifications {
-        address owner;
         uint256 bedroomNftId;
-        uint256 attributeIndex;
-        uint256 attributeValue;
-        uint256 levelToAdd;
-        uint256 levelMin;
+        uint64 data;
         bool isUsed;
+        address owner;
     }
 
     /// @notice Upgrade NFT Minting Event
     event UpgradeNftMinting(
         address indexed owner,
         uint256 tokenId,
-        string tokenURI,
-        UpgradeSpecifications specifications
+        uint256 designId,
+        uint16 level, 
+        uint16 levelMin, 
+        uint16 data,
+        uint8 attributeIndex, 
+        uint8 valueToAdd,
+        uint8 typeNft
     );
 
     /// @notice Upgrade Nft linked
@@ -42,23 +44,33 @@ interface IUpgradeNft is IERC1155Upgradeable {
         uint256 bedroomNftId
     );
 
-    /// @notice Settles contracts addresses
-    /// @param _dexAddress Address of the Dex contract
-    /// @param _devWallet Address of the Dev Wallet
-    /// @param _bedroomNft Address of the Bedroom NFT contract
-    /// @dev This function can only be called by the owner of the contract
-    function setContracts(address _dexAddress, address _devWallet, IBedroomNft _bedroomNft)
-        external;
+    /// @notice Returns the  data of a NFT
+    /// @param _tokenId NFT ID
+    /// @return _bedroomNftId NFT ID
+    /// @return _level NFT level
+    /// @return _levelMin NFT level min required
+    /// @return _data NFT additionnal data
+    /// @return _attributeIndex Score attribute index
+    /// @return _valueToAdd Value to add to the score
+    /// @return _typeNft NFT Type 
+    /// @return _isUsed Is linked to a Bedroom NFT
+    /// @return _owner NFT Owner
+    function getNftData(uint256 _tokenId) 
+        external 
+        view 
+        returns (
+            uint256 _bedroomNftId,
+            uint16 _level, 
+            uint16 _levelMin, 
+            uint16 _data,
+            uint8 _attributeIndex, 
+            uint8 _valueToAdd,
+            uint8 _typeNft,
+            bool _isUsed,
+            address _owner
+    );
 
-    /// @notice Returns informations about a NFT
-    /// @param _tokenId The id of the NFT
-    /// @return _nftSpecifications Informations about the NFT
-    function getUpgradeNftSpecifications(uint256 _tokenId)
-        external
-        view
-        returns (UpgradeSpecifications memory _nftSpecifications);
-
-     /// @notice Links an upgrade Nft to a bedroom Nft
+    /// @notice Links an upgrade Nft to a bedroom Nft
     /// @param _upgradeNftId Id of the Upgrade NFT
     /// @param _bedroomNftId Id of the Bedroom NFT
     /// @param _newDesignId New Design Id of the Bedroom NFT
@@ -100,40 +112,50 @@ interface IUpgradeNft is IERC1155Upgradeable {
     function setBaseURI(string memory _baseURI) external;
 
     /// @notice Mints an Upgrade Nft
-    /// @param _account Upgrade Nft Owner
     /// @param _amount Amount of tokens to add to the Upgrade Nft
-    /// @param _attribute Score involved (optionnal)
-    /// @param _value Value to add to the score (optionnal)
-    /// @param _levelToAdd Level to add to the Bedroom Nft
     /// @param _designId Upgrade Nft URI 
+    /// @param _account Upgrade Nft Owner
+    /// @param _level Level to add to the Bedroom Nft
     /// @param _levelMin Bedroom Nft Level min required
+    /// @param _attributeIndex Score involved (optionnal)
+    /// @param _valueToAdd Value to add to the score (optionnal)
+    /// @param _typeNft NFT Type 
+    /// @param _data Additionnal data (optionnal)
     /// @dev This function can only be called by the owner or the dev Wallet
     function mint(
-        address _account, 
         uint256 _amount,
-        uint256 _attribute, 
-        uint256 _value,
-        uint256 _levelToAdd,
         uint256 _designId,
-        uint256 _levelMin
+        address _account, 
+        uint64 _level,
+        uint64 _levelMin,
+        uint64 _attributeIndex,
+        uint64 _valueToAdd,
+        uint64 _typeNft,
+        uint64 _data
     )
         external;
 
     /// @notice Mints Upgrade Nfts per batch
-    /// @param _amounts Amount of tokens to add to the Upgrade Nft
-    /// @param _attributes Score involved (optionnal)
-    /// @param _values Value to add to the score (optionnal)
-    /// @param _levels Level to add to the Bedroom Nft
-    /// @param _designIds Upgrade Nft URI 
-    /// @param _levelsMin Bedroom Nft Level min required
+    /// @param _amount Amount of tokens to add to the Upgrade Nft
+    /// @param _designId Upgrade Nft URI 
+    /// @param _accounts Upgrade Nft Owner
+    /// @param _level Level to add to the Bedroom Nft
+    /// @param _levelMin Bedroom Nft Level min required
+    /// @param _attributeIndex Score involved (optionnal)
+    /// @param _valueToAdd Value to add to the score (optionnal)
+    /// @param _typeNft NFT Type 
+    /// @param _data Additionnal data (optionnal)
     /// @dev This function can only be called by the owner or the dev Wallet
     function mintBatch(
-        uint256[] memory _amounts, 
-        uint256[] memory _attributes, 
-        uint256[] memory _values,
-        uint256[] memory _levels,
-        uint256[] memory _designIds,
-        uint256[] memory _levelsMin
+        uint256 _amount,
+        uint256 _designId,
+        address[] memory _accounts, 
+        uint64 _level,
+        uint64 _levelMin,
+        uint64 _attributeIndex,
+        uint64 _valueToAdd,
+        uint64 _typeNft,
+        uint64 _data
     )
         external;
     
@@ -141,4 +163,8 @@ interface IUpgradeNft is IERC1155Upgradeable {
     /// @param _tokenId Id of the NFT
     /// @param _newOwner Receiver address 
     function transferUpgradeNft(uint256 _tokenId, address _newOwner) external;
+
+    /// @notice TransferOwnership
+    /// @param _newOwner New Owner address
+    function transferOwnership(address _newOwner) external;
 }

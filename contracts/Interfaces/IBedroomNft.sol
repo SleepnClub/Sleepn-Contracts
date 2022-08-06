@@ -1,28 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 import "./IUpgradeNft.sol";
 
 /// @title Interface of the Bedroom NFT Contract
 /// @author Sleepn
 /// @notice Bedroom NFT is the main NFT of GetSleepn app
-interface IBedroomNft is IERC1155Upgradeable {
-    // @notice Scores of a Bedroom NFT
+interface IBedroomNft is IERC1155 {
+    /// @notice Scores of a Bedroom NFT
     struct NftSpecifications {
-        uint256 lightIsolationScore; // Index 0
-        uint256 thermalIsolationScore; // Index 1
-        uint256 soundIsolationScore; // Index 2
-        uint256 humidityScore; // Index 3
-        uint256 temperatureScore; // Index 4
-        uint256 ventilationScore; // Index 5
-        uint256 surfaceScore; // Index 6
-        uint256 furnitureScore; // Index 7
-        uint256 sleepAidMachinesScore; // Index 8
-        uint256 bedScore; // Index 9
         address owner;
-        uint256 designId;
+        uint64 scores; 
         uint256 level;
     }
 
@@ -30,38 +20,93 @@ interface IBedroomNft is IERC1155Upgradeable {
     event BedroomNftMinting(
         address indexed owner,
         uint256 tokenId,
-        string tokenURI,
-        NftSpecifications specifications
+        uint16 ambiance, 
+        uint16 quality, 
+        uint16 luck, 
+        uint16 confortability
     );
 
-    /// @notice Emits an event when a Bedroom NFT is upgraded
-    event BedroomNftUpgrading(
+    /// @notice Emits an event when a Bedroom NFT Score is upgraded
+    event BedroomNftScoreUpgrading(
         address indexed owner,
         uint256 tokenId,
-        string newTokenURI,
-        NftSpecifications specifications
+        uint256 newDesignId,
+        uint256 amount, 
+        uint256 level,
+        uint16 ambiance, 
+        uint16 quality, 
+        uint16 luck, 
+        uint16 confortability
+    );
+
+    /// @notice Emits an event when a Bedroom NFT Score is downgraded
+    event BedroomNftScoreDowngrading(
+        address indexed owner,
+        uint256 tokenId,
+        uint256 newDesignId,
+        uint256 amount, 
+        uint256 level,
+        uint16 ambiance, 
+        uint16 quality, 
+        uint16 luck, 
+        uint16 confortability
+    );
+
+    /// @notice Emits an event when a Bedroom NFT Level is upgraded
+    event BedroomNftLevelUpgrading(
+        address indexed owner,
+        uint256 tokenId,
+        uint256 level
+    );
+
+    /// @notice Emits an event when a Bedroom NFT Level is downgraded
+    event BedroomNftLevelDowngrading(
+        address indexed owner,
+        uint256 tokenId,
+        uint256 level
+    );
+
+    /// @notice Emits an event when a Bedroom NFT Design is upgraded
+    event BedroomNftDesignUpgrading(
+        address indexed owner,
+        uint256 tokenId,
+        uint256 newDesignId,
+        uint256 amount, 
+        uint256 level
+    );
+
+    /// @notice Emits an event when a Bedroom NFT Design is downgraded
+    event BedroomNftDesignDowngrading(
+        address indexed owner,
+        uint256 tokenId,
+        uint256 newDesignId,
+        uint256 amount, 
+        uint256 level
     );
 
     /// @notice Returned Random Numbers Event
     event ReturnedRandomness(uint256[] randomWords);
 
-    /// @notice Settles contracts addresses
-    /// @param _dexAddress Address of the Dex contract
-    /// @param _upgradeNftAddress Address of the Upgrade NFT contract
-    /// @dev This function can only be called by the owner of the contract
-    function setContracts(address _dexAddress, IUpgradeNft _upgradeNftAddress)
-        external;
-
-
-    /// @notice Returns the scores of a NFT
+    /// @notice Returns the data of a NFT 
     /// @param _tokenId The id of the NFT
-    /// @return _scores Scores of the NFT
-    function getNftSpecifications(uint256 _tokenId)
-        external
-        view
-        returns (NftSpecifications memory);
+    /// @return _ambiance Score 1
+    /// @return _quality Score 2
+    /// @return _luck Score 3
+    /// @return _confortability Score 4
+    /// @return _owner NFT Owner
+    /// @return _level NFT Level
+    function getScores(
+        uint256 _tokenId
+    ) external view returns(
+        uint16 _ambiance, 
+        uint16 _quality, 
+        uint16 _luck, 
+        uint16 _confortability,
+        address _owner,
+        uint256 _level
+    );
 
-   /// @notice Updates chainlink variables
+    /// @notice Updates chainlink variables
     /// @param _callbackGasLimit Callback Gas Limit
     /// @param _subscriptionId Chainlink subscription Id
     /// @param _keyHash Chainlink Key Hash
@@ -80,11 +125,9 @@ interface IBedroomNft is IERC1155Upgradeable {
     function setFileFormat(string memory _format) external;
 
     /// @notice Launches the procedure to create an NFT
-    /// @param _designId Design Id the NFT
     /// @param _owner Owner of the NFT
     /// @dev This function can only be called by Dex Contract
-    function mintingBedroomNft(
-        uint256 _designId,
+    function mintBedroomNft(
         address _owner
     ) external;
 
@@ -96,23 +139,59 @@ interface IBedroomNft is IERC1155Upgradeable {
         view
         returns (string memory _name);
 
-    /// @notice Launches the procedure to update an NFT
+    /// @notice Returns the owner of a NFT
+    /// @param _tokenId The id of the NFT
+    /// @return _owner NFT owner address
+    function getNftsOwner(uint256 _tokenId) external view returns(address _owner);
+
+    /// @notice Returns the level of a NFT
+    /// @param _tokenId The id of the NFT
+    /// @return _level NFT level
+    function getNftsLevel(uint256 _tokenId) external view returns(uint256 _level);
+
+    /// @notice Launches the procedure to update the scores of a NFT
     /// @param _tokenId Id of the NFT
     /// @param _attributeIndex Index of the attribute to upgrade
+    /// @param _newDesignId New design Id of the NFT
+    /// @param _amount Price of the upgrade
+    /// @param _level Level to add to the Nft
     /// @param _value Value to add to the attribute score
+    /// @param _action Action to do
+    /// @dev This function can only be called by Dex Contract
+    function updateScores(
+        uint256 _tokenId,
+        uint256 _attributeIndex,
+        uint256 _newDesignId,
+        uint256 _amount, 
+        uint256 _level,
+        uint16 _value,
+        bool _action   
+    ) external;
+
+    /// @notice Launches the procedure to update the level of a NFT
+    /// @param _tokenId Id of the NFT
+    /// @param _level Level to add to the Nft
+    /// @param _action Action to do
+    /// @dev This function can only be called by Dex Contract
+    function updateLevel(
+        uint256 _tokenId, 
+        uint256 _level,
+        bool _action   
+    ) external;
+
+    /// @notice Launches the procedure to update the level of a NFT
+    /// @param _tokenId Id of the NFT
     /// @param _newDesignId New design Id of the NFT
     /// @param _amount Price of the upgrade
     /// @param _level Level to add to the Nft
     /// @param _action Action to do
     /// @dev This function can only be called by Dex Contract
-    function updateBedroomNft(
-        uint256 _tokenId,
-        uint256 _attributeIndex,
-        uint256 _value,
+    function updateDesign(
+        uint256 _tokenId, 
         uint256 _newDesignId,
-        uint256 _amount, 
+        uint256 _amount,
         uint256 _level,
-        uint256 _action
+        bool _action
     ) external;
 
     /// @notice Settles Token URL
@@ -122,4 +201,16 @@ interface IBedroomNft is IERC1155Upgradeable {
     /// @notice Settles Base URL
     /// @dev This function can only be called by the owner of the contract
     function setBaseURI(string memory _baseURI) external;
+
+    /// @notice Returns the number of Nfts owned by an address
+    /// @param _owner Owner address
+    /// @return _number NFTs number
+    function getNftsNumber(address _owner) 
+        external
+        view
+        returns (uint256);
+
+    /// @notice TransferOwnership
+    /// @param _newOwner New Owner address
+    function transferOwnership(address _newOwner) external;
 }
