@@ -3,12 +3,11 @@
 
 # GetSleepn - Smartcontracts
 ## Contracts Source Codes
-- Bedroom NFT Contract : contracts/Contracts/Nfts/BedroomNft.sol  
-- Upgrade NFT Contract : contracts/Contracts/Nfts/Upgrade.sol 
-- Decentralized Exchange Contract : contracts/Contracts/Dex.sol
-- Stream Reward Contract : contracts/Contracts/Reward.sol
-- $Sleep Contract : contracts/Contracts/Tokens/$Sleep.sol
-- $Health Contract : contracts/Contracts/Tokens/$Health.sol
+- Bedroom NFT Contract : contracts/Nfts/BedroomNft.sol  
+- Upgrade NFT Contract : contracts/Nfts/UpgradeNft.sol 
+- Decentralized Exchange Contract : contracts/Dex.sol
+- $Sleep Contract : contracts/Tokens/Sleep.sol
+- $Health Contract : contracts/Tokens/Health.sol
 
 
 ## Contracts Addresses
