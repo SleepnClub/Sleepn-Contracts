@@ -169,4 +169,38 @@ interface IDex {
         uint256 _newDesignId
     ) external;
 
+    /// @notice Buy a Pack
+    /// @param _packId Id of the Pack
+    function buyPack(
+        uint256 _packId
+    ) external;
+
+    /// @notice Returns the data of a Pack
+    /// @param _packId Id of the Pack
+    /// @return _designId Upgrade Nft URI 
+    /// @return _price Purchase price of the Upgrade NFT
+    /// @return _upgradeIds Upgrade Nfts ID
+    function getPackData(uint256 _packId) 
+        external 
+        view 
+        returns (
+            uint256 _designId, // Design Id
+            uint256 _price, // Price
+            uint256[10] memory _upgradeIds // UpgradeIds
+    );
+
+    /// @notice Settles Packs data
+    /// @param _upgradeIds Ids of the Upgrade Nfts
+    /// @param _designId Bedroom NFT Design Id
+    /// @param _price Purchase price of the Pack
+    /// @param _packId Pack ID
+    /// @dev This function can only be called by the owner of the contract
+    function setPackPrice(
+        uint256[10] memory _upgradeIds, 
+        uint256 _designId,
+        uint256 _price,
+        uint256 _packId
+    )
+        external;
+
 }

@@ -46,6 +46,16 @@ contract Dex is Initializable, OwnableUpgradeable {
 
     /// @notice Upgrade costs depending on the id of the Upgrade Nft
     mapping(uint256 => Upgrade) private upgradeCosts;
+    
+    /// @notice Packs costs
+    struct Pack {
+        uint256 designId; // Design Id
+        uint256 price; // Price
+        uint256[10] upgradeIds; // UpgradeIds
+    }
+
+    /// @notice Pack costs depending on the Pack ID
+    mapping(uint256 => Pack) private packCosts;
 
     /// @notice Buy Bedroom NFT Event
     event BuyBedroomNft(
@@ -107,6 +117,28 @@ contract Dex is Initializable, OwnableUpgradeable {
         onlyOwner
     {
         purchaseCost = _price;
+    }
+
+    /// @notice Settles Packs data
+    /// @param _upgradeIds Ids of the Upgrade Nfts
+    /// @param _designId Bedroom NFT Design Id
+    /// @param _price Purchase price of the Pack
+    /// @param _packId Pack ID
+    /// @dev This function can only be called by the owner of the contract
+    function setPackPrice(
+        uint256[10] memory _upgradeIds, 
+        uint256 _designId,
+        uint256 _price,
+        uint256 _packId
+    )
+        external
+    {
+        require(msg.sender == owner() || msg.sender == devWallet, "Wrong sender");
+        packCosts[_packId] = Pack(
+            _designId,
+            _price,
+            _upgradeIds
+        );
     }
 
     /// @notice Settles NFTs Upgrade data
@@ -176,6 +208,25 @@ contract Dex is Initializable, OwnableUpgradeable {
         }
     }
 
+    /// @notice Returns the data of a Pack
+    /// @param _packId Id of the Pack
+    /// @return _designId Upgrade Nft URI 
+    /// @return _price Purchase price of the Upgrade NFT
+    /// @return _upgradeIds Upgrade Nfts ID
+    function getPackData(uint256 _packId) 
+        external 
+        view 
+        returns (
+            uint256 _designId, // Design Id
+            uint256 _price, // Price
+            uint256[10] memory _upgradeIds // UpgradeIds
+    ) {
+        Pack memory spec = packCosts[_packId];
+        _designId = spec.designId;
+        _price = spec.price;
+        _upgradeIds = spec.upgradeIds;
+    }
+
     /// @notice Returns the data of an Upgrade Nft
     /// @param _upgradeId Id of the upgrade
     /// @return designId Upgrade Nft URI 
@@ -230,7 +281,7 @@ contract Dex is Initializable, OwnableUpgradeable {
         external
     {
         // Token Transfer
-        paymentToken.transferFrom(msg.sender, address(this), purchaseCost * 1 ether/10);
+        paymentToken.transferFrom(msg.sender, address(this), purchaseCost);
 
         // NFT Minting
         bedroomNftInstance.mintBedroomNft(
@@ -248,7 +299,7 @@ contract Dex is Initializable, OwnableUpgradeable {
     function buyUpgradeNft(
         uint256 _upgradeId
     ) external {
-        // Gets U^grade data
+        // Gets Upgrade data
         Upgrade memory spec = upgradeCosts[_upgradeId];
 
         // Burns tokens
@@ -274,6 +325,52 @@ contract Dex is Initializable, OwnableUpgradeable {
         );
     }
 
+    /// @notice Buy a Pack
+    /// @param _packId Id of the Pack
+    function buyPack(
+        uint256 _packId
+    ) external {
+        // Gets Pack data
+        Pack memory spec = packCosts[_packId];
+
+        // Token Transfer
+        paymentToken.transferFrom(msg.sender, address(this), spec.price);
+
+        // NFT Minting
+        bedroomNftInstance.mintBedroomNft(
+            msg.sender
+        );
+
+        emit BuyBedroomNft(
+            msg.sender,
+            purchaseCost
+        );
+
+        for (uint256 i = 0; i < spec.upgradeIds.length; ++i) {
+            // Gets Upgrade data
+            Upgrade memory upgradeSpec = upgradeCosts[spec.upgradeIds[i]];
+
+            // Mints Upgrade NFT
+            upgradeNftInstance.mint(
+                uint16(upgradeSpec.data >> 112),
+                upgradeSpec.designId,
+                msg.sender, 
+                uint16(upgradeSpec.data),
+                uint16(upgradeSpec.data >> 16),
+                uint16(upgradeSpec.data >> 48),
+                uint16(upgradeSpec.data >> 64),
+                uint16(upgradeSpec.data >> 80),
+                uint16(upgradeSpec.data >> 32)
+            );
+
+            emit BuyUpgradeNft(
+                msg.sender,
+                upgradeSpec.designId,
+                uint16(upgradeSpec.data >> 96)
+            );
+        }
+    }
+
     /// @notice Links an Upgrade Nft
     /// @param _upgradeNftId Id of the Upgrade NFT
     /// @param _bedroomNftId Id of the Bedroom NFT
@@ -289,6 +386,25 @@ contract Dex is Initializable, OwnableUpgradeable {
             _newDesignId,
             msg.sender
         );
+    }
+
+    /// @notice Links an Upgrade Nft - Batch transaction
+    /// @param _upgradeNftIds IDs of the Upgrade NFTs
+    /// @param _bedroomNftId Id of the Bedroom NFT
+    /// @param _newDesignId New Design Id of the Bedroom NFT
+    function linkUpgradeNftBatch(
+        uint256[] memory _upgradeNftIds, 
+        uint256 _bedroomNftId, 
+        uint256 _newDesignId
+    ) external {
+        for (uint256 i = 0; i < _upgradeNftIds.length; ++i) {
+            upgradeNftInstance.linkUpgradeNft(
+                _upgradeNftIds[i],
+                _bedroomNftId,
+                _newDesignId,
+                msg.sender
+            );   
+        }
     }
 
     /// @notice Unlinks an Upgrade Nft
@@ -317,5 +433,4 @@ contract Dex is Initializable, OwnableUpgradeable {
             );
         }
     }
-
 }
