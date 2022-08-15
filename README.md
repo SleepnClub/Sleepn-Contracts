@@ -6,6 +6,7 @@
 - Bedroom NFT Contract : contracts/Nfts/BedroomNft.sol  
 - Upgrade NFT Contract : contracts/Nfts/UpgradeNft.sol 
 - Decentralized Exchange Contract : contracts/Dex.sol
+- Sheepy Contract : contracts/Sheepy.sol
 - $Sleep Contract : contracts/Tokens/Sleep.sol
 - $Health Contract : contracts/Tokens/Health.sol
 
@@ -43,47 +44,6 @@ GetSleepn Smartcontracts are deployed on Polygon Mainet.
     ) internal override {
         _mintingBedroomNft(requestIdToTokenId[_requestId], _randomWords);
         emit ReturnedRandomness(_randomWords);
-    }
-    ```
-
-- Superfluid : Used to stream $SLEEP to GetSleepn users in Reward contract
-    ```solidity
-    (, int96 outFlowRate, , ) = cfa.getFlow(
-        superToken,
-        address(this),
-        _receiver
-    );
-
-    if (outFlowRate == 0) {
-        cfaV1.createFlow(_receiver, superToken, flowrate);
-    } else {
-        cfaV1.updateFlow(_receiver, superToken, flowrate);
-    }
-
-    cfaV1.deleteFlow(address(this), _receiver, superToken);
-    ```
-- Uniswap : Used for the liquidity pool of $SLEEP/USDC in Sleep Token contract
-    ```solidity
-    function createNewPool(
-        address _tokenB,
-        uint24 _fee,
-        uint160 _sqrtPriceX96
-    ) external onlyOwner {
-        address newPool = factory.createPool(address(this), _tokenB, _fee);
-        // Set new pool address
-        pool = IUniswapV3Pool(newPool);
-        // Init price of the pool
-        pool.initialize(_sqrtPriceX96);
-    }
-
-    function collectFee(int24 _tickLower, int24 _tickUpper) external onlyOwner {
-        pool.collect(
-            teamWallet,
-            _tickLower,
-            _tickUpper,
-            type(uint128).max,
-            type(uint128).max
-        );
     }
     ```
 
