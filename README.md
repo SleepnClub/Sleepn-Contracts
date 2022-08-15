@@ -12,7 +12,7 @@
 
 
 ## Contracts Addresses
-GetSleepn Smartcontracts are deployed on Polygon Mainet.
+Sleepn Smartcontracts are deployed on Polygon Mainet.
 
 | CONTRACTS | ADDRESSES |
 | ------ | ------ |
