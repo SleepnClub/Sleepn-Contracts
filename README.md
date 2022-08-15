@@ -1,7 +1,7 @@
 # Sleepn is a web3 game that pays you to sleep better
 ![How Sleepn Works](https://user-images.githubusercontent.com/3343429/169715829-8df70002-36ad-4794-9161-a4874e59ceda.png)
 
-# GetSleepn - Smartcontracts
+# Sleepn - Smartcontracts
 ## Contracts Source Codes
 - Bedroom NFT Contract : contracts/Nfts/BedroomNft.sol  
 - Upgrade NFT Contract : contracts/Nfts/UpgradeNft.sol 
