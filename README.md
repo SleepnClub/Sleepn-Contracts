@@ -28,7 +28,7 @@ GetSleepn Smartcontracts are deployed on Polygon Mainet.
 
 - IPFS : NFTs storage <br>
 
-- Chainlink VRF V2 : Used in Bedroom and Upgrade NFTs contracts to generate random scores
+- Chainlink VRF V2 : Used in Bedroom NFTs contracts to generate random scores
     ```solidity
     uint256 requestId = COORDINATOR.requestRandomWords(
         keyHash,
