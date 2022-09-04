@@ -16,12 +16,12 @@ Sleepn Smartcontracts are deployed on Polygon Mainet.
 
 | CONTRACTS | ADDRESSES |
 | ------ | ------ |
-| Bedroom NFT Contract | [0x4f55460FB038b27f9159D460c8Bc0ddB8aE1a760](https://polygonscan.com/address/0x4f55460FB038b27f9159D460c8Bc0ddB8aE1a760) 
-| Upgrade NFT Contract | [0x69bB50BF41E249b7F11afEcC9A52B011494cFEA5](https://polygonscan.com/address/0x69bB50BF41E249b7F11afEcC9A52B011494cFEA5)
-| Dex Contract | [0x8cD9C75c775C884128fF4Aa1508f6BfD1A0A1aAe](https://polygonscan.com/address/0x8cD9C75c775C884128fF4Aa1508f6BfD1A0A1aAe)
+| Bedroom NFT Contract | [0xC51cB791bb89aBaA16718dAEE6052D5f8FEaC9F4](https://polygonscan.com/address/0xC51cB791bb89aBaA16718dAEE6052D5f8FEaC9F4) 
+| Upgrade NFT Contract | [0xFb61e907AAcA297f5491C6E1c5f82A76f38f4681](https://polygonscan.com/address/0xFb61e907AAcA297f5491C6E1c5f82A76f38f4681)
+| Dex Contract | [0x478628AF527868e07c97120BAF885F1c178BE43f](https://polygonscan.com/address/0x478628AF527868e07c97120BAF885F1c178BE43f)
 | Sheepy Contract | [0x1055179fd59b7F81Fa3D46286735CAB6897bF304](https://polygonscan.com/address/0x1055179fd59b7F81Fa3D46286735CAB6897bF304)
-| $Sleep Contract | [0xb2C50393f487F734ee6902373A9dC3b898d2F243](https://polygonscan.com/address/0xb2C50393f487F734ee6902373A9dC3b898d2F243)
-| $Health Contract | [0x9C0b42b450c855B7258dCeafa15fA4f5D25f21e6](https://polygonscan.com/address/0x9C0b42b450c855B7258dCeafa15fA4f5D25f21e6)
+| $Sleep Contract | [0xF0F03172d0487A1B3f9731a31fa59F5381BFE47f](https://polygonscan.com/address/0xF0F03172d0487A1B3f9731a31fa59F5381BFE47f)
+| $Health Contract | [0xbbFd0a0923F939bDD5D672D4a0121c039838e658](https://polygonscan.com/address/0xbbFd0a0923F939bDD5D672D4a0121c039838e658)
 
 ## Technologies
 - Gnosis Safe : Cash management + Contracts Ownership management 
