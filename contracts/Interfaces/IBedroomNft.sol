@@ -1,110 +1,125 @@
-// SPDX-License-Identifier: MIT
-pragma solidity 0.8.15;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./IUpgradeNft.sol";
 
 /// @title Interface of the Bedroom NFT Contract
 /// @author Sleepn
-/// @notice Bedroom NFT is the main NFT of GetSleepn app
+/// @notice Bedroom NFT is the main NFT of Sleepn app
 interface IBedroomNft is IERC1155 {
     /// @notice Scores of a Bedroom NFT
     struct NftSpecifications {
         address owner;
-        uint64 scores; 
+        uint64 scores;
         uint256 level;
+        uint256 value;
     }
 
     /// @notice Emits an event when a Bedroom NFT is minted
-    event BedroomNftMinting(
+    event BedroomNftMinted(
         address indexed owner,
+        uint256 indexed requestID,
         uint256 tokenId,
-        uint16 ambiance, 
-        uint16 quality, 
-        uint16 luck, 
-        uint16 confortability
+        uint16 ambiance,
+        uint16 quality,
+        uint16 luck,
+        uint16 comfortability
     );
-
-    /// @notice Emits an event when a Bedroom NFT Score is upgraded
-    event BedroomNftScoreUpgrading(
-        address indexed owner,
-        uint256 tokenId,
-        uint256 newDesignId,
-        uint256 amount, 
-        uint256 level,
-        uint16 ambiance, 
-        uint16 quality, 
-        uint16 luck, 
-        uint16 confortability
+    /// @notice Emits an event when a Bedroom NFT Score is updated
+    event BedroomNftUpdated(
+        address indexed owner, uint256 indexed tokenId, uint256 timestamp
     );
-
-    /// @notice Emits an event when a Bedroom NFT Score is downgraded
-    event BedroomNftScoreDowngrading(
-        address indexed owner,
-        uint256 tokenId,
-        uint256 newDesignId,
-        uint256 amount, 
-        uint256 level,
-        uint16 ambiance, 
-        uint16 quality, 
-        uint16 luck, 
-        uint16 confortability
+    /// @notice Returned Request ID, Invoker and Token ID
+    event RequestedRandomness(
+        uint256 indexed requestId, address invoker, uint256 indexed tokenId
     );
-
-    /// @notice Emits an event when a Bedroom NFT Level is upgraded
-    event BedroomNftLevelUpgrading(
-        address indexed owner,
-        uint256 tokenId,
-        uint256 level
+    /// @notice Returned Random Numbers Event, Invoker and Token ID
+    event ReturnedRandomness(
+        uint256[] randomWords,
+        uint256 indexed requestId,
+        uint256 indexed tokenId
     );
-
-    /// @notice Emits an event when a Bedroom NFT Level is downgraded
-    event BedroomNftLevelDowngrading(
-        address indexed owner,
-        uint256 tokenId,
-        uint256 level
+    /// @notice Base URI Changed Event
+    event BaseURIChanged(string baseURI);
+    /// @notice Chainlink Data Updated Event
+    event ChainlinkDataUpdated(
+        uint32 callbackGasLimit,
+        uint64 subscriptionId,
+        bytes32 keyHash,
+        uint16 requestConfirmations
     );
+    /// @notice Withdraw Money Event
+    event WithdrawMoney(address indexed owner, uint256 amount);
 
-    /// @notice Emits an event when a Bedroom NFT Design is upgraded
-    event BedroomNftDesignUpgrading(
-        address indexed owner,
-        uint256 tokenId,
-        uint256 newDesignId,
-        uint256 amount, 
-        uint256 level
-    );
+    /// @notice Restricted Access Error - Wrong caller
+    error RestrictedAccess(address caller);
 
-    /// @notice Emits an event when a Bedroom NFT Design is downgraded
-    event BedroomNftDesignDowngrading(
-        address indexed owner,
-        uint256 tokenId,
-        uint256 newDesignId,
-        uint256 amount, 
-        uint256 level
-    );
+    /// @notice Returns the number of Bedroom NFTs in existence
+    /// @return nftsNumber Representing the number of Bedroom NFTs in existence
+    function getNftsNumber() external view returns (uint256 nftsNumber);
 
-    /// @notice Returned Random Numbers Event
-    event ReturnedRandomness(uint256[] randomWords);
+    /// @notice Returns the specifications of a Bedroom NFT
+    /// @param _tokenId Id of the Bedroom NFT
+    /// @return nftSpecifications Specifications of the Bedroom NFT
+    function getSpecifications(uint256 _tokenId)
+        external
+        view
+        returns (NftSpecifications memory nftSpecifications);
 
-    /// @notice Returns the data of a NFT 
+    /// @notice Returns the specifications of some Bedroom NFTs
+    /// @param _tokenIds Ids of the Bedroom NFTs
+    /// @return nftSpecifications Specifications of the Bedroom NFTs
+    function getSpecificationsBatch(uint256[] calldata _tokenIds)
+        external
+        view
+        returns (NftSpecifications[] memory nftSpecifications);
+
+    /// @notice Returns the data of a NFT
     /// @param _tokenId The id of the NFT
-    /// @return _ambiance Score 1
-    /// @return _quality Score 2
-    /// @return _luck Score 3
-    /// @return _confortability Score 4
-    /// @return _owner NFT Owner
-    /// @return _level NFT Level
-    function getScores(
-        uint256 _tokenId
-    ) external view returns(
-        uint16 _ambiance, 
-        uint16 _quality, 
-        uint16 _luck, 
-        uint16 _confortability,
-        address _owner,
-        uint256 _level
-    );
+    /// @return _ambiance Ambiance Score
+    /// @return _quality Quality Score
+    /// @return _luck Luck Score
+    /// @return _comfortability Comfortability Score
+    /// @return _owner NFT owner address
+    /// @return _level NFT level
+    /// @return _value NFT value
+    function getData(uint256 _tokenId)
+        external
+        view
+        returns (
+            uint16 _ambiance,
+            uint16 _quality,
+            uint16 _luck,
+            uint16 _comfortability,
+            address _owner,
+            uint256 _level,
+            uint256 _value
+        );
+
+    /// @notice Returns the data of some Bedroom NFTs
+    /// @param _tokenIds Nfts IDs
+    /// @return _ambiance Ambiance Score
+    /// @return _quality Quality Score
+    /// @return _luck Luck Score
+    /// @return _comfortability Comfortability Score
+    /// @return _owners NFT owner address
+    /// @return _levels NFT level
+    /// @return _values NFT value
+    function getDataBatch(uint256[] calldata _tokenIds)
+        external
+        view
+        returns (
+            uint16[] memory _ambiance,
+            uint16[] memory _quality,
+            uint16[] memory _luck,
+            uint16[] memory _comfortability,
+            address[] memory _owners,
+            uint256[] memory _levels,
+            uint256[] memory _values
+        );
 
     /// @notice Updates chainlink variables
     /// @param _callbackGasLimit Callback Gas Limit
@@ -119,98 +134,56 @@ interface IBedroomNft is IERC1155 {
         uint16 _requestConfirmations
     ) external;
 
-    /// @notice Settles File format
-    /// @param _format New file format
+    /// @notice Settles initial NFT Design URI
+    /// @param _initialURI New URI
     /// @dev This function can only be called by the owner of the contract
-    function setFileFormat(string memory _format) external;
+    function setInitialDesignURI(string calldata _initialURI)
+        external;
 
-    /// @notice Launches the procedure to create an NFT
-    /// @param _owner Owner of the NFT
-    /// @dev This function can only be called by Dex Contract
-    function mintBedroomNft(
-        address _owner
-    ) external;
-
-    /// Gets the name of a Nft
+    /// @notice Settles the URI of a NFT
     /// @param _tokenId Id of the NFT
-    /// @return _name Name of thr NFT
-    function getName(uint256 _tokenId)
-        external
-        view
-        returns (string memory _name);
-
-    /// @notice Returns the owner of a NFT
-    /// @param _tokenId The id of the NFT
-    /// @return _owner NFT owner address
-    function getNftsOwner(uint256 _tokenId) external view returns(address _owner);
-
-    /// @notice Returns the level of a NFT
-    /// @param _tokenId The id of the NFT
-    /// @return _level NFT level
-    function getNftsLevel(uint256 _tokenId) external view returns(uint256 _level);
-
-    /// @notice Launches the procedure to update the scores of a NFT
-    /// @param _tokenId Id of the NFT
-    /// @param _attributeIndex Index of the attribute to upgrade
-    /// @param _newDesignId New design Id of the NFT
-    /// @param _amount Price of the upgrade
-    /// @param _level Level to add to the Nft
-    /// @param _value Value to add to the attribute score
-    /// @param _action Action to do
-    /// @dev This function can only be called by Dex Contract
-    function updateScores(
-        uint256 _tokenId,
-        uint256 _attributeIndex,
-        uint256 _newDesignId,
-        uint256 _amount, 
-        uint256 _level,
-        uint16 _value,
-        bool _action   
-    ) external;
-
-    /// @notice Launches the procedure to update the level of a NFT
-    /// @param _tokenId Id of the NFT
-    /// @param _level Level to add to the Nft
-    /// @param _action Action to do
-    /// @dev This function can only be called by Dex Contract
-    function updateLevel(
-        uint256 _tokenId, 
-        uint256 _level,
-        bool _action   
-    ) external;
-
-    /// @notice Launches the procedure to update the level of a NFT
-    /// @param _tokenId Id of the NFT
-    /// @param _newDesignId New design Id of the NFT
-    /// @param _amount Price of the upgrade
-    /// @param _level Level to add to the Nft
-    /// @param _action Action to do
-    /// @dev This function can only be called by Dex Contract
-    function updateDesign(
-        uint256 _tokenId, 
-        uint256 _newDesignId,
-        uint256 _amount,
-        uint256 _level,
-        bool _action
-    ) external;
-
-    /// @notice Settles Token URL
+    /// @param _tokenURI Uri of the NFT
     /// @dev This function can only be called by the owner of the contract
-    function setTokenURI(uint256 _tokenId, string memory _tokenURI) external;
+    function setTokenURI(uint256 _tokenId, string memory _tokenURI)
+        external;
 
-    /// @notice Settles Base URL
+    /// Settles baseURI as the _baseURI for all tokens
+    /// @param _baseURI Base URI of NFTs
     /// @dev This function can only be called by the owner of the contract
     function setBaseURI(string memory _baseURI) external;
 
-    /// @notice Returns the number of Nfts owned by an address
-    /// @param _owner Owner address
-    /// @return _number NFTs number
-    function getNftsNumber(address _owner) 
-        external
-        view
-        returns (uint256);
+    /// @notice Withdraws the money from the contract
+    /// @param _token Address of the token to withdraw
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function withdrawMoney(IERC20 _token) external;
 
-    /// @notice TransferOwnership
-    /// @param _newOwner New Owner address
-    function transferOwnership(address _newOwner) external;
+    /// @notice Launches the procedure to create an NFT
+    /// @param _owner Owner of the NFT
+    /// @return _tokenId NFT ID
+    /// @dev This function can only be called by Dex Contract
+    function mintBedroomNft(address _owner)
+        external
+        returns (uint256 _tokenId);
+
+    /// @notice Launches the procedure to create an NFT - Batch Transaction
+    /// @param _owners Nfts Owners
+    /// @return _tokenIds NFT IDs
+    /// @dev This function can only be called by Dex Contract
+    function mintBedroomNfts(address[] calldata _owners)
+        external
+        returns (uint256[] memory _tokenIds);
+
+    /// @notice Updates a Bedroom NFT
+    /// @param _tokenId Id of the NFT
+    /// @param _newValue value of the NFT
+    /// @param _newLevel level of the NFT
+    /// @param _newScores Scores of the NFT
+    /// @param _newDesignURI Design URI of the NFT
+    function updateBedroomNft(
+        uint256 _tokenId,
+        uint256 _newValue,
+        uint256 _newLevel,
+        uint64 _newScores,
+        string memory _newDesignURI
+    ) external;
 }

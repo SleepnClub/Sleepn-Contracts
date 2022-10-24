@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
-pragma solidity 0.8.15;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
@@ -15,13 +15,17 @@ interface ISleep is IERC20 {
     /// @dev This function can only be called by the owner of the contract
     function unpause() external;
 
-    /// @notice Mints tokens 
+    /// @notice Mints tokens
     /// @param _amount Amount of tokens to mint
-    /// @dev This function can only be called by the owner 
+    /// @dev This function can only be called by the owner
     function mint(uint256 _amount) external;
 
-    /// @notice Burns tokens 
-    /// @param _account Tokens owner address 
+    /// @notice Burns tokens
+    /// @param _account Tokens owner address
     /// @param _amount Tokens amount to burn
     function burnFrom(address _account, uint256 _amount) external;
+
+    /// @notice Burns tokens
+    /// @param _amount Tokens amount to burn
+    function burn(uint256 _amount) external;
 }

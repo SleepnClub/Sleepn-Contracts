@@ -1,375 +1,117 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.15;
+pragma solidity 0.8.17;
 
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+
+import "../Interfaces/ITracker.sol";
 
 import "./BedroomNft.sol";
+import "../Utils/Upgrader.sol";
 
 /// @title Upgrade Nft Contract
 /// @author Sleepn
 /// @notice An update NFT is used to upgrade a Bedroom NFT
-contract UpgradeNft is ERC1155, Ownable, ERC1155URIStorage {
+contract UpgradeNft is ERC1155, Ownable, ERC1155URIStorage, ERC1155Supply {
+    using EnumerableSet for EnumerableSet.UintSet;
+    using SafeERC20 for IERC20;
+
     /// @dev Dex Contract address
     address public immutable dexAddress;
 
     /// @dev Dev Wallet
-    address private immutable devWallet;
+    address private devWallet;
 
     /// @dev Bedroom NFT Contract address
     BedroomNft public immutable bedroomNftInstance;
 
-    /// @notice Upgrade Specifications
-    struct UpgradeSpecifications {
-        uint256 bedroomNftId;
-        uint64 data;
-        bool isUsed;
-        address owner;
-    }
+    /// @dev Tracker Contract address
+    ITracker public immutable trackerInstance;
 
-    /// @dev File format
-    string private fileFormat;
+    /// @dev Upgrader Contract address
+    Upgrader public immutable upgraderInstance;
 
-    /// @notice Number of NFT
-    uint256 public tokenId;
+    /// @dev Maps the Upgrade NFT Data to an NFT ID
+    mapping(uint256 => uint96) private tokenIdToUpgradeNftData;
 
-    /// @dev Maps the Upgrade NFT specifications to an NFT ID
-    mapping(uint256 => UpgradeSpecifications)
-        private tokenIdToUpgradeSpecifications;
-
-    /// @notice Upgrade NFT Minting Event
-    event UpgradeNftMinting(
-        address indexed owner,
-        uint256 tokenId,
-        uint256 designId,
-        uint16 level, 
-        uint16 levelMin, 
-        uint16 data,
-        uint8 attributeIndex, 
-        uint8 valueToAdd,
-        uint8 typeNft
+    /// @notice Upgrade NFT Minted Event
+    event UpgradeNftMinted(
+        address indexed owner, uint256 tokenId, uint256 amount
     );
-
-    /// @notice Upgrade Nft linked
-    event UpgradeNftLinked(
-        address indexed owner,
-        uint256 upgradeNftId,
-        uint256 bedroomNftId
+    /// @notice Upgrade NFT Data Settled Event
+    event UpgradeNftDataSettled(
+        uint256 indexed tokenId,
+        string _designURI,
+        uint24 _data,
+        uint16 _level,
+        uint16 _levelMin,
+        uint16 _value,
+        uint8 _attributeIndex,
+        uint8 _valueToAdd,
+        uint8 _typeNft
     );
+    /// @notice Withdraw Money Event
+    event WithdrawMoney(address indexed owner, uint256 amount);
 
-    /// @notice Upgrade Nft unlinked
-    event UpgradeNftUnlinked(
-        address indexed owner,
-        uint256 upgradeNftId,
-        uint256 bedroomNftId
-    );
+    /// @notice Restricted Access Error - Wrong caller
+    error RestrictedAccess(address caller);
+    /// @notice Different Length Error - Arrays length
+    error DifferentLength();
+    /// @notice Upgrade Nft already linked Error - Upgrade NFTs have to be unlinked before any transfer
+    error UpgradeNftAlreadyLinked(uint256 tokenId);
+    /// @notice State not updated Error - State is not updated in tracker contract
+    error StateNotUpdated();
 
     /// @dev Constructor
-    constructor(
-        address _dexAddress, 
-        address _devWallet
-    ) ERC1155("") {
-        tokenId = 0;
-        fileFormat = ".png";
+    constructor(address _dexAddress, address _devWallet) ERC1155("") {
         dexAddress = _dexAddress;
         devWallet = _devWallet;
         bedroomNftInstance = BedroomNft(msg.sender);
+
+        // Deploys Tracker and Upgrader contracts
+        upgraderInstance = new Upgrader(
+            msg.sender,
+            _dexAddress
+        );
+
+        trackerInstance = ITracker(address(upgraderInstance.trackerInstance()));
     }
 
     /// @notice Returns the  data of a NFT
     /// @param _tokenId NFT ID
-    /// @return _bedroomNftId NFT ID
+    /// @return _data NFT additionnal data
     /// @return _level NFT level
     /// @return _levelMin NFT level min required
-    /// @return _data NFT additionnal data
+    /// @return _value NFT value
     /// @return _attributeIndex Score attribute index
     /// @return _valueToAdd Value to add to the score
-    /// @return _typeNft NFT Type 
-    /// @return _isUsed Is linked to a Bedroom NFT
-    /// @return _owner NFT Owner
-    function getNftData(uint256 _tokenId) 
-        external 
-        view 
+    /// @return _typeNft NFT Type
+    function getData(uint256 _tokenId)
+        external
+        view
         returns (
-            uint256 _bedroomNftId,
-            uint16 _level, 
-            uint16 _levelMin, 
-            uint16 _data,
-            uint8 _attributeIndex, 
+            uint24 _data,
+            uint16 _level,
+            uint16 _levelMin,
+            uint16 _value,
+            uint8 _attributeIndex,
             uint8 _valueToAdd,
-            uint8 _typeNft,
-            bool _isUsed,
-            address _owner
-    ) {
-        UpgradeSpecifications memory spec = tokenIdToUpgradeSpecifications[_tokenId];
-        _bedroomNftId = spec.bedroomNftId;
-        _level = uint16(spec.data);
-        _levelMin = uint16(spec.data >> 16); 
-        _data = uint16(spec.data >> 32);
-        _attributeIndex = uint8(spec.data >> 40); 
-        _valueToAdd = uint8(spec.data >> 48);
-        _typeNft = uint8(spec.data >> 56);
-        _isUsed = spec.isUsed;
-        _owner = spec.owner;
-    }
-
-    /// @notice Settles File format
-    /// @param _format New file format
-    /// @dev This function can only be called by the owner of the contract
-    function setFileFormat(string memory _format) external onlyOwner {
-        fileFormat = _format;
-    }
-
-    /// @notice Links an upgrade Nft to a bedroom Nft
-    /// @param _upgradeNftId Id of the Upgrade NFT
-    /// @param _bedroomNftId Id of the Bedroom NFT
-    /// @param _newDesignId New Design Id of the Bedroom NFT
-    /// @param _owner Owner of the NFT
-    /// @dev This function can only be called by Dex Contract or Owner
-    function linkUpgradeNft(
-        uint256 _upgradeNftId,
-        uint256 _bedroomNftId,
-        uint256 _newDesignId,
-        address _owner
-    ) external {
-        require(msg.sender == owner() || msg.sender == dexAddress, "Access forbidden");
-
-        // Get Upgrade NFT Informations
-        UpgradeSpecifications memory upgradeNft = tokenIdToUpgradeSpecifications[_upgradeNftId];
-
-        require(upgradeNft.owner == _owner && bedroomNftInstance.getNftsOwner(_bedroomNftId) == _owner, "Wrong owner");
-        require(upgradeNft.isUsed == false, "Nft already linked");
-        require(uint16(upgradeNft.data >> 16) <= bedroomNftInstance.getNftsLevel(_bedroomNftId), "Level too low"); 
-
-        if (uint8(upgradeNft.data >> 56) == 0) {
-            bedroomNftInstance.updateScores(
-                _bedroomNftId,
-                uint8(upgradeNft.data >> 40),
-                _newDesignId,
-                balanceOf(_owner, _upgradeNftId), 
-                uint16(upgradeNft.data),
-                uint8(upgradeNft.data >> 48),
-                true  
-            );
-        } else if (uint8(upgradeNft.data >> 56) == 1) {
-            bedroomNftInstance.updateLevel(
-                _bedroomNftId, 
-                uint16(upgradeNft.data),
-                true 
-            );
-        } else if (uint8(upgradeNft.data >> 56) == 2) {
-            bedroomNftInstance.updateDesign(
-                _bedroomNftId, 
-                _newDesignId,
-                balanceOf(_owner, _upgradeNftId), 
-                uint16(upgradeNft.data),
-                true
-            );
-        }
-        
-        tokenIdToUpgradeSpecifications[_upgradeNftId].bedroomNftId = _bedroomNftId;
-        tokenIdToUpgradeSpecifications[_upgradeNftId].isUsed = true;
-
-        emit UpgradeNftLinked(_owner, _upgradeNftId, _bedroomNftId);
-    }
-
-    /// @notice Unlinks an upgrade Nft to a bedroom Nft
-    /// @param _upgradeNftId Id of the Upgrade NFT
-    /// @param _owner Owner of the NFT
-    /// @param _newDesignId New Design Id of the Bedroom NFT
-    /// @dev This function can only be called by Dex Contract
-    function unlinkUpgradeNft(
-        uint256 _upgradeNftId,
-        address _owner,
-        uint256 _newDesignId
-    ) external {
-        require(msg.sender == owner() || msg.sender == dexAddress, "Access forbidden");
-
-        // Get Upgrade NFT Informations
-        UpgradeSpecifications memory upgradeNft = tokenIdToUpgradeSpecifications[_upgradeNftId];
-
-        require(upgradeNft.isUsed == true, "Nft not linked");
-        require(_owner == upgradeNft.owner, "Wrong owner");
-
-        uint256 bedroomNftId = upgradeNft.bedroomNftId;
-
-        if (uint8(upgradeNft.data >> 56) == 0) {
-            bedroomNftInstance.updateScores(
-                bedroomNftId,
-                uint8(upgradeNft.data >> 40),
-                _newDesignId,
-                balanceOf(_owner, _upgradeNftId), 
-                uint16(upgradeNft.data),
-                uint8(upgradeNft.data >> 48),
-                false 
-            );
-        } else if (uint8(upgradeNft.data >> 56) == 1) {
-            bedroomNftInstance.updateLevel(
-                bedroomNftId, 
-                uint16(upgradeNft.data),
-                false 
-            );
-        } else if (uint8(upgradeNft.data >> 56) == 2) {
-            bedroomNftInstance.updateDesign(
-                bedroomNftId, 
-                _newDesignId,
-                balanceOf(_owner, _upgradeNftId), 
-                uint16(upgradeNft.data),
-                false 
-            );
-        }
-
-        emit UpgradeNftUnlinked(
-            tokenIdToUpgradeSpecifications[_upgradeNftId].owner, 
-            _upgradeNftId, 
-            tokenIdToUpgradeSpecifications[_upgradeNftId].bedroomNftId
-        );
-
-        tokenIdToUpgradeSpecifications[_upgradeNftId].isUsed = false;
-        tokenIdToUpgradeSpecifications[_upgradeNftId].bedroomNftId = 0;
-    } 
-
-    /// @notice Gets the name of a NFT
-    /// @param _tokenId Id of the NFT
-    /// @return _name Name of the NFT
-    function getName(uint256 _tokenId) external pure returns (string memory) {
-        return string(abi.encodePacked("Token #", Strings.toString(_tokenId)));
-    }
-
-    /// @notice Mints an Upgrade Nft
-    /// @param _amount Amount of tokens to add to the Upgrade Nft
-    /// @param _designId Upgrade Nft URI 
-    /// @param _account Upgrade Nft Owner
-    /// @param _level Level to add to the Bedroom Nft
-    /// @param _levelMin Bedroom Nft Level min required
-    /// @param _attributeIndex Score involved (optionnal)
-    /// @param _valueToAdd Value to add to the score (optionnal)
-    /// @param _typeNft NFT Type 
-    /// @param _data Additionnal data (optionnal)
-    /// @dev This function can only be called by the owner or the dev Wallet
-    function mint(
-        uint256 _amount,
-        uint256 _designId,
-        address _account, 
-        uint64 _level,
-        uint64 _levelMin,
-        uint64 _attributeIndex,
-        uint64 _valueToAdd,
-        uint64 _typeNft,
-        uint64 _data
-    )
-        external
+            uint8 _typeNft
+        )
     {
-        require(
-            msg.sender == owner() || msg.sender == dexAddress,
-            "Access Forbidden"
-        );
-
-        tokenIdToUpgradeSpecifications[tokenId] = UpgradeSpecifications(
-            0,
-            _level + (_levelMin << 16) + (_data << 32) + (_attributeIndex << 40) + (_valueToAdd << 48) + (_typeNft << 56),
-            false,
-           _account
-        );
-
-        _mint(_account, tokenId, _amount, "");
-
-        string memory DesignName = string(
-            abi.encodePacked(
-                Strings.toString(
-                    _designId
-                ),
-                fileFormat
-            )
-        );
-
-        _setURI(tokenId, DesignName);
-
-        emit UpgradeNftMinting(
-            _account,
-            tokenId,
-            _designId,
-            uint16(_level), 
-            uint16(_levelMin), 
-            uint16(_data),
-            uint8(_attributeIndex), 
-            uint8(_valueToAdd),
-            uint8(_typeNft)
-        );
-
-        ++tokenId;
-    }
-
-    /// @notice Mints Upgrade Nfts per batch
-    /// @param _amount Amount of tokens to add to the Upgrade Nft
-    /// @param _designId Upgrade Nft URI 
-    /// @param _accounts Upgrade Nft Owner
-    /// @param _level Level to add to the Bedroom Nft
-    /// @param _levelMin Bedroom Nft Level min required
-    /// @param _attributeIndex Score involved (optionnal)
-    /// @param _valueToAdd Value to add to the score (optionnal)
-    /// @param _typeNft NFT Type 
-    /// @param _data Additionnal data (optionnal)
-    /// @dev This function can only be called by the owner or the dev Wallet
-    function mintBatch(
-        uint256 _amount,
-        uint256 _designId,
-        address[] memory _accounts, 
-        uint64 _level,
-        uint64 _levelMin,
-        uint64 _attributeIndex,
-        uint64 _valueToAdd,
-        uint64 _typeNft,
-        uint64 _data
-    )
-        external
-    {   
-        require(
-            msg.sender == owner() || msg.sender == devWallet,
-            "Access Forbidden"
-        );
-
-        for(uint256 i = 0; i < _accounts.length; i++) {
-            // Specifications
-            tokenIdToUpgradeSpecifications[tokenId] = UpgradeSpecifications(
-                0,
-                _level + (_levelMin << 16) + (_data << 32) + (_attributeIndex << 40) + (_valueToAdd << 48) + (_typeNft << 56),
-                false,
-                _accounts[i]
-            );
-
-            // Mints a Nft
-            _mint(_accounts[i], tokenId, _amount, "");
-
-            // Settles Metadata
-            string memory DesignName = string(
-                abi.encodePacked(
-                    Strings.toString(
-                        _designId
-                    ),
-                    fileFormat
-                )
-            );
-            _setURI(tokenId, DesignName);
-
-            emit UpgradeNftMinting(
-                _accounts[i],
-                tokenId,
-                _designId,
-                uint16(_level), 
-                uint16(_levelMin), 
-                uint16(_data),
-                uint8(_attributeIndex), 
-                uint8(_valueToAdd),
-                uint8(_typeNft)
-            );
-
-            // Increases Id 
-            ++tokenId;
-        }
-        
+        uint96 data = tokenIdToUpgradeNftData[_tokenId];
+        _data = uint24(data);
+        _level = uint16(data >> 24);
+        _levelMin = uint16(data >> 40);
+        _value = uint16(data >> 56);
+        _attributeIndex = uint8(data >> 64);
+        _valueToAdd = uint8(data >> 72);
+        _typeNft = uint8(data >> 80);
     }
 
     /// @notice Returns the concatenation of the _baseURI and the token-specific uri if the latter is set
@@ -377,7 +119,7 @@ contract UpgradeNft is ERC1155, Ownable, ERC1155URIStorage {
     function uri(uint256 _tokenId)
         public
         view
-        override(ERC1155, ERC1155URIStorage)
+        override (ERC1155, ERC1155URIStorage)
         returns (string memory)
     {
         return super.uri(_tokenId);
@@ -401,13 +143,194 @@ contract UpgradeNft is ERC1155, Ownable, ERC1155URIStorage {
         _setBaseURI(_baseURI);
     }
 
-    /// @notice Transfers an Upgrade Nft
-    /// @param _tokenId Id of the NFT
-    /// @param _newOwner Receiver address 
-    function transferUpgradeNft(uint256 _tokenId, address _newOwner) external {
-        UpgradeSpecifications memory spec = tokenIdToUpgradeSpecifications[_tokenId];
-        require(spec.owner == msg.sender, "Access Forbidden");
-        spec.owner = _newOwner;
-        _safeTransferFrom(msg.sender, _newOwner, _tokenId, balanceOf(msg.sender, _tokenId), "");
+    /// @notice Settles dev wallet address
+    /// @param _newDevWalletAddress New dev wallet address
+    /// @dev This function can only be called by the owner of the contract
+    function setDevAddress(address _newDevWalletAddress) external onlyOwner {
+        devWallet = _newDevWalletAddress;
+    }
+
+    /// @notice Settles the data of a NFT
+    /// @param _tokenId NFT ID
+    /// @param _designURI Upgrade Nft URI
+    /// @param _data Additionnal data (optionnal)
+    /// @param _level Level to add to the Bedroom Nft
+    /// @param _levelMin Bedroom Nft Level min required
+    /// @param _value Upgrade Nft value
+    /// @param _attributeIndex Score involved (optionnal)
+    /// @param _valueToAdd Value to add to the score (optionnal)
+    /// @param _typeNft NFT Type
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function setData(
+        uint256 _tokenId,
+        string memory _designURI,
+        uint96 _data,
+        uint96 _level,
+        uint96 _levelMin,
+        uint96 _value,
+        uint96 _attributeIndex,
+        uint96 _valueToAdd,
+        uint96 _typeNft
+    ) external {
+        if (msg.sender != owner() && msg.sender != devWallet) {
+            revert RestrictedAccess(msg.sender);
+        }
+        tokenIdToUpgradeNftData[_tokenId] = _data + (_level << 24)
+            + (_levelMin << 40) + (_value << 56) + (_attributeIndex << 64)
+            + (_valueToAdd << 72) + (_typeNft << 80);
+        _setURI(_tokenId, _designURI);
+        trackerInstance.settleUpgradeNftData(_tokenId);
+        emit UpgradeNftDataSettled(
+            _tokenId,
+            _designURI,
+            uint24(_data),
+            uint16(_level),
+            uint16(_levelMin),
+            uint16(_value),
+            uint8(_attributeIndex),
+            uint8(_valueToAdd),
+            uint8(_typeNft)
+            );
+    }
+
+    /// @notice Withdraws the money from the contract
+    /// @param _token Address of the token to withdraw
+    /// @dev This function can only be called by the owner or the dev Wallet
+    function withdrawMoney(IERC20 _token) external {
+        if (msg.sender != owner()) {
+            revert RestrictedAccess(msg.sender);
+        }
+        uint256 balance = _token.balanceOf(address(this));
+        _token.safeTransfer(msg.sender, balance);
+        emit WithdrawMoney(msg.sender, balance);
+    }
+
+    /// @notice Mints a new Upgrade Nft
+    /// @param _tokenId NFT ID
+    /// @param _amount Amount of tokens
+    /// @param _account Upgrade Nft Owner
+    /// @dev This function can only be called by the owner or the dev Wallet or the Dex contract
+    function mint(uint256 _tokenId, uint256 _amount, address _account)
+        external
+    {
+        if (
+            msg.sender != owner() && msg.sender != dexAddress
+                && msg.sender != devWallet
+        ) {
+            revert RestrictedAccess(msg.sender);
+        }
+        if (!trackerInstance.addUpgradeNft(_account, _tokenId, _amount)) {
+            revert StateNotUpdated();
+        }
+        _mint(_account, _tokenId, _amount, "");
+        emit UpgradeNftMinted(_account, _tokenId, _amount);
+    }
+
+    /// @notice Mints Upgrade Nfts per batch
+    /// @param _tokenIds NFT IDs
+    /// @param _amounts Amount of tokens
+    /// @param _accounts Upgrade Nft Owners
+    /// @dev This function can only be called by the owner or the dev Wallet or the Dex contract
+    function mintBatch(
+        uint256[] calldata _tokenIds,
+        uint256[] calldata _amounts,
+        address[] calldata _accounts
+    ) external {
+        if (
+            msg.sender != owner() && msg.sender != dexAddress
+                && msg.sender != devWallet
+        ) {
+            revert RestrictedAccess(msg.sender);
+        }
+        if (
+            _tokenIds.length != _amounts.length
+                && _amounts.length != _accounts.length
+        ) {
+            revert DifferentLength();
+        }
+        for (uint256 i = 0; i < _accounts.length; ++i) {
+            // Mints a Nft
+            if (!trackerInstance.addUpgradeNft(_accounts[i], _tokenIds[i], _amounts[i])) {
+                revert StateNotUpdated();
+            }
+            _mint(_accounts[i], _tokenIds[i], _amounts[i], "");
+            emit UpgradeNftMinted(_accounts[i], _tokenIds[i], _amounts[i]);
+        }
+    }
+
+    /// @notice Safe Transfer From
+    /// @param _from Owner address
+    /// @param _to Receiver address
+    /// @param _id NFT Id
+    /// @param _amount Amount to mint
+    /// @param _data Data
+    function _safeTransferFrom(
+        address _from,
+        address _to,
+        uint256 _id,
+        uint256 _amount,
+        bytes memory _data
+    ) internal virtual override {
+        (uint256 amountOwned, uint256 amountUsed) =
+            trackerInstance.getUpgradeNftAmounts(_from, _id);
+        if (_amount > amountOwned - amountUsed) {
+            revert UpgradeNftAlreadyLinked(_id);
+        }
+        if (!trackerInstance.removeUpgradeNft(_from, _id, _amount)) {
+            revert StateNotUpdated();
+        }
+        if (!trackerInstance.addUpgradeNft(_to, _id, _amount)) {
+            revert StateNotUpdated();
+        }
+        super._safeTransferFrom(_from, _to, _id, _amount, _data);
+    }
+
+    /// @notice Safe Batch Transfer From
+    /// @param _from Owner address
+    /// @param _to Receiver address
+    /// @param _ids NFT Ids
+    /// @param _amounts Amounts to mint
+    /// @param _data Data
+    function _safeBatchTransferFrom(
+        address _from,
+        address _to,
+        uint256[] memory _ids,
+        uint256[] memory _amounts,
+        bytes memory _data
+    ) internal virtual override {
+        for (uint256 i = 0; i < _ids.length; ++i) {
+            (uint256 amountOwned, uint256 amountUsed) =
+                trackerInstance.getUpgradeNftAmounts(_from, _ids[i]);
+            if (_amounts[i] > amountOwned - amountUsed) {
+                revert UpgradeNftAlreadyLinked(_ids[i]);
+            }
+            if (!trackerInstance.removeUpgradeNft(_from, _ids[i], _amounts[i])) {
+                revert StateNotUpdated();
+            }
+            if (!trackerInstance.addUpgradeNft(_to, _ids[i], _amounts[i])) {
+                revert StateNotUpdated();
+            }
+        }
+        super._safeBatchTransferFrom(_from, _to, _ids, _amounts, _data);
+    }
+
+    /// @notice Before token transfer hook
+    /// @param _operator Operator address
+    /// @param _from Owner address
+    /// @param _to Receiver address
+    /// @param _ids NFT Ids
+    /// @param _amounts Amounts to mint
+    /// @param _data Data
+    function _beforeTokenTransfer(
+        address _operator,
+        address _from,
+        address _to,
+        uint256[] memory _ids,
+        uint256[] memory _amounts,
+        bytes memory _data
+    ) internal override (ERC1155, ERC1155Supply) {
+        super._beforeTokenTransfer(
+            _operator, _from, _to, _ids, _amounts, _data
+        );
     }
 }

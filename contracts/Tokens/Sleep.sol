@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.15;
+pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
@@ -13,10 +13,11 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 contract Sleep is ERC20, ERC20Burnable, Ownable, Pausable, ERC20Permit {
     /// @dev Initializer
     /// @param _totalSupply Total Supply of $Sleep
-    constructor(
-        uint256 _totalSupply
-    ) ERC20("$Sleep", "SLP") ERC20Permit("$Sleep") {
-        _mint(msg.sender, _totalSupply * 10**decimals());
+    constructor(uint256 _totalSupply)
+        ERC20("$Sleep", "SLP")
+        ERC20Permit("$Sleep")
+    {
+        _mint(msg.sender, _totalSupply * 10 ** decimals());
     }
 
     /// @notice Stops the contract
@@ -31,11 +32,11 @@ contract Sleep is ERC20, ERC20Burnable, Ownable, Pausable, ERC20Permit {
         _unpause();
     }
 
-    /// @notice Mints tokens 
+    /// @notice Mints tokens
     /// @param _to Tokens receiver address
     /// @param _amount Amount of tokens to mint
-    /// @dev This function can only be called by the owner 
-    function mint(address _to, uint256 _amount) external onlyOwner { 
+    /// @dev This function can only be called by the owner
+    function mint(address _to, uint256 _amount) external onlyOwner {
         _mint(_to, _amount);
     }
 
@@ -45,8 +46,8 @@ contract Sleep is ERC20, ERC20Burnable, Ownable, Pausable, ERC20Permit {
     /// @param _amount Amount of tokens to send
     function _beforeTokenTransfer(address _from, address _to, uint256 _amount)
         internal
-        whenNotPaused
         override
+        whenNotPaused
     {
         super._beforeTokenTransfer(_from, _to, _amount);
     }
