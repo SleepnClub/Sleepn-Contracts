@@ -9,18 +9,22 @@
 - Sheepy Contract : contracts/Sheepy.sol
 - $Sleep Contract : contracts/Tokens/Sleep.sol
 - $Health Contract : contracts/Tokens/Health.sol
+- Upgrader Contract : contracts/Utils/Upgrader.sol
+- Tracker Contract : contracts/Utils/Tracker.sol
 
 ## Contracts Addresses
 Sleepn Smartcontracts are deployed on Polygon Mainet.
 
 | CONTRACTS | ADDRESSES |
 | ------ | ------ |
-| Bedroom NFT Contract | [0xC51cB791bb89aBaA16718dAEE6052D5f8FEaC9F4](https://polygonscan.com/address/0xC51cB791bb89aBaA16718dAEE6052D5f8FEaC9F4) 
-| Upgrade NFT Contract | [0xFb61e907AAcA297f5491C6E1c5f82A76f38f4681](https://polygonscan.com/address/0xFb61e907AAcA297f5491C6E1c5f82A76f38f4681)
-| Dex Contract | [0x4597D9F1401Accd12bf8193e2803f42902CAa346](https://polygonscan.com/address/0x4597D9F1401Accd12bf8193e2803f42902CAa346)
-| Sheepy Contract | [0x478628AF527868e07c97120BAF885F1c178BE43f](https://polygonscan.com/address/0x478628AF527868e07c97120BAF885F1c178BE43f)
-| $Sleep Contract | [0xF0F03172d0487A1B3f9731a31fa59F5381BFE47f](https://polygonscan.com/address/0xF0F03172d0487A1B3f9731a31fa59F5381BFE47f)
-| $Health Contract | [0xbbFd0a0923F939bDD5D672D4a0121c039838e658](https://polygonscan.com/address/0xbbFd0a0923F939bDD5D672D4a0121c039838e658)
+| Bedroom NFT Contract | [0x2AC6960E44ef6f4465Ea74Cc1a96fF0f7F05E5a3](https://polygonscan.com/address/0x2AC6960E44ef6f4465Ea74Cc1a96fF0f7F05E5a3) 
+| Upgrade NFT Contract | [0xCBE4EC04ABb4593348f405B898Fa5a6DEcD325c6](https://polygonscan.com/address/0xCBE4EC04ABb4593348f405B898Fa5a6DEcD325c6)
+| Dex Contract | [0x67b39c00f10d22B0cAFcf253a8D6cdA5290FBba6](https://polygonscan.com/address/0x67b39c00f10d22B0cAFcf253a8D6cdA5290FBba6)
+| Sheepy Contract | [0x7eF3e3E4b46d43Aba61BA41c2d2d6c5569f4F2ab](https://polygonscan.com/address/0x7eF3e3E4b46d43Aba61BA41c2d2d6c5569f4F2ab)
+| $Sleep Contract | [0xE4f187CEd8761e11D8464c6368FD792e0Ab60Da2](https://polygonscan.com/address/0xE4f187CEd8761e11D8464c6368FD792e0Ab60Da2)
+| $Health Contract | [0x82BA26DcCF3C7d2CB31A37c073809f9b37398Ed1](https://polygonscan.com/address/0x82BA26DcCF3C7d2CB31A37c073809f9b37398Ed1)
+| Tracker Contract | [0xCaEB84F7F812Ae85b2FBD9672B61e70BC79Dc410](https://polygonscan.com/address/0xCaEB84F7F812Ae85b2FBD9672B61e70BC79Dc410)
+| Upgrader Contract | [0x93b255aaDe976758cb9C1B29593Fb739732c6A8d](https://polygonscan.com/address/0x93b255aaDe976758cb9C1B29593Fb739732c6A8d)
 
 ## Technologies
 - Gnosis Safe : Cash management + Contracts Ownership management 
